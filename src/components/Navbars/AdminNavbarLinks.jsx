@@ -29,6 +29,8 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Hidden from "@material-ui/core/Hidden";
 import Poppers from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
+import { Link } from 'react-router-dom'
+
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
 import Notifications from "@material-ui/icons/Notifications";
@@ -37,10 +39,13 @@ import Search from "@material-ui/icons/Search";
 // core components
 import CustomInput from "components/CustomInput/CustomInput.jsx";
 import Button from "components/CustomButtons/Button.jsx";
-
+import {auth} from '../../firebase'
 import headerLinksStyle from "assets/jss/material-dashboard-react/components/headerLinksStyle.jsx";
 
 class AdminNavbarLinks extends React.Component {
+  constructor(){
+    super()
+  }
   state = {
     openNotifcation: false,
     openProfile: false
@@ -63,28 +68,30 @@ class AdminNavbarLinks extends React.Component {
     }
     this.setState({ openProfile: false });
   };
+
+ 
+    signOut = e => {
+      if (e && e.preventDefault) {
+        e.preventDefault();
+      }
+  
+      return auth
+        .doSignOut()
+        .then(response => {
+          console.log('successfully signed out', response);
+        })
+        .catch(err => {
+          console.log('failed to sign out', err);
+        });
+    };
+  
   render() {
     const { classes } = this.props;
     const { openNotifcation, openProfile } = this.state;
     return (
       <div>
-        <div className={classes.searchWrapper}>
-          <CustomInput
-            formControlProps={{
-              className: classes.margin + " " + classes.search
-            }}
-            inputProps={{
-              placeholder: "Search",
-              inputProps: {
-                "aria-label": "Search"
-              }
-            }}
-          />
-          <Button color="white" aria-label="edit" justIcon round>
-            <Search />
-          </Button>
-        </div>
-        <Button
+       
+        {/* <Button
           color={window.innerWidth > 959 ? "transparent" : "white"}
           justIcon={window.innerWidth > 959}
           simple={!(window.innerWidth > 959)}
@@ -95,7 +102,7 @@ class AdminNavbarLinks extends React.Component {
           <Hidden mdUp implementation="css">
             <p className={classes.linkText}>Dashboard</p>
           </Hidden>
-        </Button>
+        </Button> */}
         <div className={classes.manager}>
           <Button
             buttonRef={node => {
@@ -137,6 +144,7 @@ class AdminNavbarLinks extends React.Component {
                     placement === "bottom" ? "center top" : "center bottom"
                 }}
               >
+                 
                 <Paper>
                   <ClickAwayListener onClickAway={this.handleCloseNotification}>
                     <MenuList role="menu">
@@ -176,6 +184,7 @@ class AdminNavbarLinks extends React.Component {
               </Grow>
             )}
           </Poppers>
+               
         </div>
         <div className={classes.manager}>
           <Button
@@ -215,31 +224,7 @@ class AdminNavbarLinks extends React.Component {
                     placement === "bottom" ? "center top" : "center bottom"
                 }}
               >
-                <Paper>
-                  <ClickAwayListener onClickAway={this.handleCloseProfile}>
-                    <MenuList role="menu">
-                      <MenuItem
-                        onClick={this.handleCloseProfile}
-                        className={classes.dropdownItem}
-                      >
-                        Profile
-                      </MenuItem>
-                      <MenuItem
-                        onClick={this.handleCloseProfile}
-                        className={classes.dropdownItem}
-                      >
-                        Settings
-                      </MenuItem>
-                      <Divider light />
-                      <MenuItem
-                        onClick={this.handleCloseProfile}
-                        className={classes.dropdownItem}
-                      >
-                        Logout
-                      </MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
+               <a onClick={this.signOut}><Link to="/">logout</Link></a> 
               </Grow>
             )}
           </Poppers>
