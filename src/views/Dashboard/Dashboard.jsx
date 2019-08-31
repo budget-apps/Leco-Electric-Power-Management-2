@@ -31,6 +31,7 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardIcon from "components/Card/CardIcon.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
+import AddExelSheet from '../../components/Addexcel/addexcel.js'
 
 import { bugs, website, server } from "variables/general.jsx";
 
@@ -41,6 +42,8 @@ import {
 } from "variables/charts.jsx";
 
 import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
+
+
 
 class Dashboard extends React.Component {
   state = {
@@ -57,7 +60,17 @@ class Dashboard extends React.Component {
     const { classes } = this.props;
     return (
       <div>
-       Home
+       <div>
+                        <div className="row bg-default">
+                            <h2 className="btn btn warning" style={{padding: "5px"}}>Electric Grid</h2>
+                        </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-3">
+                                <AddExelSheet/>
+                            </div>
+                            </div>
+                          
       </div>
     );
   }
