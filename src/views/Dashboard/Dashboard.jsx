@@ -32,6 +32,7 @@ import CardIcon from "components/Card/CardIcon.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
 import AddExelSheet from '../../components/Addexcel/addexcel.js'
+import SelectBranch from '../../components/SelectBranch/selectBranch'
 
 import { bugs, website, server } from "variables/general.jsx";
 
@@ -42,8 +43,9 @@ import {
 } from "variables/charts.jsx";
 
 import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
+import Swal from "sweetalert2";
 
-
+var firebase = require("firebase");
 
 class Dashboard extends React.Component {
   state = {
@@ -56,21 +58,46 @@ class Dashboard extends React.Component {
   handleChangeIndex = index => {
     this.setState({ value: index });
   };
+
+  /*Change map details on change of the drop down*/
+  selectMapEventHandler=(event)=>{
+    this.setState({
+        branch: event.target.value
+    })
+    firebase.database().ref().child('electricMap').orderByChild('1/branch').equalTo(event.target.value)
+    .once('value')
+    
+    .then((snapshot) => {
+        const val = snapshot.val().electricmap;
+        this.setState({electricMap:val})
+      })
+      .catch((e) => {
+          console.log(e)
+          Swal.fire({
+              type: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong!',
+          })
+      });
+
+  }
+
   render() {
     const { classes } = this.props;
     return (
       <div>
        <div>
-                        <div className="row bg-default">
-                            <h2 className="btn btn warning" style={{padding: "5px"}}>Electric Grid</h2>
-                        </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-3">
-                                <AddExelSheet/>
-                            </div>
-                            </div>
-                          
+        </div>
+        <div className="row">
+            <div className="col-md-3">
+                <AddExelSheet/>
+            </div>
+            <div className="col-md-3">
+            </div>
+            <div className="col-md-3">
+                <SelectBranch changed={this.selectMapEventHandler}/>
+            </div>
+        </div>               
       </div>
     );
   }
