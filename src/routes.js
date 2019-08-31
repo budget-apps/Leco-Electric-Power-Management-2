@@ -22,6 +22,7 @@ import LibraryBooks from "@material-ui/icons/LibraryBooks";
 // core components/views for Admin layout
 import ElectricalConnectivity from "views/Electrical-connectivity/econnectivity";
 import PhysicalConnectivity from "views/Physical-connectivity/pconnectivity";
+import FeedingPointMatrix from "views/Feeding-point-matrix/feedingpointmatrix";
 import DashboardPage from 'views/Dashboard/Dashboard'
 
 // core components/views for RTL layout
@@ -50,6 +51,14 @@ const dashboardRoutes = [
     rtlName: "طباعة",
     icon: LibraryBooks,
     component: ElectricalConnectivity,
+    layout: "/admin"
+  },
+  {
+    path: "/feedingpoint",
+    name: "Feeding Point Matrix",
+    rtlName: "طباعة",
+    icon: LibraryBooks,
+    component: FeedingPointMatrix,
     layout: "/admin"
   },
  
