@@ -1,6 +1,6 @@
 import React from 'react'
 
-class selectMap extends React.Component {
+class SelectBranch extends React.Component {
 
     render(){
         return (
@@ -14,4 +14,4 @@ class selectMap extends React.Component {
     }
 }
 
-export default selectMap
+export default SelectBranch
