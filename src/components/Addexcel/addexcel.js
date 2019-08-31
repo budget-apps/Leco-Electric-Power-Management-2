@@ -52,8 +52,8 @@ class  AddExelSheet extends React.Component{
     render(){
     return (
         <div>
-            <input className="btn-primary btn-sm" type="file" onChange={this.uploadfile} style={{width: "20%"}} />
-            <input placeholder="branch" type='text' onChange={this.changeInputHandler}/>
+            <input className="btn-primary btn-sm" type="file" onChange={this.uploadfile} style={{width: "42%"}} />
+            <input placeholder="branch" type='text' onChange={this.changeInputHandler} style={{width: "36%"}}/>
             <button className="btn-primary btn-sm" type="submit" size="sm" onClick={this.submitFile} style={{width: "18%"}}><i className="fa fa-upload"></i> Upload</button>
         </div>
     )
