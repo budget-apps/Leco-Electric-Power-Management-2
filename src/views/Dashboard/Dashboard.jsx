@@ -27,12 +27,13 @@ class Dashboard extends React.Component {
     this.setState({
         branch: event.target.value
     })
-    firebase.database().ref().child('switchtable').orderByChild('1/branch').equalTo(event.target.value)
+    firebase.database().ref().child(event.target.value)
     .once('value')
     
     .then((snapshot) => {
-        const val = snapshot.val().electricmap;
+        const val = snapshot.val();
         this.setState({electricMap:val})
+        console.log(this.state)
       })
       .catch((e) => {
           console.log(e)
