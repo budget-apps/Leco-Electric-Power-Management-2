@@ -4,18 +4,27 @@ import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
 import AddExelSheet from '../../components/Addexcel/addexcel.js'
 import SelectBranch from '../../components/SelectBranch/selectBranch'
+import Dialog from '@material-ui/core/Dialog';
 
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
 import Swal from "sweetalert2";
-import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 var firebase = require("firebase");
 
 class Dashboard extends React.Component {
-  state = {
-    value: 0
-  };
+  constructor(){
+    super()
+    this.state = {
+      value: 0,
+      show:false
+    };
+  }
+  
   handleChange = (event, value) => {
     this.setState({ value });
   };
@@ -141,18 +150,28 @@ class Dashboard extends React.Component {
             </div>
         </div>  
         <div>
-        <Modal show={this.state.show} onHide={this.handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>Change node details </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                Hello this is a model
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={this.handleClose}>Close</Button>
-                <Button variant="primary" onClick={this.updateMap}>Save Changes</Button>
-            </Modal.Footer>
-          </Modal>
+        <Dialog
+        open={this.state.show}
+        onClose={this.handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending anonymous location data to
+            Google, even when no apps are running.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleClose} color="primary">
+            Disagree
+          </Button>
+          <Button onClick={this.handleClose} color="primary" autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
         </div>             
       </div>
     );
