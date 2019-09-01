@@ -22,18 +22,84 @@ class Dashboard extends React.Component {
     this.setState({ value: index });
   };
 
+  getSwitches(switchtable){
+    let switch_list = []
+    for (let i=0;i<switchtable.length;i++){
+      switch_list.push(switchtable[i].switch)
+    }
+    console.log("Switches List: "+switch_list)
+    this.setState({
+      switch_list: switch_list
+    })
+  }
+
+  getSections(switchtable){
+    let section_list = []
+    for (let i=0;i<switchtable.length;i++){
+      let temp_list = switchtable[i].section.split(",")
+      for(let j=0;j<temp_list.length;j++){
+        if(section_list.indexOf(temp_list[j])===-1){
+          section_list.push(temp_list[j])
+        }
+      }
+      
+    }
+    console.log("Section List: "+section_list)
+    this.setState({
+      section_list: section_list
+    })
+  }
+
+  getSectionOfSwitch(switchtable, switch_no){
+    for (let i=0;i<switchtable.length;i++){
+      if(switchtable[i].switch === switch_no){
+        return switchtable[i].section.split(",")
+      } 
+    }
+  }
+
+  generatePhysicalConMatrix(switchtable){
+    let switch_list = this.state.switch_list
+    let section_list = this.state.section_list
+
+    let physicalConMatrix = []
+
+    for(let i=0;i<switch_list.length;i++){
+      let temp_list = []
+      for(let j=0;j<section_list.length;j++){
+        temp_list[j] = 0
+      }
+      physicalConMatrix.push(temp_list)
+    }
+
+    for(let i=0;i<switch_list.length; i++){
+      //console.log(this.getSectionOfSwitch(switchtable, switch_list[i]))
+      let temp_list = this.getSectionOfSwitch(switchtable, switch_list[i])
+      for (let j=0; j<temp_list.length; j++){
+        physicalConMatrix[i][section_list.indexOf(temp_list[j])] = 1
+      }
+    }
+    console.log("Physical connection matrix")
+    console.log(physicalConMatrix)
+  }
+
   /*Change map details on change of the drop down*/
   selectMapEventHandler=(event)=>{
     this.setState({
         branch: event.target.value
     })
+    //console.log(this.state.branch)
     firebase.database().ref().child(event.target.value)
     .once('value')
     
     .then((snapshot) => {
         const val = snapshot.val();
-        this.setState({electricMap:val})
-        console.log(this.state)
+        this.setState({switchtable:val.switchtable})
+
+        this.getSwitches(this.state.switchtable)
+        this.getSections(this.state.switchtable)
+        this.generatePhysicalConMatrix(this.state.switchtable)
+
       })
       .catch((e) => {
           console.log(e)
@@ -47,7 +113,6 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
     return (
       <div>
        <div>
