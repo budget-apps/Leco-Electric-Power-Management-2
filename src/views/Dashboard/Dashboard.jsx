@@ -7,7 +7,9 @@ import SelectBranch from '../../components/SelectBranch/selectBranch'
 
 import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
 import Swal from "sweetalert2";
-
+import Modal from 'react-bootstrap/Modal'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
 var firebase = require("firebase");
 
 class Dashboard extends React.Component {
@@ -112,11 +114,19 @@ class Dashboard extends React.Component {
 
   }
 
+  handleClose = (element) => {
+    this.setState({ show: false });
+  }
+
+  handleShow = () => {
+    this.setState({
+        show: true,
+    });
+  }
+
   render() {
     return (
       <div>
-       <div>
-        </div>
         <div className="row">
             <div className="col-md-3">
                 <AddExelSheet/>
@@ -126,7 +136,24 @@ class Dashboard extends React.Component {
             <div className="col-md-3">
                 <SelectBranch changed={this.selectMapEventHandler}/>
             </div>
-        </div>               
+            <div>
+              <button onClick={this.handleShow} className="btn btn-default btn-sm"><i className="fa fa-arrow-up"></i></button>
+            </div>
+        </div>  
+        <div>
+        <Modal show={this.state.show} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Change node details </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Hello this is a model
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={this.handleClose}>Close</Button>
+                <Button variant="primary" onClick={this.updateMap}>Save Changes</Button>
+            </Modal.Footer>
+          </Modal>
+        </div>             
       </div>
     );
   }
