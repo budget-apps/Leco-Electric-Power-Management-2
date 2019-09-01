@@ -4,7 +4,7 @@ import swal from 'sweetalert';
 var firebase = require("firebase");
 
 
-class  AddExelSheet extends React.Component{
+class  AddExelNOSwitch extends React.Component{
     constructor(){
         super()
     this.state={
@@ -40,7 +40,7 @@ class  AddExelSheet extends React.Component{
     }
 
     submitFile=()=>{
-        firebase.database().ref().child(this.state.branch).child('switchtable').set(this.state.arr,(err,doc)=>{
+        firebase.database().ref().child(this.state.branch).child('noswitch').set(this.state.arr,(err,doc)=>{
             if(!err){
                 swal("File added to database!!!")
             }
@@ -60,4 +60,4 @@ class  AddExelSheet extends React.Component{
 }
 }
 
-export default AddExelSheet
+export default AddExelNOSwitch
