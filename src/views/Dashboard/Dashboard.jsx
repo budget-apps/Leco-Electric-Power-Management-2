@@ -13,8 +13,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
 import Swal from "sweetalert2";
 import Button from 'react-bootstrap/Button'
-import AddExelFeeding from "components/AddExelFeedingPoint/addexcelfeeding.js";
-import AddExelNOSwitch from "components/AddExelNOSwitch/addexcelnoswitch.js";
 import { Graph } from 'react-d3-graph';
 
 var firebase = require("firebase");
@@ -72,6 +70,28 @@ class Dashboard extends React.Component {
     }
   }
 
+  getNormallyOpenSwitches(noopn){
+    let noopensw_list = []
+    for(let i=0;i<noopn.length;i++){
+      noopensw_list.push(noopn[i].no_open)
+    }
+    console.log("Normally open switches: "+noopensw_list)
+    this.setState({
+      noopensw_list: noopensw_list
+    })
+  }
+
+  getFeedingPoints(feedingpoints){
+    let feeding_list = []
+    for(let i=0;i<feedingpoints.length;i++){
+      feeding_list.push(feedingpoints[i].feed_points)
+    }
+    console.log("Feeding points: "+feeding_list)
+    this.setState({
+      feeding_list: feeding_list
+    })
+  }
+
   generatePhysicalConMatrix(switchtable){
     let switch_list = this.state.switch_list
     let section_list = this.state.section_list
@@ -98,11 +118,44 @@ class Dashboard extends React.Component {
   }
 
   drawGraph(){
-    // graph payload (with minimalist structure)
+    let feed_list = this.state.feeding_list
+    let noopn_list = this.state.noopensw_list
+    let sw_list = this.state.switch_list
+    let se_list = this.state.section_list
+    let nodes_arr = []
+    let link_arr = []
+
+    for(let i=0;i<se_list.length;i++){
+      nodes_arr.push({id: se_list[i],color: "black", size: 300, symbolType: "circle", cx:10, cy:22, dx: 90})
+    }
+
+    for(let i=0;i<sw_list.length;i++){
+      let id = sw_list[i]
+      let color = "green"
+      let size = 600
+      let symbolType = "square"
+      if(noopn_list.includes(sw_list[i])){
+        color = "yellow"
+      }else if (feed_list.includes(sw_list[i])){
+        color = "blue"
+      }
+      nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
+
+      let section_list = this.getSectionOfSwitch(this.state.switchtable, sw_list[i])
+      for(let j=0;j<section_list.length;j++){
+          link_arr.push({source: id, target: section_list[j]})
+      }
+    }
+
     const graph_data = {
-      nodes: [{ id: 'Harry', color: 'black' }, { id: 'Sally' }, { id: 'Alice' }],
-      links: [{ source: 'Harry', target: 'Sally' }, { source: 'Harry', target: 'Alice' }]
+        nodes: nodes_arr,
+        links: link_arr
     };
+
+    // const graph_data = {
+    //   nodes: [{ id: 'Harry', color: 'black' }, { id: 'Sally' }, { id: 'Alice' }],
+    //   links: [{ source: 'Harry', target: 'Sally' }, { source: 'Harry', target: 'Alice' }]
+    // };
     const graph_config = {
       nodeHighlightBehavior: true,
       node: {
@@ -134,10 +187,13 @@ class Dashboard extends React.Component {
     
     .then((snapshot) => {
         const val = snapshot.val();
-        this.setState({switchtable:val.switchtable})
+        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints})
 
         this.getSwitches(this.state.switchtable)
         this.getSections(this.state.switchtable)
+        this.getNormallyOpenSwitches(this.state.noswitch)
+        this.getFeedingPoints(this.state.feedpoints)
+
         this.generatePhysicalConMatrix(this.state.switchtable)
 
         this.drawGraph()
@@ -156,32 +212,14 @@ class Dashboard extends React.Component {
 
   handleClose = () => {
     this.setState({
-      show1: false,
-      show2: false,
-      show3: false,
+      show: false,
   });
   }
 
-  handleShow = (id) => {
-    if(id===1){
-      this.setState({
-        show1: true,
-        show2: false,
-        show3: false,
-    });
-    }else if (id===2){
-      this.setState({
-        show1: false,
-        show2: true,
-        show3: false,
-    });
-    }else if (id===3){
-      this.setState({
-        show1: false,
-        show2: false,
-        show3: true,
-    });
-    }
+  handleShow = () => {
+    this.setState({
+      show: true,
+  });
     
   }
 
@@ -189,16 +227,14 @@ class Dashboard extends React.Component {
     return (
       <div>
         <div className="row">
-            <div>
-              <button onClick={() => this.handleShow(1)} className="btn btn-default btn-sm">Switch Table <i className="fa fa-arrow-up"></i></button>
-              <button onClick={() => this.handleShow(2)} className="btn btn-default btn-sm">Feed Points Table <i className="fa fa-arrow-up"></i></button>
-              <button onClick={() => this.handleShow(3)} className="btn btn-default btn-sm">Normally Open Table <i className="fa fa-arrow-up"></i></button>
+            <div style={{"border": "2px solid black", "border-radius": "10px", "padding": "10px", "margin-bottom": "5px"}}>
+              <button onClick={this.handleShow} className="btn btn-default btn-sm">Upload <i className="fa fa-arrow-up"></i></button>
             </div>
-            <div className="col-md-3">
+            <div className="col-md-3" style={{"border": "2px solid black", "border-radius": "10px", "padding": "10px", "margin-bottom": "5px"}}>
                 <SelectBranch changed={this.selectMapEventHandler}/>
             </div>
-            <div>
-              {this.state.graph_data==undefined?"":
+            <div style={{"border": "2px solid black", "border-radius": "10px", "padding": "10px", "margin-bottom": "5px"}}>
+              {this.state.graph_data===undefined?"":
                 <Graph
                 id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                 data={this.state.graph_data}
@@ -210,52 +246,15 @@ class Dashboard extends React.Component {
         </div>  
         <div>
         <Dialog
-          open={this.state.show1}
+          open={this.state.show}
           onClose={this.handleClose}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-        <DialogTitle id="alert-dialog-title">{"Upload switch table excel files here"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Upload excel files here"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <AddExelSheet/>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-          open={this.state.show2}
-          onClose={this.handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-        <DialogTitle id="alert-dialog-title">{"Upload feeding points table excel files here"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <AddExelFeeding/>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-      
-      <Dialog
-          open={this.state.show3}
-          onClose={this.handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-        <DialogTitle id="alert-dialog-title">{"Upload normally open switches table excel files here"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <AddExelNOSwitch/>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
