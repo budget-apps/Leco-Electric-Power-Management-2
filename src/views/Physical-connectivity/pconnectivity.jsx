@@ -28,6 +28,10 @@ import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 
+import Swal from "sweetalert2";
+import SelectBranch from "components/SelectBranch/selectBranch";
+var firebase = require("firebase");
+
 const styles = {
   cardCategoryWhite: {
     "&,& a,& a:hover,& a:focus": {
@@ -58,24 +62,128 @@ const styles = {
   }
 };
 
-function PhysicalConnectivity(props) {
-  const { classes } = props;
-  return (
-    <GridContainer>
+
+
+class PhysicalConnectivity extends React.Component {
+  
+  getSwitches(switchtable){
+    let switch_list = []
+    for (let i=0;i<switchtable.length;i++){
+      switch_list.push(switchtable[i].switch)
+    }
+    console.log("Switches List: "+switch_list)
+    this.setState({
+      switch_list: switch_list
+    })
+  }
+
+  getSections(switchtable){
+    let section_list = []
+    for (let i=0;i<switchtable.length;i++){
+      let temp_list = switchtable[i].section.split(",")
+      for(let j=0;j<temp_list.length;j++){
+        if(section_list.indexOf(temp_list[j])===-1){
+          section_list.push(temp_list[j])
+        }
+      }
+      
+    }
+    console.log("Section List: "+section_list)
+    this.setState({
+      section_list: section_list
+    })
+  }
+
+  getSectionOfSwitch(switchtable, switch_no){
+    for (let i=0;i<switchtable.length;i++){
+      if(switchtable[i].switch === switch_no){
+        return switchtable[i].section.split(",")
+      } 
+    }
+  }
+
+  generatePhysicalConMatrix(switchtable){
+    let switch_list = this.state.switch_list
+    let section_list = this.state.section_list
+
+    let physicalConMatrix = []
+
+    for(let i=0;i<switch_list.length;i++){
+      let temp_list = []
+      for(let j=0;j<section_list.length;j++){
+        temp_list[j] = 0
+      }
+      physicalConMatrix.push(temp_list)
+    }
+
+    for(let i=0;i<switch_list.length; i++){
+      //console.log(this.getSectionOfSwitch(switchtable, switch_list[i]))
+      let temp_list = this.getSectionOfSwitch(switchtable, switch_list[i])
+      for (let j=0; j<temp_list.length; j++){
+        physicalConMatrix[i][section_list.indexOf(temp_list[j])] = 1
+      }
+    }
+    this.setState({
+      physicalConMatrix: physicalConMatrix
+    })
+    console.log("Physical connection matrix")
+    console.log(physicalConMatrix)
+  }
+
+  /*Change map details on change of the drop down*/
+  selectMapEventHandler=(event)=>{
+    this.setState({
+        branch: event.target.value
+    })
+    //console.log(this.state.branch)
+    firebase.database().ref().child(event.target.value)
+    .once('value')
+    
+    .then((snapshot) => {
+        const val = snapshot.val();
+        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints})
+
+        this.getSwitches(this.state.switchtable)
+        this.getSections(this.state.switchtable)
+
+        this.generatePhysicalConMatrix(this.state.switchtable)
+
+      })
+      .catch((e) => {
+          console.log(e)
+          Swal.fire({
+              type: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong!',
+          })
+      });
+
+  }
+
+  render(){
+    const { classes } = this.props;
+    return (
+    <div>
+      <div>
+      <SelectBranch changed={this.selectMapEventHandler}/>
+    </div>
+      <div>
+      <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
           <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>Simple Table</h4>
+            <h4 className={classes.cardTitleWhite}>Physical Connectivity Matrix</h4>
             <p className={classes.cardCategoryWhite}>
               Here is a subtitle for this table
             </p>
           </CardHeader>
           <CardBody>
-            <Table
+            {this.state==null?"":
+              <Table
               tableHeaderColor="primary"
-              tableHead={["Name", "Country", "City", "Salary"]}
+              tableHead={["Section"]}
               tableData={[
-                ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
+                [1, "Niger", "Oud-Turnhout", "$36,738"],
                 ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
                 ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
                 ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
@@ -83,12 +191,20 @@ function PhysicalConnectivity(props) {
                 ["Mason Porter", "Chile", "Gloucester", "$78,615"]
               ]}
             />
+            }
+            
           </CardBody>
         </Card>
       </GridItem>
      
     </GridContainer>
+      </div>
+      
+    
+    </div>
+    
   );
+}
 }
 
 PhysicalConnectivity.propTypes = {

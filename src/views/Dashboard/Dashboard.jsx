@@ -113,8 +113,55 @@ class Dashboard extends React.Component {
         physicalConMatrix[i][section_list.indexOf(temp_list[j])] = 1
       }
     }
+    this.setState({
+      physicalConMatrix: physicalConMatrix
+    })
     console.log("Physical connection matrix")
     console.log(physicalConMatrix)
+  }
+
+  generateElectricConnectivityMatrix(){
+    let electricConMatrix = JSON.parse(JSON.stringify(this.state.physicalConMatrix))
+    let no_open = this.state.noopensw_list
+    let sw_list = this.state.switch_list
+    let se_list_len = this.state.section_list.length
+
+    for(let i=0;i<no_open.length;i++){
+      let sw_index = sw_list.indexOf(no_open[i])
+      for(let j=0;j<se_list_len;j++){
+        electricConMatrix[sw_index][j] = 0
+      }
+    }
+    this.setState({
+      electricConMatrix: electricConMatrix
+    })
+    console.log("Electric connected matrix")
+    console.log(electricConMatrix)
+  }
+
+  generateFeedingMatrix(){
+    let feedMatrix = JSON.parse(JSON.stringify(this.state.electricConMatrix))
+    let feed_list = this.state.feeding_list
+    let sw_list = this.state.switch_list
+    let se_list_length= this.state.section_list
+
+    for(let i=0;i<feed_list.length;i++){
+      let feed_index = sw_list.indexOf(feed_list[i])
+      console.log(feed_index, feed_list[i])
+      for(let j=0;j<se_list_length;j++){
+        console.log(feedMatrix[feed_index])
+        if(feedMatrix[feed_index][j]===1){
+          
+          feedMatrix[feed_index][j] = 11
+        }
+      }
+      console.log("--------------")
+    }
+    this.setState({
+      feedMatrix: feedMatrix
+    })
+    console.log("Feed matrix")
+    console.log(feedMatrix)
   }
 
   drawGraph(){
@@ -151,11 +198,6 @@ class Dashboard extends React.Component {
         nodes: nodes_arr,
         links: link_arr
     };
-
-    // const graph_data = {
-    //   nodes: [{ id: 'Harry', color: 'black' }, { id: 'Sally' }, { id: 'Alice' }],
-    //   links: [{ source: 'Harry', target: 'Sally' }, { source: 'Harry', target: 'Alice' }]
-    // };
     const graph_config = {
       nodeHighlightBehavior: true,
       node: {
@@ -195,6 +237,8 @@ class Dashboard extends React.Component {
         this.getFeedingPoints(this.state.feedpoints)
 
         this.generatePhysicalConMatrix(this.state.switchtable)
+        this.generateElectricConnectivityMatrix()
+        this.generateFeedingMatrix()
 
         this.drawGraph()
 
