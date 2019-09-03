@@ -173,16 +173,16 @@ class Dashboard extends React.Component {
     let link_arr = []
 
     for(let i=0;i<se_list.length;i++){
-      nodes_arr.push({id: se_list[i],color: "black", size: 300, symbolType: "circle", cx:10, cy:22, dx: 90})
+      nodes_arr.push({id: se_list[i],color: "black", size: 300, symbolType: "circle"})
     }
 
     for(let i=0;i<sw_list.length;i++){
       let id = sw_list[i]
       let color = "green"
-      let size = 600
+      let size = 2000
       let symbolType = "square"
       if(noopn_list.includes(sw_list[i])){
-        color = "yellow"
+        color = "orange"
       }else if (feed_list.includes(sw_list[i])){
         color = "blue"
       }

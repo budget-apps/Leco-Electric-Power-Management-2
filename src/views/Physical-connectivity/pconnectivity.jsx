@@ -183,7 +183,7 @@ class PhysicalConnectivity extends React.Component {
               tableHeaderColor="primary"
               tableHead={["Section"]}
               tableData={[
-                [1, "Niger", "Oud-Turnhout", "$36,738"],
+                ["1", "Niger", "Oud-Turnhout", "$36,738"],
                 ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
                 ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
                 ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
