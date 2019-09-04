@@ -17,7 +17,7 @@
 */
 import React from "react";
 // nodejs library to set properties for components
-import PropTypes from "prop-types";
+import PropTypes, { array } from "prop-types";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 // core components
@@ -79,6 +79,7 @@ class PhysicalConnectivity extends React.Component {
 
   getSections(switchtable){
     let section_list = []
+    section_list[0] = ""
     for (let i=0;i<switchtable.length;i++){
       let temp_list = switchtable[i].section.split(",")
       for(let j=0;j<temp_list.length;j++){
@@ -110,8 +111,9 @@ class PhysicalConnectivity extends React.Component {
 
     for(let i=0;i<switch_list.length;i++){
       let temp_list = []
-      for(let j=0;j<section_list.length;j++){
-        temp_list[j] = 0
+      temp_list[0] = switch_list[i] 
+      for(let j=1;j<section_list.length;j++){
+        temp_list[j] = '0'
       }
       physicalConMatrix.push(temp_list)
     }
@@ -120,7 +122,7 @@ class PhysicalConnectivity extends React.Component {
       //console.log(this.getSectionOfSwitch(switchtable, switch_list[i]))
       let temp_list = this.getSectionOfSwitch(switchtable, switch_list[i])
       for (let j=0; j<temp_list.length; j++){
-        physicalConMatrix[i][section_list.indexOf(temp_list[j])] = 1
+        physicalConMatrix[i][section_list.indexOf(temp_list[j])] = '1'
       }
     }
     this.setState({
@@ -162,6 +164,8 @@ class PhysicalConnectivity extends React.Component {
 
   render(){
     const { classes } = this.props;
+    // const table_data= this.state===null?"":this.state.physicalConMatrix;
+    console.log("table data"+(this.state===null?"":this.state.physicalConMatrix));
     return (
     <div>
       <div>
@@ -178,20 +182,11 @@ class PhysicalConnectivity extends React.Component {
             </p>
           </CardHeader>
           <CardBody>
-            {this.state==null?"":
-              <Table
+          <Table
               tableHeaderColor="primary"
-              tableHead={["Section"]}
-              tableData={[
-                ["1", "Niger", "Oud-Turnhout", "$36,738"],
-                ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
-                ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
-                ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
-                ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
-                ["Mason Porter", "Chile", "Gloucester", "$78,615"]
-              ]}
+              tableHead={this.state===null?[[]]:this.state.section_list===undefined?[[]]:this.state.section_list}
+              tableData={this.state===null?[[]]:this.state.physicalConMatrix===undefined?[[]]:this.state.physicalConMatrix}
             />
-            }
             
           </CardBody>
         </Card>
