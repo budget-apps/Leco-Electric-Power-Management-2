@@ -2,17 +2,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
-import AddExelSheet from '../../components/Addexcel/addexcel.js'
 import SelectBranch from '../../components/SelectBranch/selectBranch'
-import Dialog from '@material-ui/core/Dialog';
-
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
 import Swal from "sweetalert2";
-import Button from 'react-bootstrap/Button'
+import GridItem from "components/Grid/GridItem.jsx";
+import GridContainer from "components/Grid/GridContainer.jsx";
+import Card from "components/Card/Card.jsx";
+import CardHeader from "components/Card/CardHeader.jsx";
+import CardBody from "components/Card/CardBody.jsx";
 import { Graph } from 'react-d3-graph';
 
 var firebase = require("firebase");
@@ -143,13 +140,13 @@ class Dashboard extends React.Component {
     let feedMatrix = JSON.parse(JSON.stringify(this.state.electricConMatrix))
     let feed_list = this.state.feeding_list
     let sw_list = this.state.switch_list
-    let se_list_length= this.state.section_list
+    let se_list_length= this.state.section_list.length
 
     for(let i=0;i<feed_list.length;i++){
       let feed_index = sw_list.indexOf(feed_list[i])
-      console.log(feed_index, feed_list[i])
+      //console.log(feed_index, feed_list[i])
       for(let j=0;j<se_list_length;j++){
-        console.log(feedMatrix[feed_index])
+        console.log(feedMatrix[feed_index][j])
         if(feedMatrix[feed_index][j]===1){
           
           feedMatrix[feed_index][j] = 11
@@ -254,60 +251,42 @@ class Dashboard extends React.Component {
 
   }
 
-  handleClose = () => {
-    this.setState({
-      show: false,
-  });
-  }
-
-  handleShow = () => {
-    this.setState({
-      show: true,
-  });
-    
-  }
-
   render() {
+    const { classes } = this.props;
     return (
       <div>
         <div className="row">
-            <div style={{"border": "2px solid black", "border-radius": "10px", "padding": "10px", "margin-bottom": "5px"}}>
-              <button onClick={this.handleShow} className="btn btn-default btn-sm">Upload <i className="fa fa-arrow-up"></i></button>
-            </div>
-            <div className="col-md-3" style={{"border": "2px solid black", "border-radius": "10px", "padding": "10px", "margin-bottom": "5px"}}>
+            <div className="col-md-3">
                 <SelectBranch changed={this.selectMapEventHandler}/>
             </div>
-            <div style={{"border": "2px solid black", "border-radius": "10px", "padding": "10px", "margin-bottom": "5px"}}>
-              {this.state.graph_data===undefined?"":
-                <Graph
-                id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-                data={this.state.graph_data}
-                config={this.state.graph_config}
-                />
-              }
-              
-            </div>
-        </div>  
-        <div>
-        <Dialog
-          open={this.state.show}
-          onClose={this.handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-        <DialogTitle id="alert-dialog-title">{"Upload excel files here"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <AddExelSheet/>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-        </div>             
+            <div>
+              <GridContainer>
+              <GridItem xs={12} sm={12} md={12}>
+                <Card>
+                  <CardHeader color="primary">
+                    <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
+                    <p className={classes.cardCategoryWhite}>
+                      Physical connection graph will display here.
+                    </p>
+                  </CardHeader>
+                  <CardBody>
+                  <div>
+                    {this.state.graph_data===undefined?"Please select a branch":
+                      <Graph
+                      id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+                      data={this.state.graph_data}
+                      config={this.state.graph_config}
+                      />
+                    }
+                    
+                  </div>
+                  </CardBody>
+                </Card>
+              </GridItem>
+            
+            </GridContainer>
+      </div>
+        </div>           
       </div>
     );
   }
