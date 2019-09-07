@@ -274,7 +274,7 @@ class AdminNavbarLinks extends React.Component {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.handleClose} color="primary">
+          <Button onClick={this.handleClose} color="danger">
             Close
           </Button>
         </DialogActions>

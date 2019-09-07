@@ -130,38 +130,36 @@ class SwitchTable extends React.Component {
     let feed_list = this.state.feeding_list
     let no_open_list = this.state.noopensw_list
     let action = this.state.filterAction
-    console.log(action)
+    console.log("Action"+action)
     if(action === "Feeders"){
       for(let i=0;i<feed_list.length;i++){
       let temp_table = []
       temp_table.push(feed_list[i], this.getSectionOfSwitch(this.state.switchtable, feed_list[i]))
       new_swithch_table.push(temp_table)
       }
-      console.log("Feeders")
+      console.log("Selected : Feeders")
       console.log(new_swithch_table)
       this.setState({
         new_swithch_table: new_swithch_table
       })
-    }
-    if(action === "AllSwithces"){
-      for(let i=0;i<sw_list.length;i++){
-        let temp_table = []
-        temp_table.push(sw_list[i], this.getSectionOfSwitch(this.state.switchtable, sw_list[i]))
-        new_swithch_table.push(temp_table)
-        }
-        console.log("AllSwithces")
-        console.log(new_swithch_table)
-        this.setState({
-          new_swithch_table: new_swithch_table
-        })
-    }
-    if(action === "NOOpenSwithces"){
+    }else if(action === "NOOpenSwithces"){
       for(let i=0;i<sw_list.length;i++){
         let temp_table = []
         temp_table.push(no_open_list[i], this.getSectionOfSwitch(this.state.switchtable, no_open_list[i]))
         new_swithch_table.push(temp_table)
         }
-        console.log("NOOpenSwithces")
+        console.log("Selected : NOOpenSwithces")
+        console.log(new_swithch_table)
+        this.setState({
+          new_swithch_table: new_swithch_table
+        })
+    }else{
+      for(let i=0;i<sw_list.length;i++){
+        let temp_table = []
+        temp_table.push(sw_list[i], this.getSectionOfSwitch(this.state.switchtable, sw_list[i]))
+        new_swithch_table.push(temp_table)
+        }
+        console.log("Selected : AllSwithces")
         console.log(new_swithch_table)
         this.setState({
           new_swithch_table: new_swithch_table
@@ -171,11 +169,22 @@ class SwitchTable extends React.Component {
     
   }
 
+
   filterSwitchEventHandler=(event)=>{
     this.setState({
       filterAction: event.target.value
     })
-    this.generateSwitchTable()
+    try{
+      this.generateSwitchTable()
+    }catch(err){
+      console.log(err)
+      Swal.fire({
+        type: 'error',
+        title: 'Oops...',
+        text: 'Please select a branch!',
+    })
+    }
+    
 
   } 
 
@@ -226,14 +235,14 @@ class SwitchTable extends React.Component {
           <CardHeader color="info">
             <h4 className={classes.cardTitleWhite}>Switch Table</h4>
             <p className={classes.cardCategoryWhite}>
-              Here is a subtitle for this table
+              Here is the table for {this.state===null?"":this.state.filterAction}
             </p>
             <FilterSwithces changed={this.filterSwitchEventHandler}/>
           </CardHeader>
           <CardBody>
             <Table
               tableHeaderColor="primary"
-              tableHead={['Switch', 'section']}
+              tableHead={['Switch', 'Sections']}
               tableData={this.state===null?[[]]:this.state.new_swithch_table===undefined?[[]]:this.state.new_swithch_table}
             />
           </CardBody>

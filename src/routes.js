@@ -25,8 +25,6 @@ import PhysicalConnectivity from "views/Physical-connectivity/pconnectivity";
 import FeedingPointMatrix from "views/Feeding-point-matrix/feedingpointmatrix";
 import DashboardPage from 'views/Dashboard/Dashboard'
 import switchtable from "views/Switch-Table/switchtable";
-import feedpoints from "views/Feed-points/feedpoints";
-import noopen from "views/No-open-switches/noopen";
 
 // core components/views for RTL layout
 
@@ -70,22 +68,6 @@ const dashboardRoutes = [
     rtlName: "طباعة",
     icon: LibraryBooks,
     component: switchtable,
-    layout: "/admin"
-  },
-  {
-    path: "/feedpointswitches",
-    name: "Feeding Point Switches",
-    rtlName: "طباعة",
-    icon: LibraryBooks,
-    component: feedpoints,
-    layout: "/admin"
-  },
-  {
-    path: "/noopenswithces",
-    name: "Normally Open Switches",
-    rtlName: "طباعة",
-    icon: LibraryBooks,
-    component: noopen,
     layout: "/admin"
   },
  
