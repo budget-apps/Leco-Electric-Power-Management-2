@@ -5,7 +5,7 @@ class FilterSwithces extends React.Component {
     render(){
         return (
             <div>
-                <select className="browser-default custom-select btn-primary btn-sm" style={{marginTop: "10px",marginBottom: "5px"}} onChange={this.props.changed}>
+                <select onChange={this.props.changed}>
                 <option defaultValue={"default"}>Filter switches</option>
                   <option value="AllSwithces">All swithces</option>
                   <option value="Feeders">Feeders</option>

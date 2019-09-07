@@ -146,19 +146,37 @@ class Dashboard extends React.Component {
       let feed_index = sw_list.indexOf(feed_list[i])
       //console.log(feed_index, feed_list[i])
       for(let j=0;j<se_list_length;j++){
-        console.log(feedMatrix[feed_index][j])
         if(feedMatrix[feed_index][j]===1){
           
           feedMatrix[feed_index][j] = 11
         }
       }
-      console.log("--------------")
     }
     this.setState({
       feedMatrix: feedMatrix
     })
     console.log("Feed matrix")
     console.log(feedMatrix)
+  }
+
+  rowOperation(row_id, matrix){
+    for(let i=0;i<matrix[row_id].length;i++){
+      if(matrix[row_id][i]===1){
+        matrix[row_id][i]=23
+      }else if(matrix[row_id][i]===11){
+        return i
+      }
+    }
+    return -1
+  }
+
+  colOperation(col_id, matrix){
+
+  }
+
+  checkFaults(){
+    let faultSwitch = this.state.faultSwitch
+    console.log(faultSwitch)
   }
 
   drawGraph(){
@@ -212,6 +230,7 @@ class Dashboard extends React.Component {
         graph_config: graph_config
       }
     )
+    console.log("Graph data")
     console.log(this.state.graph_data)
   }
 
@@ -226,7 +245,7 @@ class Dashboard extends React.Component {
     
     .then((snapshot) => {
         const val = snapshot.val();
-        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints})
+        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints,faultSwitch:val.faultSwitch})
 
         this.getSwitches(this.state.switchtable)
         this.getSections(this.state.switchtable)
@@ -236,6 +255,8 @@ class Dashboard extends React.Component {
         this.generatePhysicalConMatrix(this.state.switchtable)
         this.generateElectricConnectivityMatrix()
         this.generateFeedingMatrix()
+
+        this.checkFaults()
 
         this.drawGraph()
 
