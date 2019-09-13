@@ -170,7 +170,7 @@ class Dashboard extends React.Component {
         break
       }
     }
-    console.log("->Row operation")
+    console.log("->Row operation: ", row_id)
     console.log(arr)
     console.log("->End row operation")
     return arr
@@ -181,11 +181,12 @@ class Dashboard extends React.Component {
     for(let i=0;i<matrix.length;i++){
       if(matrix[i][col_id]===1){
         arr.push([i,col_id])
+        matrix[i][col_id]=23
       }else if(matrix[i][col_id]===23){
         break
       }
     }
-    console.log("->Col operation")
+    console.log("->Col operation: ", col_id)
     console.log(arr)
     console.log("->End col operation")
     return arr
@@ -244,6 +245,7 @@ class Dashboard extends React.Component {
         console.log("LOcation",row_1, temp_feeder_col)
         let sw_name = this.state.switch_list[row_1]
         console.log("Name",sw_name)
+        console.log(matrix)
         this.setState({
           faultyFeeder: [sw_name, [row_1, temp_feeder_col]]
         })
@@ -254,6 +256,7 @@ class Dashboard extends React.Component {
         console.log("LOcation",temp_feeder_row, col_1)
         let sw_name = this.state.switch_list[temp_feeder_row]
         console.log("Name",sw_name)
+        console.log(matrix)
         this.setState({
           faultyFeeder: [sw_name, [row_1, temp_feeder_col]]
         })
@@ -271,6 +274,37 @@ class Dashboard extends React.Component {
       }
       
     }
+    
+  }
+
+  findFaultyPath(){
+    let faultyFeeder = this.state.faultyFeeder
+    console.log("+++++++++++++++++++++++Find faulty path++++++++++++++++++++++++++++++")
+    let matrix = JSON.parse(JSON.stringify(this.state.feedMatrix))
+    let sw_queue = []
+    let path = []
+    sw_queue.push(faultyFeeder[1])
+    path.push(faultyFeeder[1])
+    console.log(sw_queue.length)
+    while(sw_queue.length>0){
+      let item = sw_queue.pop()
+      path.push(item)
+      let row_1 = item[0]
+      let col_1 = item[1]
+
+      let itemRowSections = this.rowOperation(row_1, matrix)
+      let itemCOlSections = this.colOperation(col_1, matrix)
+
+      for(let j=0;j<itemRowSections;j++){
+        sw_queue.push(itemRowSections[j])
+      }
+
+      for(let j=0;j<itemCOlSections;j++){
+        sw_queue.push(itemCOlSections[j])
+      }
+      
+    }
+    console.log(path)
   }
 
   getRow(sw_id){
@@ -319,7 +353,7 @@ class Dashboard extends React.Component {
       "directed": false,
       "focusAnimationDuration": 0.75,
       "focusZoom": 5,
-      "height": 600,
+      "height": 700,
       "highlightDegree": 1,
       "highlightOpacity": 1,
       "linkHighlightBehavior": true,
@@ -329,10 +363,10 @@ class Dashboard extends React.Component {
       "panAndZoom": false,
       "staticGraph": false,
       "staticGraphWithDragAndDrop": false,
-      "width": 900,
+      "width": 1000,
       "d3": {
         "alphaTarget": 0.05,
-        "gravity": -400,
+        "gravity": -500,
         "linkLength": 90,
         "linkStrength": 2
       },
@@ -379,7 +413,7 @@ class Dashboard extends React.Component {
         this.generateFeedingMatrix()
 
         this.findFaultyFeeder()
-
+        this.findFaultyPath()
         this.drawGraph()
 
       })
