@@ -17,7 +17,10 @@
 */
 // @material-ui/icons
 import Dashboard from "@material-ui/icons/Dashboard";
-import LibraryBooks from "@material-ui/icons/LibraryBooks";
+import SettingsInputComponentIcon from '@material-ui/icons/SettingsInputComponent';
+import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
+import TableChartIcon from '@material-ui/icons/TableChart';
 
 // core components/views for Admin layout
 import ElectricalConnectivity from "views/Electrical-connectivity/econnectivity";
@@ -42,7 +45,7 @@ const dashboardRoutes = [
     path: "/pconnectivity",
     name: "Physical Connectivity",
     rtlName: "قائمة الجدول",
-    icon: "content_paste",
+    icon: SettingsInputComponentIcon,
     component: PhysicalConnectivity,
     layout: "/admin"
   },
@@ -50,7 +53,7 @@ const dashboardRoutes = [
     path: "/econnectivity",
     name: "Electrical Connectivity",
     rtlName: "طباعة",
-    icon: LibraryBooks,
+    icon: OfflineBoltIcon,
     component: ElectricalConnectivity,
     layout: "/admin"
   },
@@ -58,7 +61,7 @@ const dashboardRoutes = [
     path: "/feedingpointmatrix",
     name: "Feeding Point Matrix",
     rtlName: "طباعة",
-    icon: LibraryBooks,
+    icon: FlashOnIcon,
     component: FeedingPointMatrix,
     layout: "/admin"
   },
@@ -66,7 +69,7 @@ const dashboardRoutes = [
     path: "/switchtable",
     name: "Switches Table",
     rtlName: "طباعة",
-    icon: LibraryBooks,
+    icon: TableChartIcon,
     component: switchtable,
     layout: "/admin"
   },

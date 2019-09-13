@@ -19,7 +19,8 @@ class Dashboard extends React.Component {
     super()
     this.state = {
       value: 0,
-      show:false
+      show:false,
+      faultSwitch: ""
     };
   }
   
@@ -160,23 +161,120 @@ class Dashboard extends React.Component {
   }
 
   rowOperation(row_id, matrix){
+    let arr = []
     for(let i=0;i<matrix[row_id].length;i++){
       if(matrix[row_id][i]===1){
-        matrix[row_id][i]=23
-      }else if(matrix[row_id][i]===11){
-        return i
+        arr.push([row_id,i])
+        matrix[row_id][i] = 23
+      }else if(matrix[row_id][i]===23){
+        break
       }
     }
-    return -1
+    console.log("->Row operation")
+    console.log(arr)
+    console.log("->End row operation")
+    return arr
   }
 
   colOperation(col_id, matrix){
-
+    let arr = []
+    for(let i=0;i<matrix.length;i++){
+      if(matrix[i][col_id]===1){
+        arr.push([i,col_id])
+      }else if(matrix[i][col_id]===23){
+        break
+      }
+    }
+    console.log("->Col operation")
+    console.log(arr)
+    console.log("->End col operation")
+    return arr
   }
 
-  checkFaults(){
+  findFeederInRow(row_id, matrix){
+    console.log("->Find feeder in row")
+    console.log(row_id)
+    for(let i=0;i<matrix[row_id].length;i++){
+      if(matrix[row_id][i]===11){
+        console.log(i)
+        console.log("->End Find feeder in row")
+        return i
+      }
+    }
+    console.log(-1)
+    console.log("->End Find feeder in row")
+    return -1
+  }
+
+  findFeederInCol(col_id, matrix){
+    console.log("->Find feeder in col")
+    console.log(col_id)
+    for(let i=0;i<matrix.length;i++){
+      if(matrix[i][col_id]===11){
+        console.log(i)
+        console.log("->End Find feeder in col")
+        return i
+      }
+    }
+    console.log(-1)
+    console.log("->End Find feeder in col")
+    return -1
+  }
+
+  findFaultyFeeder(){
+    console.log("+++++++++++++++++++++++Find faulty feeder++++++++++++++++++++++++++++++")
     let faultSwitch = this.state.faultSwitch
-    console.log(faultSwitch)
+    let faultSwitchRowId = this.getRow(faultSwitch)
+    let matrix = JSON.parse(JSON.stringify(this.state.feedMatrix))
+    let faultSections = this.rowOperation(faultSwitchRowId, matrix)
+    let sw_queue = []
+    for(let i=0;i<faultSections.length;i++){
+      sw_queue.push(faultSections[i])
+    }
+    while(sw_queue.length>0){
+      let item = sw_queue.pop()
+      let row_1 = item[0]
+      let col_1 = item[1]
+
+      let temp_feeder_col = this.findFeederInRow(row_1, matrix)
+      let temp_feeder_row = this.findFeederInCol(col_1, matrix)
+
+      if(temp_feeder_col!==-1){
+        console.log("->Faulty feeder")
+        console.log("LOcation",row_1, temp_feeder_col)
+        let sw_name = this.state.switch_list[row_1]
+        console.log("Name",sw_name)
+        this.setState({
+          faultyFeeder: [sw_name, [row_1, temp_feeder_col]]
+        })
+        return [row_1, temp_feeder_col]
+      }
+      if(temp_feeder_row!==-1){
+        console.log("->Faulty feeder")
+        console.log("LOcation",temp_feeder_row, col_1)
+        let sw_name = this.state.switch_list[temp_feeder_row]
+        console.log("Name",sw_name)
+        this.setState({
+          faultyFeeder: [sw_name, [row_1, temp_feeder_col]]
+        })
+        return [temp_feeder_row, col_1]
+      }
+      let itemRowSections = this.rowOperation(row_1, matrix)
+      let itemCOlSections = this.colOperation(col_1, matrix)
+
+      for(let j=0;j<itemRowSections;j++){
+        sw_queue.push(itemRowSections[j])
+      }
+
+      for(let j=0;j<itemCOlSections;j++){
+        sw_queue.push(itemCOlSections[j])
+      }
+      
+    }
+  }
+
+  getRow(sw_id){
+    return this.state.switch_list.indexOf(sw_id)
   }
 
   drawGraph(){
@@ -186,9 +284,9 @@ class Dashboard extends React.Component {
     let se_list = this.state.section_list
     let nodes_arr = []
     let link_arr = []
-
+    
     for(let i=0;i<se_list.length;i++){
-      nodes_arr.push({id: se_list[i],color: "black", size: 300, symbolType: "circle"})
+      nodes_arr.push({id: se_list[i],color: "black", size: 300, symbolType: "circle",cx:10, cy:200})
     }
 
     for(let i=0;i<sw_list.length;i++){
@@ -198,8 +296,10 @@ class Dashboard extends React.Component {
       let symbolType = "square"
       if(noopn_list.includes(sw_list[i])){
         color = "orange"
-      }else if (feed_list.includes(sw_list[i])){
+      }else if(feed_list.includes(sw_list[i])){
         color = "blue"
+      }else if(this.state.faultSwitch===sw_list[i]){
+        color = "red"
       }
       nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
 
@@ -214,14 +314,36 @@ class Dashboard extends React.Component {
         links: link_arr
     };
     const graph_config = {
-      nodeHighlightBehavior: true,
+      "automaticRearrangeAfterDropNode": true,
+      "collapsible": true,
+      "directed": false,
+      "focusAnimationDuration": 0.75,
+      "focusZoom": 5,
+      "height": 600,
+      "highlightDegree": 1,
+      "highlightOpacity": 1,
+      "linkHighlightBehavior": true,
+      "maxZoom": 8,
+      "minZoom": 0.8,
+      "nodeHighlightBehavior": false,
+      "panAndZoom": false,
+      "staticGraph": false,
+      "staticGraphWithDragAndDrop": false,
+      "width": 900,
+      "d3": {
+        "alphaTarget": 0.05,
+        "gravity": -400,
+        "linkLength": 90,
+        "linkStrength": 2
+      },
       node: {
           color: 'lightgreen',
           size: 120,
-          highlightStrokeColor: 'blue'
+          highlightStrokeColor: 'blue',
       },
       link: {
-          highlightColor: 'lightblue'
+        color: 'grey',
+        highlightColor: 'lightblue'
       }
     };
     this.setState(
@@ -256,7 +378,7 @@ class Dashboard extends React.Component {
         this.generateElectricConnectivityMatrix()
         this.generateFeedingMatrix()
 
-        this.checkFaults()
+        this.findFaultyFeeder()
 
         this.drawGraph()
 
@@ -284,12 +406,21 @@ class Dashboard extends React.Component {
               <GridContainer>
               <GridItem xs={12} sm={12} md={12}>
                 <Card>
+                {this.state.faultSwitch===""?
                   <CardHeader color="primary">
-                    <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
-                    <p className={classes.cardCategoryWhite}>
-                      Physical connection graph will display here.
-                    </p>
-                  </CardHeader>
+                  <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
+                  <p className={classes.cardCategoryWhite}>
+                    Physical connection graph will display here.
+                  </p>
+                </CardHeader>
+                :
+                <CardHeader color="danger">
+                <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
+                <p className={classes.cardCategoryWhite}>
+                  Warning!
+                </p>
+                </CardHeader>
+                }
                   <CardBody>
                   <div>
                     {this.state.graph_data===undefined?"Please select a branch":
