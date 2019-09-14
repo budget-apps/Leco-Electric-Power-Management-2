@@ -11,6 +11,7 @@ import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import { Graph } from 'react-d3-graph';
+import Button from '@material-ui/core/Button';
 
 var firebase = require("firebase");
 
@@ -298,20 +299,41 @@ class Dashboard extends React.Component {
       console.log(itemCOlSections)
       for(let j=0;j<itemRowSections.length;j++){
         sw_queue.push(itemRowSections[j])
-        path.push(itemRowSections[j])
       }
 
       for(let j=0;j<itemCOlSections.length;j++){
         sw_queue.push(itemCOlSections[j])
-        path.push(itemRowSections[j])
       }
       
     }
+
+    let faultyPathSwithces = []
+    let faultyPathSections = []
+    for(let i=0;i<path.length;i++){
+      faultyPathSwithces.push(path[i][0])
+      faultyPathSections.push(path[i][1])
+    }
+
+    this.setState({
+      faultyPath: path,
+      faultyPathSwithces: faultyPathSwithces,
+      faultyPathSections: faultyPathSections
+    })
     console.log(path)
+    console.log(faultyPathSwithces)
+    console.log(faultyPathSections)
   }
 
   getRow(sw_id){
     return this.state.switch_list.indexOf(sw_id)
+  }
+
+  checkFaults(){
+    if(this.state.faultSwitch===""){
+      return false
+    }
+    
+    return true
   }
 
   drawGraph(){
@@ -321,23 +343,38 @@ class Dashboard extends React.Component {
     let se_list = this.state.section_list
     let nodes_arr = []
     let link_arr = []
-    
+    let faultyPathSwithces = this.state.faultyPathSwithces
+    let faultyPathSections = this.state.faultyPathSections
+
+
     for(let i=0;i<se_list.length;i++){
-      nodes_arr.push({id: se_list[i],color: "black", size: 300, symbolType: "circle",cx:10, cy:200})
+      let color = "black"
+      if(faultyPathSections.includes(i)){
+        color = "red"
+      }
+      nodes_arr.push({id: se_list[i],color: color, size: 200, symbolType: "circle"})
     }
 
     for(let i=0;i<sw_list.length;i++){
       let id = sw_list[i]
+      let type = "(Close)"
       let color = "green"
-      let size = 2000
+      let size = 3000
       let symbolType = "square"
       if(noopn_list.includes(sw_list[i])){
+        type = "(Normally Open)"
         color = "orange"
       }else if(feed_list.includes(sw_list[i])){
+        type = "(Feeder)"
         color = "blue"
       }else if(this.state.faultSwitch===sw_list[i]){
+        type = "(Fault Switch)"
+        color = "red"
+      }else if(faultyPathSwithces.includes(i)){
+        type = "(Fault Switch)"
         color = "red"
       }
+      id = id+type
       nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
 
       let section_list = this.getSectionOfSwitch(this.state.switchtable, sw_list[i])
@@ -360,7 +397,7 @@ class Dashboard extends React.Component {
       "highlightDegree": 1,
       "highlightOpacity": 1,
       "linkHighlightBehavior": true,
-      "maxZoom": 8,
+      "maxZoom": 1,
       "minZoom": 0.8,
       "nodeHighlightBehavior": false,
       "panAndZoom": false,
@@ -369,8 +406,8 @@ class Dashboard extends React.Component {
       "width": 1000,
       "d3": {
         "alphaTarget": 0.05,
-        "gravity": -500,
-        "linkLength": 90,
+        "gravity": -800,
+        "linkLength": 120,
         "linkStrength": 2
       },
       node: {
@@ -415,8 +452,11 @@ class Dashboard extends React.Component {
         this.generateElectricConnectivityMatrix()
         this.generateFeedingMatrix()
 
-        this.findFaultyFeeder()
-        this.findFaultyPath()
+        if(this.checkFaults()){
+          this.findFaultyFeeder()
+          this.findFaultyPath()
+        }
+
         this.drawGraph()
 
       })
@@ -454,8 +494,9 @@ class Dashboard extends React.Component {
                 <CardHeader color="danger">
                 <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
                 <p className={classes.cardCategoryWhite}>
-                  Warning!
-                </p>
+                    Physical connection graph will display here.
+                  </p>
+                  <Button cvariant="contained" color="primary">View Error</Button>
                 </CardHeader>
                 }
                   <CardBody>
