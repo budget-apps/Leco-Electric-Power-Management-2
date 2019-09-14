@@ -11,8 +11,12 @@ import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import { Graph } from 'react-d3-graph';
-import Button from '@material-ui/core/Button';
-
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from "components/CustomButtons/Button.jsx";
 var firebase = require("firebase");
 
 class Dashboard extends React.Component {
@@ -21,7 +25,9 @@ class Dashboard extends React.Component {
     this.state = {
       value: 0,
       show:false,
-      faultSwitch: ""
+      faultSwitch: "",
+      showErr: false,
+      faultyFeeder: ""
     };
   }
   
@@ -368,10 +374,8 @@ class Dashboard extends React.Component {
         type = "(Feeder)"
         color = "blue"
       }else if(this.state.faultSwitch===sw_list[i]){
-        type = "(Fault Switch)"
         color = "red"
       }else if(faultyPathSwithces.includes(i)){
-        type = "(Fault Switch)"
         color = "red"
       }
       id = id+type
@@ -394,7 +398,7 @@ class Dashboard extends React.Component {
       "focusAnimationDuration": 0.75,
       "focusZoom": 5,
       "height": 700,
-      "highlightDegree": 1,
+      "highlightDegree": 5,
       "highlightOpacity": 1,
       "linkHighlightBehavior": true,
       "maxZoom": 1,
@@ -406,8 +410,8 @@ class Dashboard extends React.Component {
       "width": 1000,
       "d3": {
         "alphaTarget": 0.05,
-        "gravity": -800,
-        "linkLength": 120,
+        "gravity": -600,
+        "linkLength": 90,
         "linkStrength": 2
       },
       node: {
@@ -429,7 +433,7 @@ class Dashboard extends React.Component {
     console.log("Graph data")
     console.log(this.state.graph_data)
   }
-
+  
   /*Change map details on change of the drop down*/
   selectMapEventHandler=(event)=>{
     this.setState({
@@ -471,6 +475,63 @@ class Dashboard extends React.Component {
 
   }
 
+  hadleOnclickErrorBtn = () =>{
+    this.setState({
+      showErr: true
+    })
+  }
+
+  handleOnclikcErrorBtnClose = () => {
+    this.setState({
+      showErr: false
+    })
+  }
+
+  // graph event callbacks
+  onClickGraph = function() {
+    window.alert(`Electric map`);
+  };
+
+  onClickNode = function(nodeId) {
+    window.alert(`Clicked node ${nodeId}`);
+  };
+
+  onDoubleClickNode = function(nodeId) {
+    window.alert(`Double clicked node ${nodeId}`);
+  };
+
+  onRightClickNode = function(event, nodeId) {
+    window.alert(`Right clicked node ${nodeId}`);
+  };
+
+  onMouseOverNode = function(nodeId) {
+    //window.alert(`Mouse over node ${nodeId}`);
+  };
+
+  onMouseOutNode = function(nodeId) {
+    //window.alert(`Mouse out node ${nodeId}`);
+  };
+
+  onClickLink = function(source, target) {
+    window.alert(`Clicked link between ${source} and ${target}`);
+  };
+
+  onRightClickLink = function(event, source, target) {
+    window.alert(`Right clicked link between ${source} and ${target}`);
+  };
+
+  onMouseOverLink = function(source, target) {
+    //window.alert(`Mouse over in link between ${source} and ${target}`);
+  };
+
+  onMouseOutLink = function(source, target) {
+    //window.alert(`Mouse out link between ${source} and ${target}`);
+  };
+
+  onNodePositionChange = function(nodeId, x, y) {
+    //window.alert(`Node ${nodeId} is moved to new position. New position is x= ${x} y= ${y}`);
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -487,16 +548,16 @@ class Dashboard extends React.Component {
                   <CardHeader color="primary">
                   <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
                   <p className={classes.cardCategoryWhite}>
-                    Physical connection graph will display here.
+                    Physical connection graph will display here. (Click on node for auto arrange them)
                   </p>
                 </CardHeader>
                 :
                 <CardHeader color="danger">
                 <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
                 <p className={classes.cardCategoryWhite}>
-                    Physical connection graph will display here.
+                    Physical connection graph will display here.(Click on node for auto arrange them)
                   </p>
-                  <Button cvariant="contained" color="primary">View Error</Button>
+                  <button className="primary" onClick={this.hadleOnclickErrorBtn}>View Error</button>
                 </CardHeader>
                 }
                   <CardBody>
@@ -506,17 +567,48 @@ class Dashboard extends React.Component {
                       id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                       data={this.state.graph_data}
                       config={this.state.graph_config}
+                      onClickNode={this.onClickNode}
+                      onRightClickNode={this.onRightClickNode}
+                      onClickGraph={this.onClickGraph}
+                      onClickLink={this.onClickLink}
+                      onRightClickLink={this.onRightClickLink}
+                      onMouseOverNode={this.onMouseOverNode}
+                      onMouseOutNode={this.onMouseOutNode}
+                      onMouseOverLink={this.onMouseOverLink}
+                      onMouseOutLink={this.onMouseOutLink}
+                      onNodePositionChange={this.onNodePositionChange}
                       />
                     }
-                    
                   </div>
                   </CardBody>
                 </Card>
               </GridItem>
             
             </GridContainer>
-      </div>
-        </div>           
+        </div>
+          </div>  
+          <div>
+          <Dialog
+            open={this.state.showErr}
+            onClose={this.handleOnclikcErrorBtnClose}
+            aria-labelledby="responsive-dialog-title"
+          >
+          <DialogTitle color="danger" id="responsive-dialog-title">{"Error"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Failure at {this.state.faultSwitch} node. Faulty feeder is {this.state.faultyFeeder[0]}. Faulty path displayed in the map.   
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleOnclikcErrorBtnClose} color="primary">
+              Reconfigure
+            </Button>
+            <Button onClick={this.handleOnclikcErrorBtnClose} color="danger">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+          </div>           
       </div>
     );
   }
