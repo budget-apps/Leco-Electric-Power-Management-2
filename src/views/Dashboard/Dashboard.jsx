@@ -166,8 +166,6 @@ class Dashboard extends React.Component {
       if(matrix[row_id][i]===1){
         arr.push([row_id,i])
         matrix[row_id][i] = 23
-      }else if(matrix[row_id][i]===23){
-        break
       }
     }
     console.log("->Row operation: ", row_id)
@@ -182,8 +180,6 @@ class Dashboard extends React.Component {
       if(matrix[i][col_id]===1){
         arr.push([i,col_id])
         matrix[i][col_id]=23
-      }else if(matrix[i][col_id]===23){
-        break
       }
     }
     console.log("->Col operation: ", col_id)
@@ -233,10 +229,11 @@ class Dashboard extends React.Component {
       sw_queue.push(faultSections[i])
     }
     while(sw_queue.length>0){
+      
       let item = sw_queue.pop()
       let row_1 = item[0]
       let col_1 = item[1]
-
+      console.log(item)
       let temp_feeder_col = this.findFeederInRow(row_1, matrix)
       let temp_feeder_row = this.findFeederInCol(col_1, matrix)
 
@@ -258,18 +255,18 @@ class Dashboard extends React.Component {
         console.log("Name",sw_name)
         console.log(matrix)
         this.setState({
-          faultyFeeder: [sw_name, [row_1, temp_feeder_col]]
+          faultyFeeder: [sw_name, [temp_feeder_row, col_1]]
         })
         return [temp_feeder_row, col_1]
       }
       let itemRowSections = this.rowOperation(row_1, matrix)
       let itemCOlSections = this.colOperation(col_1, matrix)
 
-      for(let j=0;j<itemRowSections;j++){
+      for(let j=0;j<itemRowSections.length;j++){
         sw_queue.push(itemRowSections[j])
       }
 
-      for(let j=0;j<itemCOlSections;j++){
+      for(let j=0;j<itemCOlSections.length;j++){
         sw_queue.push(itemCOlSections[j])
       }
       
@@ -284,23 +281,29 @@ class Dashboard extends React.Component {
     let sw_queue = []
     let path = []
     sw_queue.push(faultyFeeder[1])
-    path.push(faultyFeeder[1])
-    console.log(sw_queue.length)
+    console.log(faultyFeeder[1])
     while(sw_queue.length>0){
+      console.log("--------------------------------------")
       let item = sw_queue.pop()
-      path.push(item)
-      let row_1 = item[0]
-      let col_1 = item[1]
-
-      let itemRowSections = this.rowOperation(row_1, matrix)
-      let itemCOlSections = this.colOperation(col_1, matrix)
-
-      for(let j=0;j<itemRowSections;j++){
-        sw_queue.push(itemRowSections[j])
+      if(!path.includes(item)){
+        path.push(item)
       }
 
-      for(let j=0;j<itemCOlSections;j++){
+      let row_1 = item[0]
+      let col_1 = item[1]
+      console.log(item)
+      let itemRowSections = this.rowOperation(row_1, matrix)
+      let itemCOlSections = this.colOperation(col_1, matrix)
+      console.log(itemRowSections)
+      console.log(itemCOlSections)
+      for(let j=0;j<itemRowSections.length;j++){
+        sw_queue.push(itemRowSections[j])
+        path.push(itemRowSections[j])
+      }
+
+      for(let j=0;j<itemCOlSections.length;j++){
         sw_queue.push(itemCOlSections[j])
+        path.push(itemRowSections[j])
       }
       
     }
