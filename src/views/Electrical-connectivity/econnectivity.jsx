@@ -79,6 +79,7 @@ class ElectricalConnectivity extends React.Component {
 
   getSections(switchtable){
     let section_list = []
+    section_list[0] = ""
     for (let i=0;i<switchtable.length;i++){
       let temp_list = switchtable[i].section.split(",")
       for(let j=0;j<temp_list.length;j++){
@@ -113,17 +114,6 @@ class ElectricalConnectivity extends React.Component {
     })
   }
 
-  getFeedingPoints(feedingpoints){
-    let feeding_list = []
-    for(let i=0;i<feedingpoints.length;i++){
-      feeding_list.push(feedingpoints[i].feed_points)
-    }
-    console.log("Feeding points: "+feeding_list)
-    this.setState({
-      feeding_list: feeding_list
-    })
-  }
-
   generatePhysicalConMatrix(switchtable){
     let switch_list = this.state.switch_list
     let section_list = this.state.section_list
@@ -133,7 +123,7 @@ class ElectricalConnectivity extends React.Component {
     for(let i=0;i<switch_list.length;i++){
       let temp_list = []
       for(let j=0;j<section_list.length;j++){
-        temp_list[j] = 0
+        temp_list[j] = "0"
       }
       physicalConMatrix.push(temp_list)
     }
@@ -142,7 +132,7 @@ class ElectricalConnectivity extends React.Component {
       //console.log(this.getSectionOfSwitch(switchtable, switch_list[i]))
       let temp_list = this.getSectionOfSwitch(switchtable, switch_list[i])
       for (let j=0; j<temp_list.length; j++){
-        physicalConMatrix[i][section_list.indexOf(temp_list[j])] = 1
+        physicalConMatrix[i][section_list.indexOf(temp_list[j])] = "1"
       }
     }
     this.setState({
@@ -160,9 +150,12 @@ class ElectricalConnectivity extends React.Component {
 
     for(let i=0;i<no_open.length;i++){
       let sw_index = sw_list.indexOf(no_open[i])
-      for(let j=0;j<se_list_len;j++){
-        electricConMatrix[sw_index][j] = 0
+      for(let j=1;j<se_list_len;j++){
+        electricConMatrix[sw_index][j] = '0'
       }
+    }
+    for(let i=0;i<sw_list.length;i++){
+      electricConMatrix[i][0] = sw_list[i]
     }
     this.setState({
       electricConMatrix: electricConMatrix
@@ -170,32 +163,6 @@ class ElectricalConnectivity extends React.Component {
     console.log("Electric connected matrix")
     console.log(electricConMatrix)
   }
-
-  generateFeedingMatrix(){
-    let feedMatrix = JSON.parse(JSON.stringify(this.state.electricConMatrix))
-    let feed_list = this.state.feeding_list
-    let sw_list = this.state.switch_list
-    let se_list_length= this.state.section_list
-
-    for(let i=0;i<feed_list.length;i++){
-      let feed_index = sw_list.indexOf(feed_list[i])
-      console.log(feed_index, feed_list[i])
-      for(let j=0;j<se_list_length;j++){
-        console.log(feedMatrix[feed_index])
-        if(feedMatrix[feed_index][j]===1){
-          
-          feedMatrix[feed_index][j] = 11
-        }
-      }
-      console.log("--------------")
-    }
-    this.setState({
-      feedMatrix: feedMatrix
-    })
-    console.log("Feed matrix")
-    console.log(feedMatrix)
-  }
-
 
   /*Change map details on change of the drop down*/
   selectMapEventHandler=(event)=>{
@@ -213,12 +180,9 @@ class ElectricalConnectivity extends React.Component {
         this.getSwitches(this.state.switchtable)
         this.getSections(this.state.switchtable)
         this.getNormallyOpenSwitches(this.state.noswitch)
-        this.getFeedingPoints(this.state.feedpoints)
 
         this.generatePhysicalConMatrix(this.state.switchtable)
         this.generateElectricConnectivityMatrix()
-        this.generateFeedingMatrix()
-
       })
       .catch((e) => {
           console.log(e)
@@ -233,6 +197,8 @@ class ElectricalConnectivity extends React.Component {
 
   render(){
     const { classes } = this.props;
+    // const table_data= this.state===null?"":this.state.physicalConMatrix;
+    //console.log("table data"+(this.state===null?"":this.state.electricConMatrix));
     return (
     <div>
       <div>
@@ -242,25 +208,19 @@ class ElectricalConnectivity extends React.Component {
       <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
-          <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>Simple Table</h4>
+          <CardHeader color="success">
+            <h4 className={classes.cardTitleWhite}>Physical Connectivity Matrix</h4>
             <p className={classes.cardCategoryWhite}>
               Here is a subtitle for this table
             </p>
           </CardHeader>
           <CardBody>
-            <Table
+          <Table
               tableHeaderColor="primary"
-              tableHead={["Name", "Country", "City", "Salary"]}
-              tableData={[
-                ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
-                ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
-                ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
-                ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
-                ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
-                ["Mason Porter", "Chile", "Gloucester", "$78,615"]
-              ]}
+              tableHead={this.state===null?[[]]:this.state.section_list===undefined?[[]]:this.state.section_list}
+              tableData={this.state===null?[[]]:this.state.electricConMatrix===undefined?[[]]:this.state.electricConMatrix}
             />
+            
           </CardBody>
         </Card>
       </GridItem>

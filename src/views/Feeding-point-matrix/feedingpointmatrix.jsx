@@ -133,7 +133,7 @@ class FeedingPointsMatrix extends React.Component {
     for(let i=0;i<switch_list.length;i++){
       let temp_list = []
       for(let j=0;j<section_list.length;j++){
-        temp_list[j] = 0
+        temp_list[j] = "0"
       }
       physicalConMatrix.push(temp_list)
     }
@@ -142,7 +142,7 @@ class FeedingPointsMatrix extends React.Component {
       //console.log(this.getSectionOfSwitch(switchtable, switch_list[i]))
       let temp_list = this.getSectionOfSwitch(switchtable, switch_list[i])
       for (let j=0; j<temp_list.length; j++){
-        physicalConMatrix[i][section_list.indexOf(temp_list[j])] = 1
+        physicalConMatrix[i][section_list.indexOf(temp_list[j])] = "1"
       }
     }
     this.setState({
@@ -161,7 +161,7 @@ class FeedingPointsMatrix extends React.Component {
     for(let i=0;i<no_open.length;i++){
       let sw_index = sw_list.indexOf(no_open[i])
       for(let j=0;j<se_list_len;j++){
-        electricConMatrix[sw_index][j] = 0
+        electricConMatrix[sw_index][j] = "0"
       }
     }
     this.setState({
@@ -175,22 +175,29 @@ class FeedingPointsMatrix extends React.Component {
     let feedMatrix = JSON.parse(JSON.stringify(this.state.electricConMatrix))
     let feed_list = this.state.feeding_list
     let sw_list = this.state.switch_list
-    let se_list_length= this.state.section_list
+    let se_list_length= this.state.section_list.length
 
     for(let i=0;i<feed_list.length;i++){
       let feed_index = sw_list.indexOf(feed_list[i])
-      console.log(feed_index, feed_list[i])
+      //console.log(feed_index, feed_list[i])
       for(let j=0;j<se_list_length;j++){
-        console.log(feedMatrix[feed_index])
-        if(feedMatrix[feed_index][j]===1){
+        console.log(feedMatrix[feed_index][j])
+        if(feedMatrix[feed_index][j]==="1"){
           
-          feedMatrix[feed_index][j] = 11
+          feedMatrix[feed_index][j] = "11"
         }
       }
       console.log("--------------")
     }
+
+    for(let i=0;i<sw_list.length;i++){
+      feedMatrix[i].unshift(sw_list[i])
+    }
+    
+    this.state.section_list.unshift("")
     this.setState({
-      feedMatrix: feedMatrix
+      feedMatrix: feedMatrix,
+      section_list: this.state.section_list
     })
     console.log("Feed matrix")
     console.log(feedMatrix)
@@ -233,6 +240,8 @@ class FeedingPointsMatrix extends React.Component {
 
   render(){
     const { classes } = this.props;
+    // const table_data= this.state===null?"":this.state.physicalConMatrix;
+    //console.log("table data"+(this.state===null?"":this.state.feedMatrix));
     return (
     <div>
       <div>
@@ -242,25 +251,19 @@ class FeedingPointsMatrix extends React.Component {
       <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
-          <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>Simple Table</h4>
+          <CardHeader color="danger">
+            <h4 className={classes.cardTitleWhite}>Feed Matrix</h4>
             <p className={classes.cardCategoryWhite}>
               Here is a subtitle for this table
             </p>
           </CardHeader>
           <CardBody>
-            <Table
+          <Table
               tableHeaderColor="primary"
-              tableHead={["Name", "Country", "City", "Salary"]}
-              tableData={[
-                ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
-                ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
-                ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
-                ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
-                ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
-                ["Mason Porter", "Chile", "Gloucester", "$78,615"]
-              ]}
+              tableHead={this.state===null?[[]]:this.state.section_list===undefined?[[]]:this.state.section_list}
+              tableData={this.state===null?[[]]:this.state.feedMatrix===undefined?[[]]:this.state.feedMatrix}
             />
+            
           </CardBody>
         </Card>
       </GridItem>

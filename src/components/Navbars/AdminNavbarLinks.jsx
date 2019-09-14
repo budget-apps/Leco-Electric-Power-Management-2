@@ -29,6 +29,12 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Hidden from "@material-ui/core/Hidden";
 import Poppers from "@material-ui/core/Popper";
 import { Link } from 'react-router-dom'
+import AddExelSheet from '../../components/Addexcel/addexcel.js'
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
@@ -77,6 +83,19 @@ class AdminNavbarLinks extends React.Component {
           console.log('failed to sign out', err);
         });
     };
+
+    handleClose = () => {
+      this.setState({
+        show: false,
+    });
+    }
+  
+    handleShow = () => {
+      this.setState({
+        show: true,
+    });
+      
+    }
   
   render() {
     const { classes } = this.props;
@@ -217,11 +236,50 @@ class AdminNavbarLinks extends React.Component {
                     placement === "bottom" ? "center top" : "center bottom"
                 }}
               >
-               <a onClick={this.signOut}><Link to="/">logout</Link></a> 
+                <Paper>
+                  <ClickAwayListener onClickAway={this.handleCloseNotification}>
+                    <MenuList role="menu">
+                      <MenuItem
+                        onClick={this.signOut}
+                        className={classes.dropdownItem}
+                      >
+                       <Link to="/" style={{"color":"black"}}>logout</Link>
+                      </MenuItem>
+                      <MenuItem
+                        onClick={this.handleShow}
+                        className={classes.dropdownItem}
+                      >
+                        upload files
+                      </MenuItem>
+                    </MenuList>
+                  </ClickAwayListener>
+                </Paper>
+               
               </Grow>
             )}
           </Poppers>
+          
         </div>
+        <div>
+        <Dialog
+          open={this.state.show}
+          onClose={this.handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle id="alert-dialog-title">{"Upload excel files here"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <AddExelSheet/>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleClose} color="danger">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+        </div>   
       </div>
     );
   }

@@ -1,20 +1,3 @@
-/*!
-
-=========================================================
-* Material Dashboard React - v1.7.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2019 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/material-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
@@ -27,7 +10,7 @@ import Table from "components/Table/Table.jsx";
 import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardBody from "components/Card/CardBody.jsx";
-
+import FilterSwithces from "components/FilterSwithces/filterswithces"
 import Swal from "sweetalert2";
 import SelectBranch from "components/SelectBranch/selectBranch";
 var firebase = require("firebase");
@@ -97,7 +80,7 @@ class SwitchTable extends React.Component {
   getSectionOfSwitch(switchtable, switch_no){
     for (let i=0;i<switchtable.length;i++){
       if(switchtable[i].switch === switch_no){
-        return switchtable[i].section.split(",")
+        return switchtable[i].section
       } 
     }
   }
@@ -124,77 +107,69 @@ class SwitchTable extends React.Component {
     })
   }
 
-  generatePhysicalConMatrix(switchtable){
-    let switch_list = this.state.switch_list
-    let section_list = this.state.section_list
-
-    let physicalConMatrix = []
-
-    for(let i=0;i<switch_list.length;i++){
-      let temp_list = []
-      for(let j=0;j<section_list.length;j++){
-        temp_list[j] = 0
-      }
-      physicalConMatrix.push(temp_list)
-    }
-
-    for(let i=0;i<switch_list.length; i++){
-      //console.log(this.getSectionOfSwitch(switchtable, switch_list[i]))
-      let temp_list = this.getSectionOfSwitch(switchtable, switch_list[i])
-      for (let j=0; j<temp_list.length; j++){
-        physicalConMatrix[i][section_list.indexOf(temp_list[j])] = 1
-      }
-    }
-    this.setState({
-      physicalConMatrix: physicalConMatrix
-    })
-    console.log("Physical connection matrix")
-    console.log(physicalConMatrix)
-  }
-
-  generateElectricConnectivityMatrix(){
-    let electricConMatrix = JSON.parse(JSON.stringify(this.state.physicalConMatrix))
-    let no_open = this.state.noopensw_list
+  generateSwitchTable(){
+    let new_swithch_table = []
     let sw_list = this.state.switch_list
-    let se_list_len = this.state.section_list.length
-
-    for(let i=0;i<no_open.length;i++){
-      let sw_index = sw_list.indexOf(no_open[i])
-      for(let j=0;j<se_list_len;j++){
-        electricConMatrix[sw_index][j] = 0
-      }
-    }
-    this.setState({
-      electricConMatrix: electricConMatrix
-    })
-    console.log("Electric connected matrix")
-    console.log(electricConMatrix)
-  }
-
-  generateFeedingMatrix(){
-    let feedMatrix = JSON.parse(JSON.stringify(this.state.electricConMatrix))
     let feed_list = this.state.feeding_list
-    let sw_list = this.state.switch_list
-    let se_list_length= this.state.section_list
-
-    for(let i=0;i<feed_list.length;i++){
-      let feed_index = sw_list.indexOf(feed_list[i])
-      console.log(feed_index, feed_list[i])
-      for(let j=0;j<se_list_length;j++){
-        console.log(feedMatrix[feed_index])
-        if(feedMatrix[feed_index][j]===1){
-          
-          feedMatrix[feed_index][j] = 11
-        }
+    let no_open_list = this.state.noopensw_list
+    let action = this.state.filterAction
+    console.log("Action"+action)
+    if(action === "Feeders"){
+      for(let i=0;i<feed_list.length;i++){
+      let temp_table = []
+      temp_table.push(feed_list[i], this.getSectionOfSwitch(this.state.switchtable, feed_list[i]))
+      new_swithch_table.push(temp_table)
       }
-      console.log("--------------")
+      console.log("Selected : Feeders")
+      console.log(new_swithch_table)
+      this.setState({
+        new_swithch_table: new_swithch_table
+      })
+    }else if(action === "NOOpenSwithces"){
+      for(let i=0;i<sw_list.length;i++){
+        let temp_table = []
+        temp_table.push(no_open_list[i], this.getSectionOfSwitch(this.state.switchtable, no_open_list[i]))
+        new_swithch_table.push(temp_table)
+        }
+        console.log("Selected : NOOpenSwithces")
+        console.log(new_swithch_table)
+        this.setState({
+          new_swithch_table: new_swithch_table
+        })
+    }else{
+      for(let i=0;i<sw_list.length;i++){
+        let temp_table = []
+        temp_table.push(sw_list[i], this.getSectionOfSwitch(this.state.switchtable, sw_list[i]))
+        new_swithch_table.push(temp_table)
+        }
+        console.log("Selected : AllSwithces")
+        console.log(new_swithch_table)
+        this.setState({
+          new_swithch_table: new_swithch_table
+        })
     }
-    this.setState({
-      feedMatrix: feedMatrix
-    })
-    console.log("Feed matrix")
-    console.log(feedMatrix)
+
+    
   }
+
+
+  filterSwitchEventHandler=(event)=>{
+    this.setState({
+      filterAction: event.target.value
+    })
+    try{
+      this.generateSwitchTable()
+    }catch(err){
+      console.log(err)
+      Swal.fire({
+        type: 'error',
+        title: 'Oops...',
+        text: 'Please select a branch!',
+    })
+    }
+    
+
+  } 
 
 
   /*Change map details on change of the drop down*/
@@ -215,9 +190,7 @@ class SwitchTable extends React.Component {
         this.getNormallyOpenSwitches(this.state.noswitch)
         this.getFeedingPoints(this.state.feedpoints)
 
-        this.generatePhysicalConMatrix(this.state.switchtable)
-        this.generateElectricConnectivityMatrix()
-        this.generateFeedingMatrix()
+        
 
       })
       .catch((e) => {
@@ -242,24 +215,18 @@ class SwitchTable extends React.Component {
       <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
-          <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>Simple Table</h4>
+          <CardHeader color="info">
+            <h4 className={classes.cardTitleWhite}>Switch Table</h4>
             <p className={classes.cardCategoryWhite}>
-              Here is a subtitle for this table
+              Here is the table for {this.state===null?"":this.state.filterAction}
             </p>
+            <FilterSwithces changed={this.filterSwitchEventHandler}/>
           </CardHeader>
           <CardBody>
             <Table
               tableHeaderColor="primary"
-              tableHead={["Name", "Country", "City", "Salary"]}
-              tableData={[
-                ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
-                ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
-                ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
-                ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
-                ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
-                ["Mason Porter", "Chile", "Gloucester", "$78,615"]
-              ]}
+              tableHead={['Switch', 'Sections']}
+              tableData={this.state===null?[[]]:this.state.new_swithch_table===undefined?[[]]:this.state.new_swithch_table}
             />
           </CardBody>
         </Card>

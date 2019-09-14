@@ -1,6 +1,9 @@
 import React from 'react'
 import * as excel from 'xlsx';
 import swal from 'sweetalert';
+import Button from "components/CustomButtons/Button.jsx";
+import Input from '@material-ui/core/Input';
+import FormLabel from '@material-ui/core/FormLabel';
 var firebase = require("firebase");
 
 
@@ -106,14 +109,14 @@ class  AddExelSheet extends React.Component{
     render(){
     return (
         <div className="container-fluid">
-            <label>Switches table</label>
-            <input className="btn-primary btn-sm" type="file" onChange={this.uploadfile_1} style={{width: "100%"}} />
-            <label>Feed points</label>
-            <input className="btn-primary btn-sm" type="file" onChange={this.uploadfile_2} style={{width: "100%"}} />
-            <label>Normally open swithches</label>
-            <input className="btn-primary btn-sm" type="file" onChange={this.uploadfile_3} style={{width: "100%"}} />
-            <input placeholder="branch" type='text' onChange={this.changeInputHandler} style={{width: "100%"}}/>
-            <button className="btn-primary btn-sm" type="submit" size="sm" onClick={this.submitFile} style={{width: "100%"}}><i className="fa fa-upload"></i> Upload</button>
+            <FormLabel >Switches table</FormLabel>
+            <Input fullWidth="true" type="file" onChange={this.uploadfile_1} />
+            <FormLabel>Feed points</FormLabel>
+            <Input fullWidth="true" type="file" onChange={this.uploadfile_2}/>
+            <FormLabel>Normally open swithches</FormLabel>
+            <Input fullWidth="true" type="file" onChange={this.uploadfile_3}/>
+            <Input fullWidth="true" placeholder="Enter branch" type='text' onChange={this.changeInputHandler}/>
+            <Button fullWidth="true" color="success" type="submit" onClick={this.submitFile} style={{width: "100%"}}><i className="fa fa-upload"></i> Upload</Button>
         </div>
     )
 }

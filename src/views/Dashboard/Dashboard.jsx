@@ -2,19 +2,21 @@
 import React from "react";
 import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
-import AddExelSheet from '../../components/Addexcel/addexcel.js'
 import SelectBranch from '../../components/SelectBranch/selectBranch'
+import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
+import Swal from "sweetalert2";
+import GridItem from "components/Grid/GridItem.jsx";
+import GridContainer from "components/Grid/GridContainer.jsx";
+import Card from "components/Card/Card.jsx";
+import CardHeader from "components/Card/CardHeader.jsx";
+import CardBody from "components/Card/CardBody.jsx";
+import { Graph } from 'react-d3-graph';
 import Dialog from '@material-ui/core/Dialog';
-
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.jsx";
-import Swal from "sweetalert2";
-import Button from 'react-bootstrap/Button'
-import { Graph } from 'react-d3-graph';
-
+import Button from "components/CustomButtons/Button.jsx";
 var firebase = require("firebase");
 
 class Dashboard extends React.Component {
@@ -22,7 +24,10 @@ class Dashboard extends React.Component {
     super()
     this.state = {
       value: 0,
-      show:false
+      show:false,
+      faultSwitch: "",
+      showErr: false,
+      faultyFeeder: ""
     };
   }
   
@@ -143,25 +148,198 @@ class Dashboard extends React.Component {
     let feedMatrix = JSON.parse(JSON.stringify(this.state.electricConMatrix))
     let feed_list = this.state.feeding_list
     let sw_list = this.state.switch_list
-    let se_list_length= this.state.section_list
+    let se_list_length= this.state.section_list.length
 
     for(let i=0;i<feed_list.length;i++){
       let feed_index = sw_list.indexOf(feed_list[i])
-      console.log(feed_index, feed_list[i])
+      //console.log(feed_index, feed_list[i])
       for(let j=0;j<se_list_length;j++){
-        console.log(feedMatrix[feed_index])
         if(feedMatrix[feed_index][j]===1){
           
           feedMatrix[feed_index][j] = 11
         }
       }
-      console.log("--------------")
     }
     this.setState({
       feedMatrix: feedMatrix
     })
     console.log("Feed matrix")
     console.log(feedMatrix)
+  }
+
+  rowOperation(row_id, matrix){
+    let arr = []
+    for(let i=0;i<matrix[row_id].length;i++){
+      if(matrix[row_id][i]===1){
+        arr.push([row_id,i])
+        matrix[row_id][i] = 23
+      }
+    }
+    console.log("->Row operation: ", row_id)
+    console.log(arr)
+    console.log("->End row operation")
+    return arr
+  }
+
+  colOperation(col_id, matrix){
+    let arr = []
+    for(let i=0;i<matrix.length;i++){
+      if(matrix[i][col_id]===1){
+        arr.push([i,col_id])
+        matrix[i][col_id]=23
+      }
+    }
+    console.log("->Col operation: ", col_id)
+    console.log(arr)
+    console.log("->End col operation")
+    return arr
+  }
+
+  findFeederInRow(row_id, matrix){
+    console.log("->Find feeder in row")
+    console.log(row_id)
+    for(let i=0;i<matrix[row_id].length;i++){
+      if(matrix[row_id][i]===11){
+        console.log(i)
+        console.log("->End Find feeder in row")
+        return i
+      }
+    }
+    console.log(-1)
+    console.log("->End Find feeder in row")
+    return -1
+  }
+
+  findFeederInCol(col_id, matrix){
+    console.log("->Find feeder in col")
+    console.log(col_id)
+    for(let i=0;i<matrix.length;i++){
+      if(matrix[i][col_id]===11){
+        console.log(i)
+        console.log("->End Find feeder in col")
+        return i
+      }
+    }
+    console.log(-1)
+    console.log("->End Find feeder in col")
+    return -1
+  }
+
+  findFaultyFeeder(){
+    console.log("+++++++++++++++++++++++Find faulty feeder++++++++++++++++++++++++++++++")
+    let faultSwitch = this.state.faultSwitch
+    let faultSwitchRowId = this.getRow(faultSwitch)
+    let matrix = JSON.parse(JSON.stringify(this.state.feedMatrix))
+    let faultSections = this.rowOperation(faultSwitchRowId, matrix)
+    let sw_queue = []
+    for(let i=0;i<faultSections.length;i++){
+      sw_queue.push(faultSections[i])
+    }
+    while(sw_queue.length>0){
+      
+      let item = sw_queue.pop()
+      let row_1 = item[0]
+      let col_1 = item[1]
+      console.log(item)
+      let temp_feeder_col = this.findFeederInRow(row_1, matrix)
+      let temp_feeder_row = this.findFeederInCol(col_1, matrix)
+
+      if(temp_feeder_col!==-1){
+        console.log("->Faulty feeder")
+        console.log("LOcation",row_1, temp_feeder_col)
+        let sw_name = this.state.switch_list[row_1]
+        console.log("Name",sw_name)
+        console.log(matrix)
+        this.setState({
+          faultyFeeder: [sw_name, [row_1, temp_feeder_col]]
+        })
+        return [row_1, temp_feeder_col]
+      }
+      if(temp_feeder_row!==-1){
+        console.log("->Faulty feeder")
+        console.log("LOcation",temp_feeder_row, col_1)
+        let sw_name = this.state.switch_list[temp_feeder_row]
+        console.log("Name",sw_name)
+        console.log(matrix)
+        this.setState({
+          faultyFeeder: [sw_name, [temp_feeder_row, col_1]]
+        })
+        return [temp_feeder_row, col_1]
+      }
+      let itemRowSections = this.rowOperation(row_1, matrix)
+      let itemCOlSections = this.colOperation(col_1, matrix)
+
+      for(let j=0;j<itemRowSections.length;j++){
+        sw_queue.push(itemRowSections[j])
+      }
+
+      for(let j=0;j<itemCOlSections.length;j++){
+        sw_queue.push(itemCOlSections[j])
+      }
+      
+    }
+    
+  }
+
+  findFaultyPath(){
+    let faultyFeeder = this.state.faultyFeeder
+    console.log("+++++++++++++++++++++++Find faulty path++++++++++++++++++++++++++++++")
+    let matrix = JSON.parse(JSON.stringify(this.state.feedMatrix))
+    let sw_queue = []
+    let path = []
+    sw_queue.push(faultyFeeder[1])
+    console.log(faultyFeeder[1])
+    while(sw_queue.length>0){
+      console.log("--------------------------------------")
+      let item = sw_queue.pop()
+      if(!path.includes(item)){
+        path.push(item)
+      }
+
+      let row_1 = item[0]
+      let col_1 = item[1]
+      console.log(item)
+      let itemRowSections = this.rowOperation(row_1, matrix)
+      let itemCOlSections = this.colOperation(col_1, matrix)
+      console.log(itemRowSections)
+      console.log(itemCOlSections)
+      for(let j=0;j<itemRowSections.length;j++){
+        sw_queue.push(itemRowSections[j])
+      }
+
+      for(let j=0;j<itemCOlSections.length;j++){
+        sw_queue.push(itemCOlSections[j])
+      }
+      
+    }
+
+    let faultyPathSwithces = []
+    let faultyPathSections = []
+    for(let i=0;i<path.length;i++){
+      faultyPathSwithces.push(path[i][0])
+      faultyPathSections.push(path[i][1])
+    }
+
+    this.setState({
+      faultyPath: path,
+      faultyPathSwithces: faultyPathSwithces,
+      faultyPathSections: faultyPathSections
+    })
+    console.log(path)
+    console.log(faultyPathSwithces)
+    console.log(faultyPathSections)
+  }
+
+  getRow(sw_id){
+    return this.state.switch_list.indexOf(sw_id)
+  }
+
+  checkFaults(){
+    if(this.state.faultSwitch===""){
+      return false
+    }
+    
+    return true
   }
 
   drawGraph(){
@@ -171,21 +349,36 @@ class Dashboard extends React.Component {
     let se_list = this.state.section_list
     let nodes_arr = []
     let link_arr = []
+    let faultyPathSwithces = this.state.faultyPathSwithces
+    let faultyPathSections = this.state.faultyPathSections
+
 
     for(let i=0;i<se_list.length;i++){
-      nodes_arr.push({id: se_list[i],color: "black", size: 300, symbolType: "circle"})
+      let color = "black"
+      if(faultyPathSections.includes(i)){
+        color = "red"
+      }
+      nodes_arr.push({id: se_list[i],color: color, size: 200, symbolType: "circle"})
     }
 
     for(let i=0;i<sw_list.length;i++){
       let id = sw_list[i]
+      let type = "(Close)"
       let color = "green"
-      let size = 2000
+      let size = 3000
       let symbolType = "square"
       if(noopn_list.includes(sw_list[i])){
+        type = "(Normally Open)"
         color = "orange"
-      }else if (feed_list.includes(sw_list[i])){
+      }else if(feed_list.includes(sw_list[i])){
+        type = "(Feeder)"
         color = "blue"
+      }else if(this.state.faultSwitch===sw_list[i]){
+        color = "red"
+      }else if(faultyPathSwithces.includes(i)){
+        color = "red"
       }
+      id = id+type
       nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
 
       let section_list = this.getSectionOfSwitch(this.state.switchtable, sw_list[i])
@@ -199,14 +392,36 @@ class Dashboard extends React.Component {
         links: link_arr
     };
     const graph_config = {
-      nodeHighlightBehavior: true,
+      "automaticRearrangeAfterDropNode": true,
+      "collapsible": true,
+      "directed": false,
+      "focusAnimationDuration": 0.75,
+      "focusZoom": 5,
+      "height": 700,
+      "highlightDegree": 5,
+      "highlightOpacity": 1,
+      "linkHighlightBehavior": true,
+      "maxZoom": 1,
+      "minZoom": 0.8,
+      "nodeHighlightBehavior": false,
+      "panAndZoom": false,
+      "staticGraph": false,
+      "staticGraphWithDragAndDrop": false,
+      "width": 1000,
+      "d3": {
+        "alphaTarget": 0.05,
+        "gravity": -600,
+        "linkLength": 90,
+        "linkStrength": 2
+      },
       node: {
           color: 'lightgreen',
           size: 120,
-          highlightStrokeColor: 'blue'
+          highlightStrokeColor: 'blue',
       },
       link: {
-          highlightColor: 'lightblue'
+        color: 'grey',
+        highlightColor: 'lightblue'
       }
     };
     this.setState(
@@ -215,9 +430,10 @@ class Dashboard extends React.Component {
         graph_config: graph_config
       }
     )
+    console.log("Graph data")
     console.log(this.state.graph_data)
   }
-
+  
   /*Change map details on change of the drop down*/
   selectMapEventHandler=(event)=>{
     this.setState({
@@ -229,7 +445,7 @@ class Dashboard extends React.Component {
     
     .then((snapshot) => {
         const val = snapshot.val();
-        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints})
+        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints,faultSwitch:val.faultSwitch})
 
         this.getSwitches(this.state.switchtable)
         this.getSections(this.state.switchtable)
@@ -239,6 +455,11 @@ class Dashboard extends React.Component {
         this.generatePhysicalConMatrix(this.state.switchtable)
         this.generateElectricConnectivityMatrix()
         this.generateFeedingMatrix()
+
+        if(this.checkFaults()){
+          this.findFaultyFeeder()
+          this.findFaultyPath()
+        }
 
         this.drawGraph()
 
@@ -254,60 +475,140 @@ class Dashboard extends React.Component {
 
   }
 
-  handleClose = () => {
+  hadleOnclickErrorBtn = () =>{
     this.setState({
-      show: false,
-  });
+      showErr: true
+    })
   }
 
-  handleShow = () => {
+  handleOnclikcErrorBtnClose = () => {
     this.setState({
-      show: true,
-  });
-    
+      showErr: false
+    })
   }
+
+  // graph event callbacks
+  onClickGraph = function() {
+    window.alert(`Electric map`);
+  };
+
+  onClickNode = function(nodeId) {
+    window.alert(`Clicked node ${nodeId}`);
+  };
+
+  onDoubleClickNode = function(nodeId) {
+    window.alert(`Double clicked node ${nodeId}`);
+  };
+
+  onRightClickNode = function(event, nodeId) {
+    window.alert(`Right clicked node ${nodeId}`);
+  };
+
+  onMouseOverNode = function(nodeId) {
+    //window.alert(`Mouse over node ${nodeId}`);
+  };
+
+  onMouseOutNode = function(nodeId) {
+    //window.alert(`Mouse out node ${nodeId}`);
+  };
+
+  onClickLink = function(source, target) {
+    window.alert(`Clicked link between ${source} and ${target}`);
+  };
+
+  onRightClickLink = function(event, source, target) {
+    window.alert(`Right clicked link between ${source} and ${target}`);
+  };
+
+  onMouseOverLink = function(source, target) {
+    //window.alert(`Mouse over in link between ${source} and ${target}`);
+  };
+
+  onMouseOutLink = function(source, target) {
+    //window.alert(`Mouse out link between ${source} and ${target}`);
+  };
+
+  onNodePositionChange = function(nodeId, x, y) {
+    //window.alert(`Node ${nodeId} is moved to new position. New position is x= ${x} y= ${y}`);
+  };
 
   render() {
+    const { classes } = this.props;
     return (
       <div>
         <div className="row">
-            <div style={{"border": "2px solid black", "border-radius": "10px", "padding": "10px", "margin-bottom": "5px"}}>
-              <button onClick={this.handleShow} className="btn btn-default btn-sm">Upload <i className="fa fa-arrow-up"></i></button>
-            </div>
-            <div className="col-md-3" style={{"border": "2px solid black", "border-radius": "10px", "padding": "10px", "margin-bottom": "5px"}}>
+            <div className="col-md-3">
                 <SelectBranch changed={this.selectMapEventHandler}/>
             </div>
-            <div style={{"border": "2px solid black", "border-radius": "10px", "padding": "10px", "margin-bottom": "5px"}}>
-              {this.state.graph_data===undefined?"":
-                <Graph
-                id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-                data={this.state.graph_data}
-                config={this.state.graph_config}
-                />
-              }
-              
-            </div>
-        </div>  
-        <div>
-        <Dialog
-          open={this.state.show}
-          onClose={this.handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-        <DialogTitle id="alert-dialog-title">{"Upload excel files here"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <AddExelSheet/>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-        </div>             
+            <div>
+              <GridContainer>
+              <GridItem xs={12} sm={12} md={12}>
+                <Card>
+                {this.state.faultSwitch===""?
+                  <CardHeader color="primary">
+                  <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
+                  <p className={classes.cardCategoryWhite}>
+                    Physical connection graph will display here. (Click on node for auto arrange them)
+                  </p>
+                </CardHeader>
+                :
+                <CardHeader color="danger">
+                <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
+                <p className={classes.cardCategoryWhite}>
+                    Physical connection graph will display here.(Click on node for auto arrange them)
+                  </p>
+                  <button className="primary" onClick={this.hadleOnclickErrorBtn}>View Error</button>
+                </CardHeader>
+                }
+                  <CardBody>
+                  <div>
+                    {this.state.graph_data===undefined?"Please select a branch":
+                      <Graph
+                      id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+                      data={this.state.graph_data}
+                      config={this.state.graph_config}
+                      onClickNode={this.onClickNode}
+                      onRightClickNode={this.onRightClickNode}
+                      onClickGraph={this.onClickGraph}
+                      onClickLink={this.onClickLink}
+                      onRightClickLink={this.onRightClickLink}
+                      onMouseOverNode={this.onMouseOverNode}
+                      onMouseOutNode={this.onMouseOutNode}
+                      onMouseOverLink={this.onMouseOverLink}
+                      onMouseOutLink={this.onMouseOutLink}
+                      onNodePositionChange={this.onNodePositionChange}
+                      />
+                    }
+                  </div>
+                  </CardBody>
+                </Card>
+              </GridItem>
+            
+            </GridContainer>
+        </div>
+          </div>  
+          <div>
+          <Dialog
+            open={this.state.showErr}
+            onClose={this.handleOnclikcErrorBtnClose}
+            aria-labelledby="responsive-dialog-title"
+          >
+          <DialogTitle color="danger" id="responsive-dialog-title">{"Error"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Failure at {this.state.faultSwitch} node. Faulty feeder is {this.state.faultyFeeder[0]}. Faulty path displayed in the map.   
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleOnclikcErrorBtnClose} color="primary">
+              Reconfigure
+            </Button>
+            <Button onClick={this.handleOnclikcErrorBtnClose} color="danger">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+          </div>           
       </div>
     );
   }

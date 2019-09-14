@@ -1,23 +1,9 @@
-/*!
-
-=========================================================
-* Material Dashboard React - v1.7.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2019 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/material-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 // @material-ui/icons
 import Dashboard from "@material-ui/icons/Dashboard";
-import LibraryBooks from "@material-ui/icons/LibraryBooks";
+import SettingsInputComponentIcon from '@material-ui/icons/SettingsInputComponent';
+import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
+import TableChartIcon from '@material-ui/icons/TableChart';
 
 // core components/views for Admin layout
 import ElectricalConnectivity from "views/Electrical-connectivity/econnectivity";
@@ -25,8 +11,6 @@ import PhysicalConnectivity from "views/Physical-connectivity/pconnectivity";
 import FeedingPointMatrix from "views/Feeding-point-matrix/feedingpointmatrix";
 import DashboardPage from 'views/Dashboard/Dashboard'
 import switchtable from "views/Switch-Table/switchtable";
-import feedpoints from "views/Feed-points/feedpoints";
-import noopen from "views/No-open-switches/noopen";
 
 // core components/views for RTL layout
 
@@ -44,7 +28,7 @@ const dashboardRoutes = [
     path: "/pconnectivity",
     name: "Physical Connectivity",
     rtlName: "قائمة الجدول",
-    icon: "content_paste",
+    icon: SettingsInputComponentIcon,
     component: PhysicalConnectivity,
     layout: "/admin"
   },
@@ -52,7 +36,7 @@ const dashboardRoutes = [
     path: "/econnectivity",
     name: "Electrical Connectivity",
     rtlName: "طباعة",
-    icon: LibraryBooks,
+    icon: OfflineBoltIcon,
     component: ElectricalConnectivity,
     layout: "/admin"
   },
@@ -60,7 +44,7 @@ const dashboardRoutes = [
     path: "/feedingpointmatrix",
     name: "Feeding Point Matrix",
     rtlName: "طباعة",
-    icon: LibraryBooks,
+    icon: FlashOnIcon,
     component: FeedingPointMatrix,
     layout: "/admin"
   },
@@ -68,24 +52,8 @@ const dashboardRoutes = [
     path: "/switchtable",
     name: "Switches Table",
     rtlName: "طباعة",
-    icon: LibraryBooks,
+    icon: TableChartIcon,
     component: switchtable,
-    layout: "/admin"
-  },
-  {
-    path: "/feedpointswitches",
-    name: "Feeding Point Switches",
-    rtlName: "طباعة",
-    icon: LibraryBooks,
-    component: feedpoints,
-    layout: "/admin"
-  },
-  {
-    path: "/noopenswithces",
-    name: "Normally Open Switches",
-    rtlName: "طباعة",
-    icon: LibraryBooks,
-    component: noopen,
     layout: "/admin"
   },
  

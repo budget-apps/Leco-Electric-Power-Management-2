@@ -17,7 +17,7 @@
 */
 import React from "react";
 // nodejs library to set properties for components
-import PropTypes, { array } from "prop-types";
+import PropTypes from "prop-types";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 // core components
@@ -175,7 +175,7 @@ class PhysicalConnectivity extends React.Component {
       <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
-          <CardHeader color="primary">
+          <CardHeader color="warning">
             <h4 className={classes.cardTitleWhite}>Physical Connectivity Matrix</h4>
             <p className={classes.cardCategoryWhite}>
               Here is a subtitle for this table
