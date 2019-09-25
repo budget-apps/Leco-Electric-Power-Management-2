@@ -9,8 +9,9 @@ import TableChartIcon from '@material-ui/icons/TableChart';
 import ElectricalConnectivity from "views/Electrical-connectivity/econnectivity";
 import PhysicalConnectivity from "views/Physical-connectivity/pconnectivity";
 import FeedingPointMatrix from "views/Feeding-point-matrix/feedingpointmatrix";
-import DashboardPage from 'views/Dashboard/Dashboard'
+import DashboardPage from "views/Dashboard/Dashboard";
 import switchtable from "views/Switch-Table/switchtable";
+import FaultGenerator from "views/FaultGenerater/FaultGenerator";
 
 // core components/views for RTL layout
 
@@ -55,7 +56,9 @@ const dashboardRoutes = [
     icon: TableChartIcon,
     component: switchtable,
     layout: "/admin"
-  },
+  }
+
+
  
 
 ];

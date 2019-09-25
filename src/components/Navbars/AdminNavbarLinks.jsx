@@ -251,6 +251,19 @@ class AdminNavbarLinks extends React.Component {
                       >
                         upload files
                       </MenuItem>
+                        <MenuItem
+
+                            className={classes.dropdownItem}
+                        >
+                            <Link to="/faultgenerater"  style={{"color":"black"}}>Fault Generator</Link>
+                        </MenuItem>
+                        <MenuItem
+
+                            className={classes.dropdownItem}
+                        >
+                            <Link to="/admin"  style={{"color":"black"}}>Admin Panel</Link>
+                        </MenuItem>
+
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
