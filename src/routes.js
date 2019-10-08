@@ -10,9 +10,10 @@ import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import ElectricalConnectivity from "views/Electrical-connectivity/econnectivity";
 import PhysicalConnectivity from "views/Physical-connectivity/pconnectivity";
 import FeedingPointMatrix from "views/Feeding-point-matrix/feedingpointmatrix";
-import DashboardPage from 'views/Dashboard/Dashboard'
+import DashboardPage from "views/Dashboard/Dashboard";
 import switchtable from "views/Switch-Table/switchtable";
 import logs from "views/Logs/Logs";
+//import FaultGenerator from "views/FaultGenerater/FaultGenerator";
 
 // core components/views for RTL layout
 

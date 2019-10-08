@@ -21,7 +21,8 @@ import { createBrowserHistory } from "history";
 import { Router, Route, Switch } from "react-router-dom";
 // core components
 import Admin from "layouts/Admin.jsx";
-import Login from './views/Login/login'
+import Login from "./views/Login/login";
+import FaultGenerator from "layouts/FaultGenerater";
 import "assets/css/material-dashboard-react.css?v=1.7.0";
 
 const hist = createBrowserHistory();
@@ -29,6 +30,7 @@ const hist = createBrowserHistory();
 ReactDOM.render(
   <Router history={hist}>
     <Switch>
+      <Route path="/faultgenerater" component={FaultGenerator} />
       <Route path="/admin" component={Admin} />
       <Route path="/" component={Login} />
     </Switch>

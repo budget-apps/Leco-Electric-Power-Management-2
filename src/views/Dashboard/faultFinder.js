@@ -1,4 +1,5 @@
-import {findFeederInRow, findFeederInCol, getRow, rowOperation, colOperation} from "./matrixOperations"
+import {findFeederInRow, findFeederInCol, getRow, rowOperation, colOperation, getSwitchsToSwitch} from "./matrixOperations"
+var firebase = require("firebase");
 
 const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
     console.log("+++++++++++++++++++++++Find faulty feeder++++++++++++++++++++++++++++++")
@@ -101,4 +102,61 @@ const checkFaults = (faultSwitch) => {
     return true
   }
 
-export {findFaultyFeeder, findFaultyPath, checkFaults}
+  const sendFaultCurrentRequest = (faultyPath, branch, faultSwitch, switch_list) => {
+    let faultSwitchID = switch_list.indexOf(faultSwitch)
+    console.log(faultSwitchID)
+    let faultSWIDInFP = faultyPath.indexOf(faultSwitchID)
+    
+    faultyPath = [...new Set(faultyPath)]
+    let FPLength = faultyPath.length
+    if(faultSWIDInFP<FPLength){
+      faultyPath = faultyPath.slice(faultSWIDInFP+1, FPLength)
+    }
+    let faultPathSW = []
+    for(let i=0;i<faultyPath.length;i++){
+      faultPathSW.push(switch_list[faultyPath[i]])
+    }
+
+    let fautPathStr = faultPathSW.toString()
+    try{
+      firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchID').set(fautPathStr)
+    }catch(e){
+      console.log(e)
+    }
+    
+  }
+
+  const getFaultLoc = (faultyPath, validset, switch_list, switch_table) => {
+    console.log(validset)
+    faultyPath = [...new Set(faultyPath)]
+    let FPLength = faultyPath.length
+
+    let loc = []
+    for(let i=0;i<validset.length;i++){
+      let tempLoc = []
+      tempLoc.push(validset[i])
+      let tempID = switch_list.indexOf(validset[i])
+      if(FPLength>faultyPath.indexOf(tempID)+1){
+        let endLoc = switch_list[faultyPath[faultyPath.indexOf(tempID)+1]]
+        tempLoc.push(endLoc)
+        loc.push(tempLoc)
+      }else{
+        tempLoc.push(validset[i])
+        loc.push(tempLoc)
+        let arr = getSwitchsToSwitch(switch_list,validset[i],switch_table)
+        for(let j=0;j<faultyPath.length;j++){
+          if(arr.includes(switch_list[faultyPath[j]])){
+            console.log(switch_list[faultyPath[j]])
+            console.log(j)
+            arr.splice(arr.indexOf(switch_list[faultyPath[j]]), 1)
+          }
+        }
+        console.log(arr)
+      }
+      console.log(loc)
+      return loc
+      
+    }
+  }
+
+export {findFaultyFeeder, findFaultyPath, checkFaults, sendFaultCurrentRequest, getFaultLoc}

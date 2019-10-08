@@ -57,7 +57,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       "width": 1000,
       "d3": {
         "alphaTarget": 0.05,
-        "gravity": -350,
+        "gravity": -400,
         "linkLength": 90,
         "linkStrength": 2
       },

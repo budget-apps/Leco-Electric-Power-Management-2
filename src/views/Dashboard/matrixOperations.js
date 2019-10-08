@@ -179,6 +179,24 @@ const getRow = (sw_id, switch_list) =>{
     return switch_list.indexOf(sw_id)
   }
 
+const getSwitchsToSwitch = (switch_list, switchh, switch_table) => {
+  let swSeList = getSectionOfSwitch(switch_table,switchh)
+  let bypasssw = switch_list.indexOf(switchh)
+  console.log(switch_list)
+  console.log(swSeList)
+  let arr = []
+  for(let i=0;i<swSeList.length;i++){
+    for(let j=0;j<switch_list.length;j++){
+      if(getSectionOfSwitch(switch_table, switch_list[j]).includes(swSeList[i]) && !arr.includes(switch_list[j]) && bypasssw!==j){
+        arr.push(switch_list[j])
+      }
+    }
+    
+  }
+  console.log(arr)
+  return arr
+}
+
 export {getSwitches, getSections, getSectionOfSwitch, getNormallyOpenSwitches, getSwitchType, getFeedingPoints, generatePhysicalConMatrix};
 export {generateElectricConnectivityMatrix, generateFeedingMatrix, rowOperation, colOperation, findFeederInRow, findFeederInCol}
-export {getRow}
+export {getRow, getSwitchsToSwitch}

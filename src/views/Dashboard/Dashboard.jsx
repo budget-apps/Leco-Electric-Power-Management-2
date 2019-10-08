@@ -13,8 +13,9 @@ import CardBody from "components/Card/CardBody.jsx";
 import { Graph } from 'react-d3-graph';
 
 import { getSwitches, getSections, getNormallyOpenSwitches, getFeedingPoints, generatePhysicalConMatrix, generateElectricConnectivityMatrix, generateFeedingMatrix } from "./matrixOperations";
-import {findFaultyFeeder, findFaultyPath, checkFaults} from './faultFinder'
+import {findFaultyFeeder, findFaultyPath, checkFaults, sendFaultCurrentRequest, getFaultLoc} from './faultFinder'
 import {drawGraph, onClickNode, onRightClickNode, onRightClickLink} from "./drawMap"
+import {findEndConnectedNOs} from './reconfigure'
 //import Tree from 'react-d3-tree';
 var firebase = require("firebase");
 
@@ -38,7 +39,38 @@ class Dashboard extends React.Component {
     this.setState({ value: index });
   };
 
-  
+  onChangeDB(){
+    let branch = this.state.branch!==undefined?this.state.branch:""
+    if(branch===""){return ""}
+    firebase.database().ref().child(branch).child('faultSwitch').on('value', function(snapshot) {
+      // Do whatever
+      let switchids = snapshot.val()
+      console.log(switchids)
+      //this.findingFaults()
+    })
+  }
+
+  findingFaults = () => {
+    if(checkFaults(this.state.faultSwitch)){
+      this.setState({
+        faultyFeeder: findFaultyFeeder(this.state.faultSwitch, this.state.feedMatrix, this.state.switch_list)
+      })
+      Swal.fire({
+        type: 'error',
+        title: 'NodeFailure',
+        text: "At "+this.state.faultSwitch + ".(*"+ this.state.faultyFeeder[0] + "*)",
+      })
+      let path = findFaultyPath(this.state.faultyFeeder,this.state.feedMatrix)[0]
+      let faultyPathSwithces = findFaultyPath(this.state.faultyFeeder,this.state.feedMatrix)[1]
+      let faultyPathSections = findFaultyPath(this.state.faultyFeeder,this.state.feedMatrix)[2]
+
+      this.setState({
+        path: path, 
+        faultyPathSwithces: faultyPathSwithces, 
+        faultyPathSections: faultyPathSections
+      })
+    }
+  }
   
   /*Change map details on change of the drop down*/
   selectMapEventHandler=(event)=>{
@@ -51,7 +83,7 @@ class Dashboard extends React.Component {
     
     .then((snapshot) => {
         const val = snapshot.val();
-        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints,faultSwitch:val.faultSwitch})
+        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints,faultSwitch:val.faultSwitch, faultCurrentSwitches: val.faultCurrentRequest.switchIDValid.split(',')})
         
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
@@ -69,27 +101,24 @@ class Dashboard extends React.Component {
         this.setState({
           feedMatrix: generateFeedingMatrix(this.state.electricConMatrix, this.state.feeding_list,this.state.switch_list,this.state.section_list)
         })
-        
+        //Find Faults
+        this.findingFaults()
 
-        if(checkFaults(this.state.faultSwitch)){
-          this.setState({
-            faultyFeeder: findFaultyFeeder(this.state.faultSwitch, this.state.feedMatrix, this.state.switch_list)
-          })
-          Swal.fire({
-            type: 'error',
-            title: 'NodeFailure',
-            text: "At "+this.state.faultSwitch + ".(*"+ this.state.faultyFeeder[0] + "*)",
-          })
-          let path = findFaultyPath(this.state.faultyFeeder,this.state.feedMatrix)[0]
-          let faultyPathSwithces = findFaultyPath(this.state.faultyFeeder,this.state.feedMatrix)[1]
-          let faultyPathSections = findFaultyPath(this.state.faultyFeeder,this.state.feedMatrix)[2]
+        //sendFaultRequests
+        sendFaultCurrentRequest(this.state.faultyPathSwithces, this.state.branch, this.state.faultSwitch, this.state.switch_list)
 
-          this.setState({
-            path: path, 
-            faultyPathSwithces: faultyPathSwithces, 
-            faultyPathSections: faultyPathSections
-          })
-        }
+        //Find Loc
+        let validSet = this.state.faultCurrentSwitches[0]!==""?this.state.faultCurrentSwitches:this.state.faultSwitch.split(',')
+        let loc = getFaultLoc(this.state.faultyPathSwithces, validSet, this.state.switch_list, this.state.switchtable)
+        this.setState({
+          faultLoc: loc
+        })
+        console.log(this.state.faultLoc)
+
+        //reconfigure
+        findEndConnectedNOs(this.state.faultLoc, this.state.noopensw_list,this.state.switchtable, this.state.switch_list)
+
+        //Draw graph
         let graphData = drawGraph(this.state.feeding_list,this.state.noopensw_list,this.state.switch_list,this.state.section_list,this.state.faultyPathSwithces, this.state.faultyPathSections, this.state.switchtable, this.state.faultSwitch)[0]
         let graphConfig = drawGraph(this.state.feeding_list,this.state.noopensw_list,this.state.switch_list,this.state.section_list,this.state.faultyPathSwithces, this.state.faultyPathSections, this.state.switchtable, this.state.faultSwitch)[1]
         this.setState({
@@ -113,6 +142,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    this.onChangeDB()
     const { classes } = this.props;
     return (
       <div>
@@ -126,15 +156,15 @@ class Dashboard extends React.Component {
                 <Card>
                 {this.state.faultSwitch===""?
                   <CardHeader color="primary">
-                  <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid</h4>
+                  <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid (Graph View)</h4>
                   <p className={classes.cardCategoryWhite}>
                     Physical connection graph will display here. (Click on node for auto arrange them)
                   </p>
                 </CardHeader>
                 :
                 <CardHeader color="danger">
-                <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid (Check logs)</h4>
-                <p className={classes.cardCategoryWhite}>
+                <h4 className={classes.cardTitleWhite}>{this.state!=null?this.state.branch:""} Electric Grid (Graph View) <small>(Check logs)</small></h4>
+                  <p className={classes.cardCategoryWhite}>
                     Physical connection graph will display here.(Click on node for auto arrange them)
                   </p>
                 </CardHeader>
