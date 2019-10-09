@@ -65,7 +65,18 @@ const styles = {
 
 
 class PhysicalConnectivity extends React.Component {
+  processLogs(reconfigure){
+    let faultSwitch = reconfigure[faultSwitch]
+    let faultyFeeder = reconfigure[faultSwitch]
+    let faultyPath = reconfigure[faultyPath]
+    let faultySection = reconfigure[faultySection]
+    let isFaultRepaired = reconfigure[isFaultRepaired]
+    let reconfiguredPaths = reconfigure[reconfiguredPaths]
+    let time = reconfigure[time]
 
+    let tableData = []
+    let row = [time, "details", "Reconfigure btn", "Repaired btn"]
+  }
 
   /*Change map details on change of the drop down*/
   selectMapEventHandler=(event)=>{
@@ -78,12 +89,9 @@ class PhysicalConnectivity extends React.Component {
     
     .then((snapshot) => {
         const val = snapshot.val();
-        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints})
-
-        this.getSwitches(this.state.switchtable)
-        this.getSections(this.state.switchtable)
-
-        this.generatePhysicalConMatrix(this.state.switchtable)
+        this.setState({faultSwitch:val.faultSwitch})
+        this.setState({log: val.reconfigure[this.state.faultSwitch]})
+        console.log(this.state.log)
 
       })
       .catch((e) => {
@@ -119,7 +127,7 @@ class PhysicalConnectivity extends React.Component {
           <CardBody>
           <Table
               tableHeaderColor="primary"
-              tableHead={['Timestamp', 'Details', 'Reconfigure', 'Undo']}
+              tableHead={['Timestamp', 'Details', 'Reconfigure', 'Repaired']}
               tableData={[['2019.', 'failed', 'btn', 'btn']]}
             />
             

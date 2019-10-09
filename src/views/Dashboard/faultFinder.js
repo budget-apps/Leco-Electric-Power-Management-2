@@ -15,7 +15,7 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
       let item = sw_queue.pop()
       let row_1 = item[0]
       let col_1 = item[1]
-      console.log(item)
+      //console.log(item)
       let temp_feeder_col = findFeederInRow(row_1, matrix)
       let temp_feeder_row = findFeederInCol(col_1, matrix)
 
@@ -24,7 +24,7 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
         console.log("LOcation",row_1, temp_feeder_col)
         let sw_name = switch_list[row_1]
         console.log("Name",sw_name)
-        console.log(matrix)
+        //console.log(matrix)
 
         return [sw_name, [row_1, temp_feeder_col]]
       }
@@ -33,7 +33,7 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
         console.log("LOcation",temp_feeder_row, col_1)
         let sw_name = switch_list[temp_feeder_row]
         console.log("Name",sw_name)
-        console.log(matrix)
+        //console.log(matrix)
 
         return [sw_name, [temp_feeder_row, col_1]]
       }
@@ -58,9 +58,9 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
     let sw_queue = []
     let path = []
     sw_queue.push(faultyFeeder[1])
-    console.log(faultyFeeder[1])
+    //console.log(faultyFeeder[1])
     while(sw_queue.length>0){
-      console.log("--------------------------------------")
+      //console.log("--------------------------------------")
       let item = sw_queue.pop()
       if(!path.includes(item)){
         path.push(item)
@@ -68,11 +68,11 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
 
       let row_1 = item[0]
       let col_1 = item[1]
-      console.log(item)
+      //console.log(item)
       let itemRowSections = rowOperation(row_1, matrix)
       let itemCOlSections = colOperation(col_1, matrix)
-      console.log(itemRowSections)
-      console.log(itemCOlSections)
+      //console.log(itemRowSections)
+      //console.log(itemCOlSections)
       for(let j=0;j<itemRowSections.length;j++){
         sw_queue.push(itemRowSections[j])
       }
@@ -89,9 +89,9 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
       faultyPathSwithces.push(path[i][0])
       faultyPathSections.push(path[i][1])
     }
-    console.log(path)
-    console.log(faultyPathSwithces)
-    console.log(faultyPathSections)
+    //console.log(path)
+    //console.log(faultyPathSwithces)
+    //console.log(faultyPathSections)
     return [path, faultyPathSwithces, faultyPathSections]
   }
 const checkFaults = (faultSwitch) => {
@@ -104,7 +104,7 @@ const checkFaults = (faultSwitch) => {
 
   const sendFaultCurrentRequest = (faultyPath, branch, faultSwitch, switch_list) => {
     let faultSwitchID = switch_list.indexOf(faultSwitch)
-    console.log(faultSwitchID)
+    //console.log(faultSwitchID)
     let faultSWIDInFP = faultyPath.indexOf(faultSwitchID)
     
     faultyPath = [...new Set(faultyPath)]

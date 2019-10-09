@@ -12,10 +12,10 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import { Graph } from 'react-d3-graph';
 
-import { getSwitches, getSections, getNormallyOpenSwitches, getFeedingPoints, generatePhysicalConMatrix, generateElectricConnectivityMatrix, generateFeedingMatrix } from "./matrixOperations";
+import { getSwitches, getSections, getNormallyOpenSwitches, getFeedingPoints, generatePhysicalConMatrix, generateElectricConnectivityMatrix, generateFeedingMatrix, generatePhysicalConnectionFeederMatrix } from "./matrixOperations";
 import {findFaultyFeeder, findFaultyPath, checkFaults, sendFaultCurrentRequest, getFaultLoc} from './faultFinder'
 import {drawGraph, onClickNode, onRightClickNode, onRightClickLink} from "./drawMap"
-import {findEndConnectedNOs} from './reconfigure'
+import {findRecofigurePaths, sendReconfigurePathsToDB} from './reconfigure'
 //import Tree from 'react-d3-tree';
 var firebase = require("firebase");
 
@@ -44,8 +44,8 @@ class Dashboard extends React.Component {
     if(branch===""){return ""}
     firebase.database().ref().child(branch).child('faultSwitch').on('value', function(snapshot) {
       // Do whatever
-      let switchids = snapshot.val()
-      console.log(switchids)
+      //let switchids = snapshot.val()
+      //console.log(switchids)
       //this.findingFaults()
     })
   }
@@ -101,6 +101,10 @@ class Dashboard extends React.Component {
         this.setState({
           feedMatrix: generateFeedingMatrix(this.state.electricConMatrix, this.state.feeding_list,this.state.switch_list,this.state.section_list)
         })
+        this.setState({
+          physicalConFeedMatrix: generatePhysicalConnectionFeederMatrix(this.state.physicalConMatrix, this.state.feeding_list,this.state.switch_list,this.state.section_list)
+        })
+
         //Find Faults
         this.findingFaults()
 
@@ -116,7 +120,11 @@ class Dashboard extends React.Component {
         console.log(this.state.faultLoc)
 
         //reconfigure
-        findEndConnectedNOs(this.state.faultLoc, this.state.noopensw_list,this.state.switchtable, this.state.switch_list)
+        this.setState({
+          reconfigurePaths: findRecofigurePaths(this.state.faultLoc, this.state.noopensw_list,this.state.switchtable, this.state.switch_list, this.state.physicalConFeedMatrix, this.state.faultSwitch)
+        }) 
+
+        sendReconfigurePathsToDB(this.state.branch, this.state.faultSwitch, this.state.faultyFeeder, this.state.path, this.state.faultLoc, Date(), false, this.state.reconfigurePaths)
 
         //Draw graph
         let graphData = drawGraph(this.state.feeding_list,this.state.noopensw_list,this.state.switch_list,this.state.section_list,this.state.faultyPathSwithces, this.state.faultyPathSections, this.state.switchtable, this.state.faultSwitch)[0]

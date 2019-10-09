@@ -117,6 +117,25 @@ const generateElectricConnectivityMatrix = (physicalConMatrix, no_open, sw_list,
     return feedMatrix
   }
 
+  const generatePhysicalConnectionFeederMatrix = (physicalConMatrix, feed_list, sw_list, section_list) => {
+    let physicalConFeedMatrix = JSON.parse(JSON.stringify(physicalConMatrix))
+    let se_list_length= section_list.length
+
+    for(let i=0;i<feed_list.length;i++){
+      let feed_index = sw_list.indexOf(feed_list[i])
+      //console.log(feed_index, feed_list[i])
+      for(let j=0;j<se_list_length;j++){
+        if(physicalConFeedMatrix[feed_index][j]===1){
+          
+          physicalConFeedMatrix[feed_index][j] = 11
+        }
+      }
+    }
+    console.log("Physical Con Feed matrix")
+    console.log(physicalConFeedMatrix)
+    return physicalConFeedMatrix
+  }
+
 const rowOperation = (row_id, matrix) =>{
     let arr = []
     for(let i=0;i<matrix[row_id].length;i++){
@@ -125,9 +144,9 @@ const rowOperation = (row_id, matrix) =>{
         matrix[row_id][i] = 23
       }
     }
-    console.log("->Row operation: ", row_id)
-    console.log(arr)
-    console.log("->End row operation")
+    //console.log("->Row operation: ", row_id)
+    //console.log(arr)
+    //console.log("->End row operation")
     return arr
   }
 
@@ -139,39 +158,39 @@ const colOperation = (col_id, matrix) => {
         matrix[i][col_id]=23
       }
     }
-    console.log("->Col operation: ", col_id)
-    console.log(arr)
-    console.log("->End col operation")
+    // console.log("->Col operation: ", col_id)
+    // console.log(arr)
+    // console.log("->End col operation")
     return arr
   }
 
 const findFeederInRow = (row_id, matrix) => {
-    console.log("->Find feeder in row")
-    console.log(row_id)
+    // console.log("->Find feeder in row")
+    // console.log(row_id)
     for(let i=0;i<matrix[row_id].length;i++){
       if(matrix[row_id][i]===11){
-        console.log(i)
-        console.log("->End Find feeder in row")
+        // console.log(i)
+        // console.log("->End Find feeder in row")
         return i
       }
     }
-    console.log(-1)
-    console.log("->End Find feeder in row")
+    // console.log(-1)
+    // console.log("->End Find feeder in row")
     return -1
   }
 
 const findFeederInCol = (col_id, matrix) => {
-    console.log("->Find feeder in col")
-    console.log(col_id)
+    // console.log("->Find feeder in col")
+    // console.log(col_id)
     for(let i=0;i<matrix.length;i++){
       if(matrix[i][col_id]===11){
-        console.log(i)
-        console.log("->End Find feeder in col")
+        // console.log(i)
+        // console.log("->End Find feeder in col")
         return i
       }
     }
-    console.log(-1)
-    console.log("->End Find feeder in col")
+    // console.log(-1)
+    // console.log("->End Find feeder in col")
     return -1
   }
 
@@ -182,8 +201,8 @@ const getRow = (sw_id, switch_list) =>{
 const getSwitchsToSwitch = (switch_list, switchh, switch_table) => {
   let swSeList = getSectionOfSwitch(switch_table,switchh)
   let bypasssw = switch_list.indexOf(switchh)
-  console.log(switch_list)
-  console.log(swSeList)
+  // console.log(switch_list)
+  // console.log(swSeList)
   let arr = []
   for(let i=0;i<swSeList.length;i++){
     for(let j=0;j<switch_list.length;j++){
@@ -197,6 +216,7 @@ const getSwitchsToSwitch = (switch_list, switchh, switch_table) => {
   return arr
 }
 
+
 export {getSwitches, getSections, getSectionOfSwitch, getNormallyOpenSwitches, getSwitchType, getFeedingPoints, generatePhysicalConMatrix};
 export {generateElectricConnectivityMatrix, generateFeedingMatrix, rowOperation, colOperation, findFeederInRow, findFeederInCol}
-export {getRow, getSwitchsToSwitch}
+export {getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix}
