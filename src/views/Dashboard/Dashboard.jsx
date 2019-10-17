@@ -63,7 +63,8 @@ class Dashboard extends React.Component {
       let path = findFaultyPath(this.state.faultyFeeder,this.state.feedMatrix)[0]
       let faultyPathSwithces = findFaultyPath(this.state.faultyFeeder,this.state.feedMatrix)[1]
       let faultyPathSections = findFaultyPath(this.state.faultyFeeder,this.state.feedMatrix)[2]
-
+      console.log(faultyPathSections)
+      console.log(faultyPathSwithces)
       this.setState({
         path: path, 
         faultyPathSwithces: faultyPathSwithces, 
@@ -121,7 +122,7 @@ class Dashboard extends React.Component {
 
         //reconfigure
         this.setState({
-          reconfigurePaths: findRecofigurePaths(this.state.faultLoc, this.state.noopensw_list,this.state.switchtable, this.state.switch_list, this.state.physicalConFeedMatrix, this.state.faultSwitch)
+          reconfigurePaths: findRecofigurePaths(this.state.faultLoc, this.state.noopensw_list,this.state.switchtable, this.state.switch_list, this.state.physicalConFeedMatrix, this.state.faultSwitch, this.state.faultyPathSections, this.state.section_list)
         }) 
 
         sendReconfigurePathsToDB(this.state.logIndex, this.state.branch, this.state.faultSwitch, this.state.faultyFeeder, this.state.path, this.state.faultLoc, Date(), false, this.state.reconfigurePaths)
