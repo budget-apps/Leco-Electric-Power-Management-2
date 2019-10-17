@@ -83,7 +83,7 @@ class Dashboard extends React.Component {
     
     .then((snapshot) => {
         const val = snapshot.val();
-        this.setState({switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints,faultSwitch:val.faultSwitch, faultCurrentSwitches: val.faultCurrentRequest.switchIDValid.split(',')})
+        this.setState({logIndex: val.logIndex,switchtable:val.switchtable,noswitch:val.noswitch,feedpoints:val.feedpoints,faultSwitch:val.faultSwitch, faultCurrentSwitches: val.faultCurrentRequest.switchIDValid.split(',')})
         
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
@@ -124,7 +124,7 @@ class Dashboard extends React.Component {
           reconfigurePaths: findRecofigurePaths(this.state.faultLoc, this.state.noopensw_list,this.state.switchtable, this.state.switch_list, this.state.physicalConFeedMatrix, this.state.faultSwitch)
         }) 
 
-        sendReconfigurePathsToDB(this.state.branch, this.state.faultSwitch, this.state.faultyFeeder, this.state.path, this.state.faultLoc, Date(), false, this.state.reconfigurePaths)
+        sendReconfigurePathsToDB(this.state.logIndex, this.state.branch, this.state.faultSwitch, this.state.faultyFeeder, this.state.path, this.state.faultLoc, Date(), false, this.state.reconfigurePaths)
 
         //Draw graph
         let graphData = drawGraph(this.state.feeding_list,this.state.noopensw_list,this.state.switch_list,this.state.section_list,this.state.faultyPathSwithces, this.state.faultyPathSections, this.state.switchtable, this.state.faultSwitch)[0]

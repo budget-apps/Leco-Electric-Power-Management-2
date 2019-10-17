@@ -75,6 +75,66 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
     return [graph_data, graph_config]
   }
 
+  const drawPath = (se_list,sw_list, switchtable) => {
+    let nodes_arr = []
+    let link_arr = []
+
+    for(let i=0;i<se_list.length;i++){
+      let color = "black"
+      nodes_arr.push({id: se_list[i],color: color, size: 60, symbolType: "circle"})
+    }
+
+    for(let i=0;i<sw_list.length;i++){
+      let id = sw_list[i]
+      let color = "green"
+      let size = 300
+      let symbolType = "square"
+      nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
+
+      link_arr.push({source: id, target: se_list[i]})
+    }
+
+    const graph_data = {
+        nodes: nodes_arr,
+        links: link_arr
+    };
+    const graph_config = {
+      "automaticRearrangeAfterDropNode": false,
+      "collapsible": false,
+      "directed": false,
+      "focusAnimationDuration": 0.75,
+      "focusZoom": 5,
+      "height": 170,
+      "highlightDegree": 5,
+      "highlightOpacity": 1,
+      "linkHighlightBehavior": true,
+      "maxZoom": 1,
+      "minZoom": 0.8,
+      "nodeHighlightBehavior": false,
+      "panAndZoom": false,
+      "staticGraph": false,
+      "staticGraphWithDragAndDrop": false,
+      "width": 400,
+      "d3": {
+        "alphaTarget": 0.05,
+        "gravity": -400,
+        "linkLength": 30,
+        "linkStrength": 2
+      },
+      node: {
+          color: 'lightgreen',
+          size: 120,
+          highlightStrokeColor: 'blue',
+      },
+      link: {
+        color: 'grey',
+        highlightColor: 'lightblue'
+      }
+    };
+    console.log("Graph data")
+    return [graph_data, graph_config]
+  }
+
 //graph event callbacks
 const onClickGraph = () =>{
     //window.alert(`Electric map`);
@@ -135,4 +195,4 @@ const onNodePositionChange = (nodeId, x, y) =>{
 };
 
 export {drawGraph, onClickGraph, onClickNode, onDoubleClickNode, onRightClickNode, onMouseOverNode, onMouseOutNode, onClickLink, onRightClickLink}
-export {onMouseOverLink, onMouseOutLink, onNodePositionChange}
+export {onMouseOverLink, onMouseOutLink, onNodePositionChange, drawPath}

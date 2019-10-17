@@ -106,7 +106,7 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
     return allPaths
 }
 
-const sendReconfigurePathsToDB = (branch, faultSwitch, faultyFeeder, faultyPath, faultySection, time, isFaultRepaired, reconfiguredPaths) => {
+const sendReconfigurePathsToDB = (logIndex, branch, faultSwitch, faultyFeeder, faultyPath, faultySection, time, isFaultRepaired, reconfiguredPaths) => {
     console.log("Sending recnfigured paths to DB...")
     faultyFeeder = JSON.stringify(faultyFeeder)
     faultyPath = JSON.stringify(faultyPath)
@@ -114,16 +114,22 @@ const sendReconfigurePathsToDB = (branch, faultSwitch, faultyFeeder, faultyPath,
     reconfiguredPaths = JSON.stringify(reconfiguredPaths)
     
     try{
-        firebase.database().ref().child(branch).child('reconfigure').child(faultSwitch).child('isFaultRepaired')
+        firebase.database().ref().child(branch).child('reconfigure')
         .once('value')
         
-        .then((snapshot) => {
+        .then((snapshot, key) => {
         const val = snapshot.val();
-        console.log("Is Reconfigured for this fault: "+val)
-        if(val || val === null){
-            console.log("OK. Sending new reconfiguartions...")
-            firebase.database().ref().child(branch).child('reconfigure').child(faultSwitch).set({faultSwitch: faultSwitch, faultyFeeder: faultyFeeder, faultyPath: faultyPath, faultySection: faultySection, time: time, isFaultRepaired: isFaultRepaired, reconfiguredPaths: reconfiguredPaths})
-        }
+        
+        let isRepaired = val!==null?val[logIndex]['isFaultRepaired']:null
+        
+        if(isRepaired || isRepaired === null){
+          //console.log(val[logIndex]['isFaultRepaired'])
+          logIndex = logIndex+1
+          console.log("OK. Sending new reconfiguartions...")
+          firebase.database().ref().child(branch).child('reconfigure').child(logIndex).set({faultSwitch: faultSwitch, faultyFeeder: faultyFeeder, faultyPath: faultyPath, faultySection: faultySection, time: time, isFaultRepaired: isFaultRepaired, reconfiguredPaths: reconfiguredPaths})
+          firebase.database().ref().child(branch).child('logIndex').set(logIndex)
+
+          }
         else{
             console.log("Reconfiguration not done.")
         }
