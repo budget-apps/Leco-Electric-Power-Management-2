@@ -4,6 +4,7 @@ import SettingsInputComponentIcon from '@material-ui/icons/SettingsInputComponen
 import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import TableChartIcon from '@material-ui/icons/TableChart';
+import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 
 // core components/views for Admin layout
 import ElectricalConnectivity from "views/Electrical-connectivity/econnectivity";
@@ -11,7 +12,8 @@ import PhysicalConnectivity from "views/Physical-connectivity/pconnectivity";
 import FeedingPointMatrix from "views/Feeding-point-matrix/feedingpointmatrix";
 import DashboardPage from "views/Dashboard/Dashboard";
 import switchtable from "views/Switch-Table/switchtable";
-import FaultGenerator from "views/FaultGenerater/FaultGenerator";
+import logs from "views/Logs/Logs";
+//import FaultGenerator from "views/FaultGenerater/FaultGenerator";
 
 // core components/views for RTL layout
 
@@ -56,10 +58,15 @@ const dashboardRoutes = [
     icon: TableChartIcon,
     component: switchtable,
     layout: "/admin"
-  }
-
-
- 
+  },
+  {
+    path: "/logs",
+    name: "Logs",
+    rtlName: "طباعة",
+    icon: AccessAlarmIcon,
+    component: logs,
+    layout: "/admin"
+  },
 
 ];
 

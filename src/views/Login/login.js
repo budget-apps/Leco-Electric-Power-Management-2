@@ -55,7 +55,7 @@ password:''
     render(){
       
         return(
-            <Container component="main" maxWidth="xs">
+            <Container style={{padding: 10}} component="main" maxWidth="xs">
             <CssBaseline />
             <div >
         <Avatar >
