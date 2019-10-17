@@ -15,7 +15,12 @@ import Swal from "sweetalert2";
 import SelectBranch from "components/SelectBranch/selectBranch";
 import { getSwitches, getSections } from "../Dashboard/matrixOperations";
 import {drawPath} from "../Dashboard/drawMap"
-
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from "components/CustomButtons/Button.jsx";
 var firebase = require("firebase");
 
 const styles = {
@@ -48,13 +53,14 @@ const styles = {
   }
 };
 
-
-
 class PhysicalConnectivity extends React.Component {
   constructor(){
     super()
     this.state = {
-      tableData: [[]]
+      tableData: [[]],
+      graphs: [],
+      viewIndex: 0,
+      subIndex: 0
     };
   }
 
@@ -76,8 +82,7 @@ class PhysicalConnectivity extends React.Component {
       console.log(isFaultRepaired)
       console.log(reconfiguredPaths)
       let graphDatas = []
-      let recBtn = []
-      let repBtn = []
+      let viewBtn = []
       for(let j=0;j<reconfiguredPaths.length;j++){
         let tempArr = reconfiguredPaths[j]
         console.log(tempArr)
@@ -93,22 +98,17 @@ class PhysicalConnectivity extends React.Component {
         let graphData = drawPath(se, sw, switchtable)[0]
         let graphConfig  = drawPath(se, sw, switchtable)[1]
 
-        graphDatas.push(
-          
-          <div style={{borderWidth: 1, borderRadius: 10, borderColor: 'grey'}}><Graph
-            id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-            data={graphData}
-            config={graphConfig}
-          /></div>
-        )
-        recBtn.push(
-          <button>Reconfigure</button>
-        )
-        repBtn.push(
-          <button>Repaired</button>
-        )
+        graphDatas.push([graphData,graphConfig])
+        viewBtn.push(<button onClick={()=>this.handleShow(i-1, j)}>View Reconfigure {j+1}</button>)
       }
-      let row = [time, graphDatas, <button>Reconfigure</button>, <button>Repaired</button>]
+      let gphs = this.state.graphs
+      gphs.push(graphDatas)
+      console.log(gphs[0][0][0])
+      let details = []
+      let dts = <div>Fault switch is {faultSwitch}. Faulty Feeder is {faultyFeeder[0]}.</div>
+      details.push(dts)
+      details.push(viewBtn)
+      let row = [time, details, <button>Repaired</button>]
       tableData.push(row)
       
     }
@@ -137,7 +137,7 @@ class PhysicalConnectivity extends React.Component {
         console.log(this.state.log)
         console.log(this.state.section_list)
         this.processLogs(this.state.log, this.state.switch_list, this.state.section_list, this.state.switchtable)
-
+        console.log(this.state.graphs)
       })
     .catch((e) => {
         console.log(e)
@@ -149,13 +149,63 @@ class PhysicalConnectivity extends React.Component {
     });
 
   }
+  handleClose = () => {
+    this.setState({
+      show: false,
+  });
+  }
 
+  handleShow = (viewIndex, subIndex) => {
+    console.log(viewIndex, subIndex)
+    this.setState({
+      show: true,
+      viewIndex: viewIndex,
+      subIndex: subIndex
+  });
+    
+  }
+
+  showGraphs(){
+    let arr = this.state.graphs[this.state.viewIndex]
+    for(let i=0;i<arr.length;i++){
+      console.log(arr[i])
+      return arr[i]
+    }
+  }
   render(){
     const { classes } = this.props;
+    console.log(this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][0]:"No":"Noo":"Nooo")
     // const table_data= this.state===null?"":this.state.physicalConMatrix;
     console.log("table data"+(this.state===null?"":this.state.physicalConMatrix));
     return (
     <div>
+      <div>
+        <Dialog
+          open={this.state.show}
+          onClose={this.handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle id="alert-dialog-title">{"Reconfigurations paths"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+          <Graph
+            id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+            data={this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][0]:"No":"Noo":"Nooo"}
+            config={this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][1]:"No":"Noo":"Nooo"}
+          />
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleClose} color="danger">
+            Close
+          </Button>
+          <Button onClick={this.handleClose} color="success">
+            Reconfigure
+          </Button>
+        </DialogActions>
+       </Dialog>
+      </div>   
       <div>
       <SelectBranch changed={this.selectMapEventHandler}/>
     </div>
@@ -172,7 +222,7 @@ class PhysicalConnectivity extends React.Component {
           <CardBody>
           <Table
               tableHeaderColor="primary"
-              tableHead={['Timestamp', 'Details', 'Reconfigure', 'Repaired']}
+              tableHead={['Timestamp', 'Details', 'Repaired']}
               tableData={this.state.tableData}
             />
             

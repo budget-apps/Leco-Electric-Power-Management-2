@@ -81,13 +81,13 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
 
     for(let i=0;i<se_list.length;i++){
       let color = "black"
-      nodes_arr.push({id: se_list[i],color: color, size: 60, symbolType: "circle"})
+      nodes_arr.push({id: se_list[i],color: color, size: 100, symbolType: "circle"})
     }
 
     for(let i=0;i<sw_list.length;i++){
       let id = sw_list[i]
       let color = "green"
-      let size = 300
+      let size = 3000
       let symbolType = "square"
       nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
 
@@ -104,7 +104,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       "directed": false,
       "focusAnimationDuration": 0.75,
       "focusZoom": 5,
-      "height": 170,
+      "height": 300,
       "highlightDegree": 5,
       "highlightOpacity": 1,
       "linkHighlightBehavior": true,
@@ -114,11 +114,11 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       "panAndZoom": false,
       "staticGraph": false,
       "staticGraphWithDragAndDrop": false,
-      "width": 400,
+      "width": 500,
       "d3": {
         "alphaTarget": 0.05,
-        "gravity": -400,
-        "linkLength": 30,
+        "gravity": -500,
+        "linkLength": 50,
         "linkStrength": 2
       },
       node: {
