@@ -216,7 +216,19 @@ const getSwitchsToSwitch = (switch_list, switchh, switch_table) => {
   return arr
 }
 
+const getSwitchesFromSection = (section_no, switch_list, switch_table) => {
+  let sw_list = []
+  for(let i=0;i<switch_list.length;i++){
+    let arr = getSectionOfSwitch(switch_table, switch_list[i])
+    if(arr.includes(section_no)){
+      sw_list.push(switch_list[i])
+    }
+  }
+  console.log(sw_list)
+  return sw_list
+}
+
 
 export {getSwitches, getSections, getSectionOfSwitch, getNormallyOpenSwitches, getSwitchType, getFeedingPoints, generatePhysicalConMatrix};
 export {generateElectricConnectivityMatrix, generateFeedingMatrix, rowOperation, colOperation, findFeederInRow, findFeederInCol}
-export {getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix}
+export {getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix, getSwitchesFromSection}
