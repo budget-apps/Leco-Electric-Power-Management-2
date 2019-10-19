@@ -1,4 +1,4 @@
-import {getSwitchsToSwitch, getRow, rowOperation, colOperation,findFeederInCol, findFeederInRow, getSectionOfSwitch } from "./matrixOperations"
+import {getSwitchsToSwitch, getRow, rowOperation, colOperation,findFeederInCol, findFeederInRow } from "./matrixOperations"
 var firebase = require("firebase");
 
 const findEndConnectedNOs = (faultLoc, noList, switch_table, switch_list) => {

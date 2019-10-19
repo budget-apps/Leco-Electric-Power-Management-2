@@ -187,7 +187,7 @@ class Dashboard extends React.Component {
                         config={this.state.graph_config}
                         onClickNode={(nodeId)=>onClickNode(nodeId, this.state.noopensw_list, this.state.feeding_list)}
                         onRightClickNode={onRightClickNode}
-                        onRightClickLink={onRightClickLink}
+                        onRightClickLink={(event, source, target) => onRightClickLink(event, source, target, this.state.switch_list, this.state.switchtable)}
                       />
                     }
                   </div>
