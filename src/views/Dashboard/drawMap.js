@@ -1,5 +1,6 @@
 import {getSectionOfSwitch, getSwitchType, getSwitchesFromSection} from "./matrixOperations"
 import Swal from "sweetalert2";
+
 const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, faultyPathSections, switchtable, faultSwitch) => {
     let nodes_arr = []
     let link_arr = []
@@ -175,13 +176,15 @@ window.alert(`Clicked link between ${source} and ${target}`);
 };
 
 const onRightClickLink = (event, source, target,switch_list, switchtable) =>{
-  let switchesConnectedToTarget = getSwitchesFromSection(target,switch_list, switchtable)
-  console.log(switchesConnectedToTarget)
-  Swal.fire({
-    type: 'info',
-    title: 'Add Switch',
-    text: 'Do you want to add switch between '+source+' and'+ target+' ?',
-  })
+
+  let switchesConnectedToTargeswitchesConnectedToTargett = getSwitchesFromSection(target,switch_list, switchtable)
+  // console.log(source)
+  // Swal.fire({
+  //   type: 'info',
+  //   title: 'Add Switch',
+  //   text: 'Do you want to add switch between '+source+' and'+ target+' ?',
+  // })
+  return switchesConnectedToTargeswitchesConnectedToTargett;
 };
 
 const onMouseOverLink = (source, target) =>{
