@@ -129,7 +129,7 @@ class AdminNavbarLinks extends React.Component {
             className={classes.buttonLink}
           >
             <Notifications className={classes.icons} />
-            <span className={classes.notifications}>5</span>
+            <span className={classes.notifications}>2</span>
             <Hidden mdUp implementation="css">
               <p onClick={this.handleClick} className={classes.linkText}>
                 Notification
@@ -171,24 +171,6 @@ class AdminNavbarLinks extends React.Component {
                         className={classes.dropdownItem}
                       >
                         You have 5 new tasks
-                      </MenuItem>
-                      <MenuItem
-                        onClick={this.handleCloseNotification}
-                        className={classes.dropdownItem}
-                      >
-                        You{"'"}re now friend with Andrew
-                      </MenuItem>
-                      <MenuItem
-                        onClick={this.handleCloseNotification}
-                        className={classes.dropdownItem}
-                      >
-                        Another Notification
-                      </MenuItem>
-                      <MenuItem
-                        onClick={this.handleCloseNotification}
-                        className={classes.dropdownItem}
-                      >
-                        Another One
                       </MenuItem>
                     </MenuList>
                   </ClickAwayListener>
@@ -245,6 +227,57 @@ class AdminNavbarLinks extends React.Component {
                       >
                        <Link to="/" style={{"color":"black"}}>logout</Link>
                       </MenuItem>
+
+                    </MenuList>
+                  </ClickAwayListener>
+                </Paper>
+               
+              </Grow>
+            )}
+          </Poppers>
+          
+        </div>
+        <div className={classes.manager}>
+          <Button
+            buttonRef={node => {
+              this.anchorProfile = node;
+            }}
+            color={window.innerWidth > 959 ? "transparent" : "white"}
+            justIcon={window.innerWidth > 959}
+            simple={!(window.innerWidth > 959)}
+            aria-owns={openNotifcation ? "profile-menu-list-grow" : null}
+            aria-haspopup="true"
+            onClick={this.handleToggleProfile}
+            className={classes.buttonLink}
+          >
+            <Person className={classes.icons} />
+            <Hidden mdUp implementation="css">
+              <p className={classes.linkText}>Profile</p>
+            </Hidden>
+          </Button>
+          <Poppers
+            open={openProfile}
+            anchorEl={this.anchorProfile}
+            transition
+            disablePortal
+            className={
+              classNames({ [classes.popperClose]: !openProfile }) +
+              " " +
+              classes.popperNav
+            }
+          >
+            {({ TransitionProps, placement }) => (
+              <Grow
+                {...TransitionProps}
+                id="profile-menu-list-grow"
+                style={{
+                  transformOrigin:
+                    placement === "bottom" ? "center top" : "center bottom"
+                }}
+              >
+                <Paper>
+                  <ClickAwayListener onClickAway={this.handleCloseNotification}>
+                    <MenuList role="menu">
                       <MenuItem
                         onClick={this.handleShow}
                         className={classes.dropdownItem}

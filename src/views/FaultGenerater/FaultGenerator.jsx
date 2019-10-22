@@ -1,20 +1,3 @@
-/*!
-
-=========================================================
-* Material Dashboard React - v1.7.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2019 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/material-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
@@ -28,14 +11,8 @@ import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import Button from '../../components/CustomButtons/Button.jsx';
-
+import AddExelCurrentData from '../../components/AddExcelCurrentData/addExcelCurrentData'
 import Swal from "sweetalert2";
-//import SelectBranch from "components/SelectBranch/selectBranch";
-//import InputAdornment from "@material-ui/core/InputAdornment";
-// @material-ui/icons
-//import People from "@material-ui/icons/People";
-// core components
-//import CustomInput from "../../components/CustomInput/CustomInput";
 import SelectBranch from '../../components/SelectBranch/selectBranch'
 var firebase = require("firebase");
 
@@ -72,7 +49,7 @@ const styles = {
 class FaultGenerator extends React.Component {
   constructor(props){
     super(props)
-    this.state = {switchId: ''}
+    this.state = {switchId: '',switchidss:""}
   }
   /*Change map details on change of the drop down*/
   selectMapEventHandler=(event)=>{
@@ -114,11 +91,14 @@ class FaultGenerator extends React.Component {
   onChangeDB(){
     let branch = this.state.branch!==undefined?this.state.branch:""
     if(branch===""){return ""}
-    firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchID').on('value', function(snapshot) {
+    firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchID').on('value', (snapshot)=> {
       // Do whatever
       let switchids = snapshot.val().split(',')
+      this.setState({
+        switchidss: switchids
+      })
       console.log(switchids)
-      if(switchids!==''){
+      if(switchids!=='' && this.state.switchidss!==switchids){
         Swal.fire({
           type: 'info',
           title: 'RequestFaultLocation',
@@ -165,7 +145,8 @@ class FaultGenerator extends React.Component {
               </CardHeader>
               <CardBody>
                 <GridContainer>
-                  <GridItem xs={6} sm={6} md={6}>
+                  <GridItem xs={6} sm={6} md={12}>
+                    Create a fault 
                     <input
                         type='text'
                         value={this.state.switchId}
@@ -173,6 +154,10 @@ class FaultGenerator extends React.Component {
                         placeholder="Switch ID"
                     />
                     <Button onClick={this.sendFault} style={{marginLeft: 5}} color="danger">Power Down</Button>
+                  </GridItem>
+                  <GridItem xs={6} sm={6} md={12}>
+                    Add current table
+                    <AddExelCurrentData/>
                   </GridItem>
                 </GridContainer>
               </CardBody>
