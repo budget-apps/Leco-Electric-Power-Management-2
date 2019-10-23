@@ -453,7 +453,9 @@ class Dashboard extends React.Component {
                               onClickNode(
                                 nodeId,
                                 this.state.noopensw_list,
-                                this.state.feeding_list
+                                this.state.feeding_list,
+                                this.state.currentSwVal,
+                                this.state.switch_list
                               )
                             }
                             onRightClickNode={onRightClickNode}

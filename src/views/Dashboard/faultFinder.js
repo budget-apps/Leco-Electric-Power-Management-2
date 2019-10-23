@@ -94,7 +94,7 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
     //console.log(faultyPathSections)
     return [path, faultyPathSwithces, faultyPathSections]
   }
-const checkFaults = (faultSwitch) => {
+  const checkFaults = (faultSwitch) => {
     if(faultSwitch===""){
       return false
     }
@@ -104,7 +104,7 @@ const checkFaults = (faultSwitch) => {
 
   const sendFaultCurrentRequest = (faultyPath, branch, faultSwitch, switch_list) => {
     let faultSwitchID = switch_list.indexOf(faultSwitch)
-    //console.log(faultSwitchID)
+    console.log(faultSwitchID)
     let faultSWIDInFP = faultyPath.indexOf(faultSwitchID)
     
     faultyPath = [...new Set(faultyPath)]

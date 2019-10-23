@@ -121,6 +121,7 @@ class PhysicalConnectivity extends React.Component {
 
   repairedBtnHandler = () =>{
     firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
+    firebase.database().ref().child(this.state.branch).child('reconfigure').child(this.state.logIndex).child('isFaultRepaired').set(true)
     Swal.fire({
       type: 'success',
       title: 'Reparing Success',
@@ -140,7 +141,7 @@ class PhysicalConnectivity extends React.Component {
     .then((snapshot) => {
         const val = snapshot.val();
         
-        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable})
+        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable, logIndex: val.logIndex})
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
           section_list: getSections(this.state.switchtable),
