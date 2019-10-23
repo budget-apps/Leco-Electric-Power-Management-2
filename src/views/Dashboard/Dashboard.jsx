@@ -115,6 +115,26 @@ class Dashboard extends React.Component {
         )
       });
 
+      let path = findFaultyPath(
+        this.state.faultyFeeder,
+        this.state.feedMatrix
+      )[0];
+      let faultyPathSwithces = findFaultyPath(
+        this.state.faultyFeeder,
+        this.state.feedMatrix
+      )[1];
+      let faultyPathSections = findFaultyPath(
+        this.state.faultyFeeder,
+        this.state.feedMatrix
+      )[2];
+      console.log(faultyPathSections);
+      console.log(faultyPathSwithces);
+      this.setState({
+        path: path,
+        faultyPathSwithces: faultyPathSwithces,
+        faultyPathSections: faultyPathSections
+      });
+
       //sendFaultRequests
       sendFaultCurrentRequest(
         this.state.faultyPathSwithces,
@@ -175,25 +195,7 @@ class Dashboard extends React.Component {
           this.state.faultyFeeder[0] +
           "*)"
       });
-      let path = findFaultyPath(
-        this.state.faultyFeeder,
-        this.state.feedMatrix
-      )[0];
-      let faultyPathSwithces = findFaultyPath(
-        this.state.faultyFeeder,
-        this.state.feedMatrix
-      )[1];
-      let faultyPathSections = findFaultyPath(
-        this.state.faultyFeeder,
-        this.state.feedMatrix
-      )[2];
-      console.log(faultyPathSections);
-      console.log(faultyPathSwithces);
-      this.setState({
-        path: path,
-        faultyPathSwithces: faultyPathSwithces,
-        faultyPathSections: faultyPathSections
-      });
+      
     }
   };
 
