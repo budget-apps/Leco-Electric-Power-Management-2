@@ -49,8 +49,13 @@ const styles = {
 class FaultGenerator extends React.Component {
   constructor(props){
     super(props)
-    this.state = {switchId: '',switchidss:""}
+    this.state = {branch: '',switchId: '',switchidss:""}
   }
+
+  componentDidMount(){
+    this.onChangeDB()
+  }
+
   /*Change map details on change of the drop down*/
   selectMapEventHandler=(event)=>{
     this.setState({
@@ -94,11 +99,8 @@ class FaultGenerator extends React.Component {
     firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchID').on('value', (snapshot)=> {
       // Do whatever
       let switchids = snapshot.val().split(',')
-      this.setState({
-        switchidss: switchids
-      })
       console.log(switchids)
-      if(switchids!=='' && this.state.switchidss!==switchids){
+      if(switchids!==''){
         Swal.fire({
           type: 'info',
           title: 'RequestFaultLocation',
@@ -125,7 +127,7 @@ class FaultGenerator extends React.Component {
   }
 
   render() {
-    this.onChangeDB()
+    
     const { classes } = this.props;
     // const table_data= this.state===null?"":this.state.physicalConMatrix;
     //console.log("table data"+(this.state===null?"":this.state.electricConMatrix));
@@ -146,7 +148,7 @@ class FaultGenerator extends React.Component {
               <CardBody>
                 <GridContainer>
                   <GridItem xs={6} sm={6} md={12}>
-                    Create a fault 
+                    <p>1. Create a fault</p> 
                     <input
                         type='text'
                         value={this.state.switchId}
@@ -156,8 +158,9 @@ class FaultGenerator extends React.Component {
                     <Button onClick={this.sendFault} style={{marginLeft: 5}} color="danger">Power Down</Button>
                   </GridItem>
                   <GridItem xs={6} sm={6} md={12}>
-                    Add current table
-                    <AddExelCurrentData/>
+                    <p>2. Add current table (Do not use this without except admin)</p> 
+                    
+                    <AddExelCurrentData branch={this.state.branch}/>
                   </GridItem>
                 </GridContainer>
               </CardBody>

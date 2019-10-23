@@ -245,7 +245,7 @@ class AdminNavbarLinks extends React.Component {
             color={window.innerWidth > 959 ? "transparent" : "white"}
             justIcon={window.innerWidth > 959}
             simple={!(window.innerWidth > 959)}
-            aria-owns={openNotifcation ? "profile-menu-list-grow" : null}
+            aria-owns={openNotifcation ? "notification-menu-list-grow" : null}
             aria-haspopup="true"
             onClick={this.handleToggleProfile}
             className={classes.buttonLink}

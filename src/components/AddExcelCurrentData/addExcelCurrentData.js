@@ -32,17 +32,9 @@ class  AddExelCurrentData extends React.Component{
         }
     }
 
-    changeInputHandler=(event)=>{
-        this.setState(
-            {
-                branch: event.target.value
-            }
-        )
-        console.log(this.state.branch)
-    }
-
     submitFile=()=>{
-        firebase.database().ref().child(this.state.branch).child('currentTable').set(this.state.arr_1,(err,doc)=>{
+        console.log(this.props.branch)
+        firebase.database().ref().child(this.props.branch).child('currentTable').set(this.state.arr_1,(err,doc)=>{
             if(!err){
                 console.log("File added")
                 swal("File added to database!!!")
