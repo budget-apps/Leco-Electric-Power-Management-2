@@ -120,12 +120,26 @@ class PhysicalConnectivity extends React.Component {
   }
 
   repairedBtnHandler = () =>{
-    firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
     Swal.fire({
-      type: 'success',
-      title: 'Reparing Success',
-      text: 'Fault switch removed from the database successfully.',
-  })
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Power up fault switch!'
+    }).then((result) => {
+      console.log(result['dismiss']==='cancel')
+      if (result['dismiss']!=='cancel') {
+        firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
+        firebase.database().ref().child(this.state.branch).child('reconfigure').child(this.state.logIndex).child('isFaultRepaired').set(true)
+        Swal.fire({
+          type: 'success',
+          title: 'Successfull!!!',
+          text: 'Fault switch power up succesfully!',
+        })
+      }
+    })
   }
 
   /*Change map details on change of the drop down*/
@@ -140,7 +154,7 @@ class PhysicalConnectivity extends React.Component {
     .then((snapshot) => {
         const val = snapshot.val();
         
-        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable})
+        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable, logIndex: val.logIndex})
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
           section_list: getSections(this.state.switchtable),
