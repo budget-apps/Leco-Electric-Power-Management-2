@@ -14,7 +14,6 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import FormLabel from "@material-ui/core/FormLabel";
@@ -27,7 +26,8 @@ import {
   generatePhysicalConMatrix,
   generateElectricConnectivityMatrix,
   generateFeedingMatrix,
-  generatePhysicalConnectionFeederMatrix
+  generatePhysicalConnectionFeederMatrix,
+  getSwitchesCurrent
 } from "./matrixOperations";
 import {
   findFaultyFeeder,
@@ -61,7 +61,9 @@ class Dashboard extends React.Component {
       newNode: {
         id: "",
         section: ""
-      }
+      },
+      faultyPathSwithces: [],
+      faultyPathSections: []
     };
     this.onChageNewID = this.onChageNewID.bind(this);
     this.onChageNewSection = this.onChageNewSection.bind(this);
@@ -95,7 +97,7 @@ class Dashboard extends React.Component {
       .ref()
       .child(branch)
       .child("faultSwitch")
-      .on("value", function(snapshot) {
+      .on("value", function (snapshot) {
         // Do whatever
         //let switchids = snapshot.val()
         //console.log(switchids)
@@ -112,6 +114,57 @@ class Dashboard extends React.Component {
           this.state.switch_list
         )
       });
+
+      //sendFaultRequests
+      sendFaultCurrentRequest(
+        this.state.faultyPathSwithces,
+        this.state.branch,
+        this.state.faultSwitch,
+        this.state.switch_list
+      );
+
+      //Find Loc
+      let validSet =
+        this.state.faultCurrentSwitches[0] !== ""
+          ? this.state.faultCurrentSwitches
+          : this.state.faultSwitch.split(",");
+      let loc = getFaultLoc(
+        this.state.faultyPathSwithces,
+        validSet,
+        this.state.switch_list,
+        this.state.switchtable
+      );
+      this.setState({
+        faultLoc: loc
+      });
+      console.log(this.state.faultLoc);
+
+      //reconfigure
+      this.setState({
+        reconfigurePaths: findRecofigurePaths(
+          this.state.faultLoc,
+          this.state.noopensw_list,
+          this.state.switchtable,
+          this.state.switch_list,
+          this.state.physicalConFeedMatrix,
+          this.state.faultSwitch,
+          this.state.faultyPathSections,
+          this.state.section_list
+        )
+      });
+
+      sendReconfigurePathsToDB(
+        this.state.logIndex,
+        this.state.branch,
+        this.state.faultSwitch,
+        this.state.faultyFeeder,
+        this.state.path,
+        this.state.faultLoc,
+        Date(),
+        false,
+        this.state.reconfigurePaths
+      );
+
       Swal.fire({
         type: "error",
         title: "NodeFailure",
@@ -164,7 +217,8 @@ class Dashboard extends React.Component {
           noswitch: val.noswitch,
           feedpoints: val.feedpoints,
           faultSwitch: val.faultSwitch,
-          faultCurrentSwitches: val.faultCurrentRequest.switchIDValid.split(",")
+          faultCurrentSwitches: val.faultCurrentRequest.switchIDValid.split(","),
+          currentTable: val.currentTable
         });
 
         this.setState({
@@ -209,55 +263,9 @@ class Dashboard extends React.Component {
         //Find Faults
         this.findingFaults();
 
-        //sendFaultRequests
-        sendFaultCurrentRequest(
-          this.state.faultyPathSwithces,
-          this.state.branch,
-          this.state.faultSwitch,
-          this.state.switch_list
-        );
-
-        //Find Loc
-        let validSet =
-          this.state.faultCurrentSwitches[0] !== ""
-            ? this.state.faultCurrentSwitches
-            : this.state.faultSwitch.split(",");
-        let loc = getFaultLoc(
-          this.state.faultyPathSwithces,
-          validSet,
-          this.state.switch_list,
-          this.state.switchtable
-        );
         this.setState({
-          faultLoc: loc
-        });
-        console.log(this.state.faultLoc);
-
-        //reconfigure
-        this.setState({
-          reconfigurePaths: findRecofigurePaths(
-            this.state.faultLoc,
-            this.state.noopensw_list,
-            this.state.switchtable,
-            this.state.switch_list,
-            this.state.physicalConFeedMatrix,
-            this.state.faultSwitch,
-            this.state.faultyPathSections,
-            this.state.section_list
-          )
-        });
-
-        sendReconfigurePathsToDB(
-          this.state.logIndex,
-          this.state.branch,
-          this.state.faultSwitch,
-          this.state.faultyFeeder,
-          this.state.path,
-          this.state.faultLoc,
-          Date(),
-          false,
-          this.state.reconfigurePaths
-        );
+          currentSwVal: getSwitchesCurrent(this.state.currentTable)
+        })
 
         //Draw graph
         let graphData = drawGraph(
@@ -334,7 +342,7 @@ class Dashboard extends React.Component {
     }));
   };
 
-  hadleOnclickErrorBtn = () => {};
+  hadleOnclickErrorBtn = () => { };
 
   render() {
     this.onChangeDB();
@@ -349,10 +357,10 @@ class Dashboard extends React.Component {
         >
           <DialogTitle id="alert-dialog-title">
             <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>
-              Add New Node
+              <h4 className={classes.cardTitleWhite}>
+                Add New Node
             </h4>
-          </CardHeader></DialogTitle>
+            </CardHeader></DialogTitle>
           <DialogContent>
             {/*<DialogContentText id="alert-dialog-description">*/}
             {/*    Let Google help apps determine location. This means sending anonymous location data to*/}
@@ -421,39 +429,39 @@ class Dashboard extends React.Component {
                       </p>
                     </CardHeader>
                   ) : (
-                    <CardHeader color="danger">
-                      <h4 className={classes.cardTitleWhite}>
-                        {this.state != null ? this.state.branch : ""} Electric
+                      <CardHeader color="danger">
+                        <h4 className={classes.cardTitleWhite}>
+                          {this.state != null ? this.state.branch : ""} Electric
                         Grid (Graph View) <small>(Check logs)</small>
-                      </h4>
-                      <p className={classes.cardCategoryWhite}>
-                        Physical connection graph will display here.(Click on
-                        node for auto arrange them)
+                        </h4>
+                        <p className={classes.cardCategoryWhite}>
+                          Physical connection graph will display here.(Click on
+                          node for auto arrange them)
                       </p>
-                    </CardHeader>
-                  )}
+                      </CardHeader>
+                    )}
                   <CardBody id="Map" style={{ marginTop: 10 }}>
                     <div>
                       {this.state.graph_data === undefined ? (
                         "Please select a branch"
                       ) : (
-                        <Graph
-                          id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-                          data={this.state.graph_data}
-                          config={this.state.graph_config}
-                          onClickNode={nodeId =>
-                            onClickNode(
-                              nodeId,
-                              this.state.noopensw_list,
-                              this.state.feeding_list
-                            )
-                          }
-                          onRightClickNode={onRightClickNode}
-                          onRightClickLink={(event, source, target) =>
-                            this.handleClickOpen(event, source, target)
-                          }
-                        />
-                      )}
+                          <Graph
+                            id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+                            data={this.state.graph_data}
+                            config={this.state.graph_config}
+                            onClickNode={nodeId =>
+                              onClickNode(
+                                nodeId,
+                                this.state.noopensw_list,
+                                this.state.feeding_list
+                              )
+                            }
+                            onRightClickNode={onRightClickNode}
+                            onRightClickLink={(event, source, target) =>
+                              this.handleClickOpen(event, source, target)
+                            }
+                          />
+                        )}
                     </div>
                     {/* {this.state.treeData===undefined?"Please select a branch"
                     :

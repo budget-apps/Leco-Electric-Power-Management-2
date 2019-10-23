@@ -63,7 +63,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
         "linkStrength": 2
       },
       node: {
-          color: 'lightgreen',
+          color: 'lightgreen',  
           size: 120,
           highlightStrokeColor: 'blue',
       },
@@ -200,4 +200,4 @@ const onNodePositionChange = (nodeId, x, y) =>{
 };
 
 export {drawGraph, onClickGraph, onClickNode, onDoubleClickNode, onRightClickNode, onMouseOverNode, onMouseOutNode, onClickLink, onRightClickLink}
-export {onMouseOverLink, onMouseOutLink, onNodePositionChange, drawPath}
+export {onMouseOverLink, onMouseOutLink, onNodePositionChange, drawPath}                                                                                                                                                                                                                                                              
