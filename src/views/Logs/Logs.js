@@ -60,7 +60,8 @@ class PhysicalConnectivity extends React.Component {
       tableData: [[]],
       graphs: [],
       viewIndex: 0,
-      subIndex: 0
+      subIndex: 0,
+      showOp: false
     };
   }
 
@@ -104,17 +105,27 @@ class PhysicalConnectivity extends React.Component {
       let gphs = this.state.graphs
       gphs.push(graphDatas)
       console.log(gphs[0][0][0])
-      let details = []
+      let details = []  
       let dts = <div>Fault switch is {faultSwitch}. Faulty Feeder is {faultyFeeder[0]}.</div>
       details.push(dts)
       details.push(viewBtn)
-      let row = [time, details, <button>Repaired</button>]
+      details.push(<button onClick={this.handleShowOp}>Optimal path </button>)
+      let row = [time, details, <button onClick={this.repairedBtnHandler}>Repaired</button>]
       tableData.push(row)
       
     }
     this.setState({
       tableData: tableData
     })
+  }
+
+  repairedBtnHandler = () =>{
+    firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
+    Swal.fire({
+      type: 'success',
+      title: 'Reparing Success',
+      text: 'Fault switch removed from the database successfully.',
+  })
   }
 
   /*Change map details on change of the drop down*/
@@ -165,6 +176,19 @@ class PhysicalConnectivity extends React.Component {
     
   }
 
+  handleCloseOp = () => {
+    this.setState({
+      showOp: false,
+  });
+  }
+
+  handleShowOp = () => {
+    this.setState({
+      showOp: true,
+  });
+    
+  }
+
   showGraphs(){
     let arr = this.state.graphs[this.state.viewIndex]
     for(let i=0;i<arr.length;i++){
@@ -205,7 +229,32 @@ class PhysicalConnectivity extends React.Component {
           </Button>
         </DialogActions>
        </Dialog>
-      </div>   
+      </div>  
+
+      <div>
+        <Dialog
+          open={this.state.showOp}
+          onClose={this.handleCloseOp}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle id="alert-dialog-title">{"Reconfigurations paths"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            No optimal path.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleCloseOp} color="danger">
+            Close
+          </Button>
+          <Button onClick={this.handleCloseOp} color="success">
+            Reconfigure
+          </Button>
+        </DialogActions>
+       </Dialog>
+      </div>  
+
       <div>
       <SelectBranch changed={this.selectMapEventHandler}/>
     </div>
