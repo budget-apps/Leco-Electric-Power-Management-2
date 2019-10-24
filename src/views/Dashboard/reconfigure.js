@@ -1,4 +1,4 @@
-import {getSwitchsToSwitch, getRow, rowOperation, colOperation,findFeederInCol, findFeederInRow } from "./matrixOperations"
+import {getSwitchsToSwitch, getSectionOfSwitch, getRow, rowOperation, colOperation,findFeederInCol, findFeederInRow } from "./matrixOperations"
 var firebase = require("firebase");
 
 const findEndConnectedNOs = (faultLoc, noList, switch_table, switch_list) => {
@@ -102,22 +102,24 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
             allPaths.push(feederPaths)
         }
     }
-  //   for(let i=0;i<allPaths.length;i++){
-  //     for(let j=0;j<allPaths[i].length;j++){
-  //       let se = allPaths[i][j][0][0]
-  //       console.log(switch_list[se])
-  //       let seSec = getSectionOfSwitch(switch_table, switch_list[se])
-  //       console.log(seSec)
-  //       for(let k=0;k<faultyPathSections.length;k++){
-  //         console.log(section_list[faultyPathSections[k]])
-  //         if(seSec.includes(section_list[faultyPathSections[k]])){
-  //           allPaths[i].splice(j,1)
-  //           break
-  //         }
-  //       }
+    faultyPathSections.pop()
+    for(let i=0;i<allPaths.length;i++){
+      for(let j=0;j<allPaths[i].length;j++){
+        let se = allPaths[i][j][0][0]
+        console.log(switch_list[se])
+        let seSec = getSectionOfSwitch(switch_table, switch_list[se])
+        console.log(seSec)
+        for(let k=0;k<faultyPathSections.length;k++){
+          console.log(section_list[faultyPathSections[k]])
+          if(seSec.includes(section_list[faultyPathSections[k]])){
+            allPaths.splice(i,1)
+            break
+          }
+        }
         
-  //     }
-  // }
+      }
+    }
+
     console.log("All reconfigure paths")
     console.log(allPaths)
     return allPaths

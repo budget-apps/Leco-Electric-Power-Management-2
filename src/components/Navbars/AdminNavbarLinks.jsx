@@ -43,7 +43,7 @@ import Notifications from "@material-ui/icons/Notifications";
 import Button from "components/CustomButtons/Button.jsx";
 import {auth} from '../../firebase'
 import headerLinksStyle from "assets/jss/material-dashboard-react/components/headerLinksStyle.jsx";
-
+var firebase = require("firebase");
 class AdminNavbarLinks extends React.Component {
   state = {
     openNotifcation: false,
@@ -68,6 +68,15 @@ class AdminNavbarLinks extends React.Component {
     this.setState({ openProfile: false });
   };
 
+  handleToggleSettings = () => {
+    this.setState(state => ({ openSettings: !state.openSettings }));
+  };
+  handleCloseSettings = event => {
+    if (this.anchorProfile.contains(event.target)) {
+      return;
+    }
+    this.setState({ openSettings: false });
+  };
  
     signOut = e => {
       if (e && e.preventDefault) {
@@ -94,12 +103,35 @@ class AdminNavbarLinks extends React.Component {
       this.setState({
         show: true,
     });
+    } 
+
+    handleCloseWeight = () => {
+      this.setState({
+        showWeight: false,
+    });
+    }
+  
+    handleShowWeight = () => {
+      this.setState({
+        showWeight: true,
+    });
       
+    }
+
+    weightInputHandler = (event) => {
+      this.setState({
+        weightText: event.target.value
+      })
+    }
+
+
+    sendWeightBtnHandler = () => {
+      firebase.database().ref().child("Negambo").child('minOut').set(this.state.weightText)
     }
   
   render() {
     const { classes } = this.props;
-    const { openNotifcation, openProfile } = this.state;
+    const { openNotifcation, openProfile, openSettings } = this.state;
     return (
       <div>
        
@@ -247,21 +279,21 @@ class AdminNavbarLinks extends React.Component {
             simple={!(window.innerWidth > 959)}
             aria-owns={openNotifcation ? "notification-menu-list-grow" : null}
             aria-haspopup="true"
-            onClick={this.handleToggleProfile}
+            onClick={this.handleToggleSettings}
             className={classes.buttonLink}
           >
             <Person className={classes.icons} />
             <Hidden mdUp implementation="css">
-              <p className={classes.linkText}>Profile</p>
+              <p className={classes.linkText}>Profile2</p>
             </Hidden>
           </Button>
           <Poppers
-            open={openProfile}
+            open={openSettings}
             anchorEl={this.anchorProfile}
             transition
             disablePortal
             className={
-              classNames({ [classes.popperClose]: !openProfile }) +
+              classNames({ [classes.popperClose]: !openSettings }) +
               " " +
               classes.popperNav
             }
@@ -297,6 +329,13 @@ class AdminNavbarLinks extends React.Component {
                             <Link to="/admin"  style={{"color":"black"}}>Admin Panel</Link>
                         </MenuItem>
 
+                        <MenuItem
+                            onClick={this.handleShowWeight}
+                            className={classes.dropdownItem}
+                        >
+                            Manage Weighig Factors
+                        </MenuItem>
+
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
@@ -321,6 +360,27 @@ class AdminNavbarLinks extends React.Component {
         </DialogContent>
         <DialogActions>
           <Button onClick={this.handleClose} color="danger">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+        </div>   
+        <div>
+        <Dialog
+          open={this.state.showWeight}
+          onClose={this.handleCloseWeight}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle id="alert-dialog-title">{"Change Factors"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+                <input onChange={this.weightInputHandler} placeholder="Minimum output current" type='text'></input>
+                <button onClick={this.sendWeightBtnHandler}>Send</button>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleCloseWeight} color="danger">
             Close
           </Button>
         </DialogActions>
