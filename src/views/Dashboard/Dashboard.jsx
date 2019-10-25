@@ -144,10 +144,19 @@ class Dashboard extends React.Component {
       );
 
       //Find Loc
-      let validSet =
-      this.state.faultCurrentSwitchesNotValid!==""?this.state.faultCurrentSwitches[0] !== ""
-          ? this.state.faultCurrentSwitches
-          : this.state.faultSwitch.split(","):[];
+      let validSet = []
+      console.log(this.state.faultCurrentSwitchesNotValid[0])
+      console.log(this.state.faultCurrentSwitches[0])
+      if(this.state.faultCurrentSwitchesNotValid[0]===""){
+        validSet = []
+      }else{
+        if(this.state.faultCurrentSwitches[0] !== ""){
+          validSet = this.state.faultCurrentSwitches
+        }else{
+          validSet = this.state.faultSwitch.split(",")
+        }
+      }
+      
 
       console.log(validSet)
       let loc = getFaultLoc(
@@ -176,6 +185,7 @@ class Dashboard extends React.Component {
       });
 
       sendReconfigurePathsToDB(
+        this.state.switch_list,
         this.state.logIndex,
         this.state.branch,
         this.state.faultSwitch,

@@ -102,8 +102,10 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
             allPaths.push(feederPaths)
         }
     }
+    console.log(allPaths)
     faultyPathSections.pop()
     for(let i=0;i<allPaths.length;i++){
+      let removed = false
       for(let j=0;j<allPaths[i].length;j++){
         let se = allPaths[i][j][0][0]
         console.log(switch_list[se])
@@ -113,8 +115,12 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
           console.log(section_list[faultyPathSections[k]])
           if(seSec.includes(section_list[faultyPathSections[k]])){
             allPaths.splice(i,1)
+            removed=true
             break
           }
+        }
+        if(removed){
+          break
         }
         
       }
@@ -125,12 +131,8 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
     return allPaths
 }
 
-const sendReconfigurePathsToDB = (logIndex, branch, faultSwitch, faultyFeeder, faultyPath, faultySection, time, isFaultRepaired, reconfiguredPaths) => {
+const sendReconfigurePathsToDB = (switch_list, logIndex, branch, faultSwitch, faultyFeeder, faultyPath, faultySection, time, isFaultRepaired, reconfiguredPaths) => {
     console.log("Sending recnfigured paths to DB...")
-    faultyFeeder = JSON.stringify(faultyFeeder)
-    faultyPath = JSON.stringify(faultyPath)
-    faultySection = JSON.stringify(faultySection)
-    reconfiguredPaths = JSON.stringify(reconfiguredPaths)
     
     try{
         firebase.database().ref().child(branch).child('reconfigure')
@@ -138,10 +140,27 @@ const sendReconfigurePathsToDB = (logIndex, branch, faultSwitch, faultyFeeder, f
         
         .then((snapshot, key) => {
         const val = snapshot.val();
+        let prevFaultPath = JSON.parse(val[logIndex]['faultyPath'])
+        let faultSwitchID = switch_list.indexOf(faultSwitch)
+        let sameFault = false
+        for(let i=0;i<prevFaultPath.length;i++){
+          console.log(prevFaultPath[i][0]+", "+faultSwitchID)
+          if(prevFaultPath[i][0]===faultSwitchID){
+            sameFault = true
+            break
+          }
+        }
+
+        console.log(sameFault)
+
+        //let isRepaired = val!==null?val[logIndex]['isFaultRepaired']:null
         
-        let isRepaired = val!==null?val[logIndex]['isFaultRepaired']:null
-        
-        if(isRepaired || isRepaired === null){
+        faultyFeeder = JSON.stringify(faultyFeeder)
+        faultyPath = JSON.stringify(faultyPath)
+        faultySection = JSON.stringify(faultySection)
+        reconfiguredPaths = JSON.stringify(reconfiguredPaths)
+
+        if(!sameFault){
           //console.log(val[logIndex]['isFaultRepaired'])
           logIndex = logIndex+1
           console.log("OK. Sending new reconfiguartions...")
