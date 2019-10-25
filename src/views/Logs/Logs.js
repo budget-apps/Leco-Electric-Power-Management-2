@@ -110,7 +110,7 @@ class PhysicalConnectivity extends React.Component {
       details.push(dts)
       details.push(viewBtn)
       details.push(<button onClick={this.handleShowOp}>Optimal path </button>)
-      let row = [time, details, <button onClick={this.repairedBtnHandler}>Repaired</button>]
+      let row = [time, details, <button onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>Repaired</button>]
       tableData.push(row)
       
     }
@@ -119,7 +119,7 @@ class PhysicalConnectivity extends React.Component {
     })
   }
 
-  repairedBtnHandler = () =>{
+  repairedBtnHandler = (index, isFaultRepaired) =>{
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -130,15 +130,25 @@ class PhysicalConnectivity extends React.Component {
       confirmButtonText: 'Yes, Power up fault switch!'
     }).then((result) => {
       console.log(result['dismiss']==='cancel')
-      if (result['dismiss']!=='cancel') {
-        firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
-        firebase.database().ref().child(this.state.branch).child('reconfigure').child(this.state.logIndex).child('isFaultRepaired').set(true)
+      if(!isFaultRepaired){
+        if (result['dismiss']!=='cancel') {
+          firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
+          firebase.database().ref().child(this.state.branch).child('reconfigure').child(index).child('isFaultRepaired').set(true)
+          console.log("Updating "+index+" record...")
+          Swal.fire({
+            type: 'success',
+            title: 'Successfull!!!',
+            text: 'Fault switch power up succesfully!',
+          })
+        }
+      }else{
         Swal.fire({
-          type: 'success',
-          title: 'Successfull!!!',
-          text: 'Fault switch power up succesfully!',
+          type: 'error',
+          title: 'Unsuccessfull!!!',
+          text: 'Fault switch power up already!',
         })
       }
+      
     })
   }
 
