@@ -141,12 +141,26 @@ const onClickGraph = () =>{
     //window.alert(`Electric map`);
   };
 
-const onClickNode = (nodeId, noopensw_list, feeding_list) =>{
+const onClickNode = (nodeId, noopensw_list, feeding_list, crrntTable,sw_list) =>{
+  
   let type = getSwitchType(nodeId, noopensw_list, feeding_list)
+  let swCurrent = 0
+  if(type!=='Feeder'){
+    swCurrent = crrntTable[sw_list.indexOf(nodeId)]
+  }else{
+    swCurrent = 300
+  }
+
+  console.log(swCurrent)
+
   Swal.fire({
       type: 'info',
       title: nodeId,
-      text: "Status: "+type,
+      html:
+    'Switch Status: <b>'+type+'</b>, <br>'
+    +'Power Consupmtion: <b>'+swCurrent+'</b>, <br>',
+  showCloseButton: true,
+  focusConfirm: false,
   })
   };
 
@@ -155,11 +169,16 @@ const onDoubleClickNode = (nodeId) =>{
 };
 
 const onRightClickNode = (event, nodeId, fw) =>{
+  document.oncontextmenu = function() { return false; }
   console.log(event)
   Swal.fire({
     type: 'error',
     title: 'Delete '+nodeId,
     text: 'Do you want to remove '+nodeId+'?',
+  }).then((result) => {
+    if (result.value) {
+      document.oncontextmenu = function() { return true; }
+    }
   })
 };
 

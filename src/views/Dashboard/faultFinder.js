@@ -94,7 +94,7 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
     //console.log(faultyPathSections)
     return [path, faultyPathSwithces, faultyPathSections]
   }
-const checkFaults = (faultSwitch) => {
+  const checkFaults = (faultSwitch) => {
     if(faultSwitch===""){
       return false
     }
@@ -103,21 +103,32 @@ const checkFaults = (faultSwitch) => {
   }
 
   const sendFaultCurrentRequest = (faultyPath, branch, faultSwitch, switch_list) => {
-    let faultSwitchID = switch_list.indexOf(faultSwitch)
-    //console.log(faultSwitchID)
-    let faultSWIDInFP = faultyPath.indexOf(faultSwitchID)
-    
     faultyPath = [...new Set(faultyPath)]
+    let faultSwitchID = switch_list.indexOf(faultSwitch)
+    console.log(faultSwitchID)
+    let faultSWIDInFP = 0
+    for(let i=0;i<faultyPath.length;i++){
+      if(faultyPath[i]===faultSwitchID){
+        faultSWIDInFP = i
+        break
+      }
+    }
+
+    console.log(faultSWIDInFP)
+    
     let FPLength = faultyPath.length
+    console.log(faultSWIDInFP<FPLength)
     if(faultSWIDInFP<FPLength){
       faultyPath = faultyPath.slice(faultSWIDInFP+1, FPLength)
     }
+    console.log(faultyPath)
     let faultPathSW = []
     for(let i=0;i<faultyPath.length;i++){
       faultPathSW.push(switch_list[faultyPath[i]])
     }
 
     let fautPathStr = faultPathSW.toString()
+    console.log(fautPathStr)
     try{
       firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchID').set(fautPathStr)
     }catch(e){

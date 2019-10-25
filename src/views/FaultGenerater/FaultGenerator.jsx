@@ -94,36 +94,41 @@ class FaultGenerator extends React.Component {
   }
 
   onChangeDB(){
-    let branch = this.state.branch!==undefined?this.state.branch:""
-    if(branch===""){return ""}
-    firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchID').on('value', (snapshot)=> {
-      // Do whatever
-      let switchids = snapshot.val().split(',')
-      console.log(switchids)
-      if(switchids!==''){
-        Swal.fire({
-          type: 'info',
-          title: 'RequestFaultLocation',
-          text: 'Requesting switches are '+switchids.toString()+".",
-          input: 'text',
-          inputPlaceholder: 'Enter swithces',
-          showCancelButton: true,
-          inputValidator: (value) => {
-            // if (!value) {
-            //   return 'You need to write something!'
-            // }
-            // else{
-            firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchIDValid').set(value)
-              
-              // Swal.fire({
-              //   type: 'success',
-              //   text: 'Fault location sent.'
-              // })
-            //}
-          }
+    try{
+      firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').child('switchID').on('value', (snapshot)=> {
+        // Do whatever
+        let switchids = snapshot.val().split(',')
+        console.log(switchids)
+        this.setState({
+          switchidss: switchids
         })
-      }
-    })
+        if(switchids!==''){
+          Swal.fire({
+            type: 'info',
+            title: 'RequestFaultLocation',
+            text: 'Requesting switches are '+switchids.toString()+".",
+            input: 'text',
+            inputPlaceholder: 'Enter swithces',
+            showCancelButton: true,
+            inputValidator: (value) => {
+              // if (!value) {
+              //   return 'You need to write something!'
+              // }
+              // else{
+              firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').child('switchIDValid').set(value)
+                
+                // Swal.fire({
+                //   type: 'success',
+                //   text: 'Fault location sent.'
+                // })
+              //}
+            }
+          })
+        }
+      })
+    }catch(e){
+      console.log("Error couaght")
+    }
   }
 
   render() {
