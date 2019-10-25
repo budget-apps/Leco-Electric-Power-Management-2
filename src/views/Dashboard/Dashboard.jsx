@@ -17,7 +17,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import FormLabel from "@material-ui/core/FormLabel";
-
+import MyDiagram from "../../components/ManualMap/MyDiagram";
 import {
   getSwitches,
   getSections,
@@ -51,6 +51,7 @@ class Dashboard extends React.Component {
     super();
     this.state = {
       value: 0,
+      manual:false,
       show: false,
       faultSwitch: "",
       showErr: false,
@@ -63,7 +64,8 @@ class Dashboard extends React.Component {
         section: ""
       },
       faultyPathSwithces: [],
-      faultyPathSections: []
+      faultyPathSections: [],
+      ButtonCaption: "View Manual Map"
     };
     this.onChageNewID = this.onChageNewID.bind(this);
     this.onChageNewSection = this.onChageNewSection.bind(this);
@@ -311,6 +313,17 @@ class Dashboard extends React.Component {
     this.setState({ affectedNodes: arr });
   };
 
+  chageMap=()=>{
+    if(!this.state.manual){
+      this.setState({ButtonCaption:"View Remote Map"})
+    }
+    else{
+      this.setState({ButtonCaption:"View Manual Map"})
+    }
+    this.setState({manual:!this.state.manual});
+
+  }
+
   handleClose = () => {
     this.setState({ showLinkPopUp: false, closeLinkPopUp: true });
   };
@@ -425,10 +438,12 @@ class Dashboard extends React.Component {
                         {this.state != null ? this.state.branch : ""} Electric
                         Grid (Graph View)
                       </h4>
+
                       <p className={classes.cardCategoryWhite}>
                         Physical connection graph will display here. (Click on
                         node for auto arrange them)
                       </p>
+
                     </CardHeader>
                   ) : (
                       <CardHeader color="danger">
@@ -440,31 +455,40 @@ class Dashboard extends React.Component {
                           Physical connection graph will display here.(Click on
                           node for auto arrange them)
                       </p>
+                        <Button variant="contained" color="primary" onClick={this.chageMap}>
+                          {this.state.ButtonCaption}
+                        </Button>
                       </CardHeader>
                     )}
                   <CardBody id="Map" style={{ marginTop: 10 }}>
                     <div>
                       {this.state.graph_data === undefined ? (
                         "Please select a branch"
-                      ) : (
-                          <Graph
-                            id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-                            data={this.state.graph_data}
-                            config={this.state.graph_config}
-                            onClickNode={nodeId =>
-                              onClickNode(
-                                nodeId,
-                                this.state.noopensw_list,
-                                this.state.feeding_list,
-                                this.state.currentSwVal,
-                                this.state.switch_list
-                              )
-                            }
-                            onRightClickNode={onRightClickNode}
-                            onRightClickLink={(event, source, target) =>
-                              this.handleClickOpen(event, source, target)
-                            }
-                          />
+                      ) : (this.state.manual ?
+                              <div>
+                         <MyDiagram></MyDiagram>
+                                </div>
+                              :
+                              <div>
+                              <Graph
+                                  id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+                                  data={this.state.graph_data}
+                                  config={this.state.graph_config}
+                                  onClickNode={nodeId =>
+                                      onClickNode(
+                                          nodeId,
+                                          this.state.noopensw_list,
+                                          this.state.feeding_list,
+                                          this.state.currentSwVal,
+                                          this.state.switch_list
+                                      )
+                                  }
+                                  onRightClickNode={onRightClickNode}
+                                  onRightClickLink={(event, source, target) =>
+                                      this.handleClickOpen(event, source, target)
+                                  }
+                              />
+                              </div>
                         )}
                     </div>
                     {/* {this.state.treeData===undefined?"Please select a branch"
