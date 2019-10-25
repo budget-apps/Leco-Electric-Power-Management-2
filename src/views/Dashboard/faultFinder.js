@@ -89,9 +89,9 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
       faultyPathSwithces.push(path[i][0])
       faultyPathSections.push(path[i][1])
     }
-    //console.log(path)
-    //console.log(faultyPathSwithces)
-    //console.log(faultyPathSections)
+    console.log(path)
+    console.log(faultyPathSwithces)
+    console.log(faultyPathSections)
     return [path, faultyPathSwithces, faultyPathSections]
   }
   const checkFaults = (faultSwitch) => {
@@ -117,23 +117,26 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
     console.log(faultSWIDInFP)
     
     let FPLength = faultyPath.length
-    console.log(faultSWIDInFP<FPLength)
-    if(faultSWIDInFP<FPLength){
+    console.log(faultSWIDInFP+1<FPLength)
+    if(faultSWIDInFP+1<FPLength){
       faultyPath = faultyPath.slice(faultSWIDInFP+1, FPLength)
-    }
-    console.log(faultyPath)
-    let faultPathSW = []
-    for(let i=0;i<faultyPath.length;i++){
-      faultPathSW.push(switch_list[faultyPath[i]])
-    }
+      console.log(faultyPath)
+      let faultPathSW = []
+      for(let i=0;i<faultyPath.length;i++){
+        faultPathSW.push(switch_list[faultyPath[i]])
+      }
 
-    let fautPathStr = faultPathSW.toString()
-    console.log(fautPathStr)
-    try{
-      firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchID').set(fautPathStr)
-    }catch(e){
-      console.log(e)
+      let fautPathStr = faultPathSW.toString()
+      console.log(fautPathStr)
+      try{
+        firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchID').set(fautPathStr)
+      }catch(e){
+        console.log(e)
+      }
+    }else{
+      firebase.database().ref().child(branch).child('faultCurrentRequest').child('switchID').set("")
     }
+    
     
   }
 
@@ -164,10 +167,11 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
         }
         console.log(arr)
       }
-      console.log(loc)
-      return loc
+      
       
     }
+    console.log(loc)
+    return loc
   }
 
 export {findFaultyFeeder, findFaultyPath, checkFaults, sendFaultCurrentRequest, getFaultLoc}
