@@ -39,7 +39,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
 import Notifications from "@material-ui/icons/Notifications";
-// core components
+// eslint-disable-next-line no-unused-vars
+import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
+
 import Button from "components/CustomButtons/Button.jsx";
 import {auth} from '../../firebase'
 import headerLinksStyle from "assets/jss/material-dashboard-react/components/headerLinksStyle.jsx";
@@ -47,7 +49,15 @@ var firebase = require("firebase");
 class AdminNavbarLinks extends React.Component {
   state = {
     openNotifcation: false,
-    openProfile: false
+    openProfile: false,
+    switchCapacity:0,
+    switchFactor:0,
+    feederCapacity:0,
+    feederFactor:0,
+    feederlineCapacity:0,
+    feederlineFactor:0
+
+
   };
   handleToggleNotification = () => {
     this.setState(state => ({ openNotifcation: !state.openNotifcation }));
@@ -77,7 +87,9 @@ class AdminNavbarLinks extends React.Component {
     }
     this.setState({ openSettings: false });
   };
- 
+ onChange=(e)=>{
+   this.setState({[e.target.name]: e.target.value})
+ }
     signOut = e => {
       if (e && e.preventDefault) {
         e.preventDefault();
@@ -128,6 +140,14 @@ class AdminNavbarLinks extends React.Component {
     sendWeightBtnHandler = () => {
       firebase.database().ref().child("Negambo").child('minOut').set(this.state.weightText)
     }
+  calculateMinimum=()=>{
+     var switchCurrent= this.state.switchFactor*this.state.switchCapacity;
+     var feederCurrent = this.state.feederCapacity*this.state.feederFactor;
+     var feederlineCurrent = this.state.feederlineCapacity*this.state.feederlineFactor;
+alert(Math.min(switchCurrent,feederCurrent,feederlineCurrent))
+     return Math.min(switchCurrent,feederCurrent,feederlineCurrent)
+
+  }
   
   render() {
     const { classes } = this.props;
@@ -282,7 +302,7 @@ class AdminNavbarLinks extends React.Component {
             onClick={this.handleToggleSettings}
             className={classes.buttonLink}
           >
-            <Person className={classes.icons} />
+            <SettingsApplicationsIcon className={classes.icons} />
             <Hidden mdUp implementation="css">
               <p className={classes.linkText}>Profile2</p>
             </Hidden>
@@ -375,7 +395,37 @@ class AdminNavbarLinks extends React.Component {
         <DialogTitle id="alert-dialog-title">{"Change Factors"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-                <input onChange={this.weightInputHandler} placeholder="Minimum output current" type='text'></input>
+
+            <div>
+              <label htmlFor="switchCapacity" style={{
+                display: 'inline-block',
+                width: '140px',
+                textAlign :'right',
+              }}>Switch Capacity</label>
+              <input onChange={this.onChange} aria-label={"Switch Capacity"} placeholder="Switch Capacity" type='number' id="switchCapacity" name="switchCapacity" value={this.state.switchCapacity}></input>
+              <input onChange={this.onChange} placeholder="Multiply Factor" type='number' id="switchFactor" name="switchFactor" value={this.state.switchFactor}></input>
+            </div>
+            <div>
+              <label htmlFor="feederCapacity" style={{
+                display: 'inline-block',
+                width: '140px',
+                textAlign :'right',
+              }}>Feeder Capacity</label>
+              <input onChange={this.onChange} placeholder="feeder Capacity" type='number' id="feederCapacity" name="feederCapacity" value={this.state.feederCapacity}></input>
+              <input onChange={this.onChange} placeholder="Multiply Factor" type='number' id="feederFactor" name="feederFactor" value={this.state.feederFactor}></input>
+            </div>
+            <div>
+              <label htmlFor="feederlineCapacity" style={{
+                display: 'inline-block',
+                width: '140px',
+                textAlign :'right',
+              }}>feeder line Capacity</label>
+              <input onChange={this.onChange} placeholder="feeder line Capacity " type='number' id="feederlineCapacity" name="feederlineCapacity" value={this.state.feederlineCapacity}></input>
+              <input onChange={this.onChange} placeholder="Multiply Factor" type='number' id="feederlineFactor" name="feederlineFactor" value={this.state.feederlineFactor}></input>
+            </div>
+            <div style={{width:'30px'}}>
+              <Button onClick={this.calculateMinimum} color="primary">Get Minimum Output Current</Button>
+            </div>
                 <button onClick={this.sendWeightBtnHandler}>Send</button>
           </DialogContentText>
         </DialogContent>
