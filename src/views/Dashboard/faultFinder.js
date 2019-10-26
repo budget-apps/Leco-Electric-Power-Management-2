@@ -139,7 +139,7 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
     
     
   }
-
+  
   const getFaultLoc = (faultyPath, validset, switch_list, switch_table) => {
     console.log(validset)
     faultyPath = [...new Set(faultyPath)]

@@ -73,14 +73,16 @@ class Dashboard extends React.Component {
           sections: []
         }
       ],
+      branch: "",
       faultyPathSwithces: [],
       faultyPathSections: [],
-      ButtonCaption: "View Structural Map",
+      ButtonCaption: "View Graph Map",
       faultLoc: []
     };
     this.onChageNewID = this.onChageNewID.bind(this);
     this.onChageNewSection = this.onChageNewSection.bind(this);
   }
+
   handleClickOpen = (event, source, target) => {
     var affectedNodes = onRightClickLink(
       event,
@@ -125,125 +127,21 @@ class Dashboard extends React.Component {
       .on("value", function(snapshot) {
         // Do whatever
         //let switchids = snapshot.val()
-        //console.log(switchids)
-        //this.findingFaults()
+        // Swal.fire({
+        //   type: "info",
+        //   title: "DBChanged",
+        //   text: switchids
+        // });
+        //this.changeGrid(this.state.branch)
       });
   }
 
-  findingFaults = () => {
-    if (checkFaults(this.state.faultSwitch)) {
-      this.setState({
-        faultyFeeder: findFaultyFeeder(
-          this.state.faultSwitch,
-          this.state.feedMatrix,
-          this.state.switch_list
-        )
-      });
-
-      let path = findFaultyPath(
-        this.state.faultyFeeder,
-        this.state.feedMatrix
-      )[0];
-      let faultyPathSwithces = findFaultyPath(
-        this.state.faultyFeeder,
-        this.state.feedMatrix
-      )[1];
-      let faultyPathSections = findFaultyPath(
-        this.state.faultyFeeder,
-        this.state.feedMatrix
-      )[2];
-      console.log(faultyPathSections);
-      console.log(faultyPathSwithces);
-      this.setState({
-        path: path,
-        faultyPathSwithces: faultyPathSwithces,
-        faultyPathSections: faultyPathSections
-      });
-
-      //sendFaultRequests
-      sendFaultCurrentRequest(
-        this.state.faultyPathSwithces,
-        this.state.branch,
-        this.state.faultSwitch,
-        this.state.switch_list
-      );
-
-      //Find Loc
-      let validSet = [];
-      console.log(this.state.faultCurrentSwitchesNotValid[0]);
-      console.log(this.state.faultCurrentSwitches[0]);
-      if (this.state.faultCurrentSwitchesNotValid[0] === "") {
-        validSet = [];
-      } else {
-        if (this.state.faultCurrentSwitches[0] !== "") {
-          validSet = this.state.faultCurrentSwitches;
-        } else {
-          validSet = this.state.faultSwitch.split(",");
-        }
-      }
-
-      console.log(validSet);
-      let loc = getFaultLoc(
-        this.state.faultyPathSwithces,
-        validSet,
-        this.state.switch_list,
-        this.state.switchtable
-      );
-      this.setState({
-        faultLoc: loc
-      });
-      console.log(this.state.faultLoc);
-
-      //reconfigure
-      this.setState({
-        reconfigurePaths: findRecofigurePaths(
-          this.state.faultLoc,
-          this.state.noopensw_list,
-          this.state.switchtable,
-          this.state.switch_list,
-          this.state.physicalConFeedMatrix,
-          this.state.faultSwitch,
-          this.state.faultyPathSections,
-          this.state.section_list
-        )
-      });
-
-      sendReconfigurePathsToDB(
-        this.state.switch_list,
-        this.state.logIndex,
-        this.state.branch,
-        this.state.faultSwitch,
-        this.state.faultyFeeder,
-        this.state.path,
-        this.state.faultLoc,
-        Date(),
-        false,
-        this.state.reconfigurePaths
-      );
-
-      Swal.fire({
-        type: "error",
-        title: "NodeFailure",
-        text:
-          "At " +
-          this.state.faultSwitch +
-          ".(*" +
-          this.state.faultyFeeder[0] +
-          "*)"
-      });
-    }
-  };
-
-  /*Change map details on change of the drop down*/
-  selectMapEventHandler = event => {
-    this.setState({
-      branch: event.target.value
-    });
+  changeGrid(branch){
     //console.log(this.state.branch)
     firebase
       .database()
       .ref()
-      .child(event.target.value)
+      .child(branch)
       .once("value")
 
       .then(snapshot => {
@@ -254,12 +152,6 @@ class Dashboard extends React.Component {
           noswitch: val.noswitch,
           feedpoints: val.feedpoints,
           faultSwitch: val.faultSwitch,
-          faultCurrentSwitchesNotValid: val.faultCurrentRequest.switchID.split(
-            ","
-          ),
-          faultCurrentSwitches: val.faultCurrentRequest.switchIDValid.split(
-            ","
-          ),
           currentTable: val.currentTable,
           prevReconfigure: val.reconfigure
         });
@@ -353,6 +245,137 @@ class Dashboard extends React.Component {
           text: e.message
         });
       });
+  }
+
+  findingFaults = () => {
+    if (checkFaults(this.state.faultSwitch)) {
+      this.setState({
+        faultyFeeder: findFaultyFeeder(
+          this.state.faultSwitch,
+          this.state.feedMatrix,
+          this.state.switch_list
+        )
+      });
+
+      let path = findFaultyPath(
+        this.state.faultyFeeder,
+        this.state.feedMatrix
+      )[0];
+      let faultyPathSwithces = findFaultyPath(
+        this.state.faultyFeeder,
+        this.state.feedMatrix
+      )[1];
+      let faultyPathSections = findFaultyPath(
+        this.state.faultyFeeder,
+        this.state.feedMatrix
+      )[2];
+      console.log(faultyPathSections);
+      console.log(faultyPathSwithces);
+      this.setState({
+        path: path,
+        faultyPathSwithces: faultyPathSwithces,
+        faultyPathSections: faultyPathSections
+      });
+
+      //sendFaultRequests
+      sendFaultCurrentRequest(
+        this.state.faultyPathSwithces,
+        this.state.branch,
+        this.state.faultSwitch,
+        this.state.switch_list
+      );
+      
+      firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').once("value").then(snapshot => {
+        const val = snapshot.val();
+        this.setState({
+          faultCurrentSwitchesNotValid: val.switchID.split(
+            ","
+          ),
+          faultCurrentSwitches: val.switchIDValid.split(
+            ","
+          ),
+        })
+
+        //Find Loc
+      let validSet = [];
+      console.log(this.state.faultCurrentSwitchesNotValid[0]);
+      console.log(this.state.faultCurrentSwitches[0]);
+      if (this.state.faultCurrentSwitchesNotValid[0] === "") {
+        console.log("In 1st condition")
+        validSet = [];
+      } else {
+        if (this.state.faultCurrentSwitches[0] !== "") {
+          console.log("In 2nd condition")
+          validSet = this.state.faultCurrentSwitches;
+        } else {
+          console.log("In 3rd condition")
+          console.log(this.state.faultSwitch.split(","))
+          validSet = this.state.faultSwitch.split(",");
+        }
+      }
+
+      console.log(validSet);
+      let loc = getFaultLoc(
+        this.state.faultyPathSwithces,
+        validSet,
+        this.state.switch_list,
+        this.state.switchtable
+      );
+      this.setState({
+        faultLoc: loc
+      });
+      console.log(this.state.faultLoc);
+
+      //reconfigure
+      this.setState({
+        reconfigurePaths: findRecofigurePaths(
+          this.state.faultLoc,
+          this.state.noopensw_list,
+          this.state.switchtable,
+          this.state.switch_list,
+          this.state.physicalConFeedMatrix,
+          this.state.faultSwitch,
+          this.state.faultyPathSections,
+          this.state.section_list
+        )
+      });
+
+      sendReconfigurePathsToDB(
+        this.state.switch_list,
+        this.state.logIndex,
+        this.state.branch,
+        this.state.faultSwitch,
+        this.state.faultyFeeder,
+        this.state.path,
+        this.state.faultLoc,
+        Date(),
+        false,
+        this.state.reconfigurePaths
+      );
+
+      Swal.fire({
+        type: "error",
+        title: "NodeFailure",
+        text:
+          "At " +
+          this.state.faultSwitch +
+          ".(*" +
+          this.state.faultyFeeder[0] +
+          "*)"
+      });
+
+      })
+
+      
+    }
+  };
+
+  /*Change map details on change of the drop down*/
+  selectMapEventHandler = event => {
+    this.setState({
+      branch: event.target.value
+    });
+    this.changeGrid(event.target.value)
   };
   onChangeWithInput = (node, e) => {
     var arr = this.state.affectedSections;
@@ -368,13 +391,22 @@ class Dashboard extends React.Component {
   };
 
   chageMap=()=>{
-    if(!this.state.manual){
-      this.setState({ButtonCaption:"View Graph Map"})
+    if(this.state.branch!==""){
+      if(!this.state.manual){
+        this.setState({ButtonCaption:"View Structural Map"})
+      }
+      else{
+        this.setState({ButtonCaption:"View Graph Map"})
+      }
+      this.setState({ manual: !this.state.manual });
     }
     else{
-      this.setState({ButtonCaption:"View Structural Map"})
+      Swal.fire({
+        type: "error",
+        title: "No Branch Selected",
+        text: "Please select a branch!"
+      });
     }
-    this.setState({ manual: !this.state.manual });
   };
 
   handleClose = () => {
@@ -508,19 +540,26 @@ class Dashboard extends React.Component {
                     <CardHeader color="primary">
                       <h4 className={classes.cardTitleWhite}>
                         {this.state != null ? this.state.branch : ""} Electric
-                        Grid (Graph View)
+                        Grid {this.state.manual?"(Graph View)":"(Structural View)"}
                       </h4>
 
                       <p className={classes.cardCategoryWhite}>
                         Physical connection graph will display here. (Click on
                         node for auto arrange them)
                       </p>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={this.chageMap}
+                      >
+                        {this.state.ButtonCaption}
+                      </Button>
                     </CardHeader>
                   ) : (
                     <CardHeader color="danger">
                       <h4 className={classes.cardTitleWhite}>
                         {this.state != null ? this.state.branch : ""} Electric
-                        Grid (Graph View) <small>(Check logs)</small>
+                        Grid {this.state.manual?"(Graph View)":"(Structural View)"} <small>(Check logs)</small>
                       </h4>
                       <p className={classes.cardCategoryWhite}>
                         Physical connection graph will display here.(Click on
@@ -541,11 +580,7 @@ class Dashboard extends React.Component {
                         "Please select a branch"
                       ) : this.state.manual ? (
                         <div>
-                          <MyDiagram></MyDiagram>
-                        </div>
-                      ) : (
-                        <div>
-                          <Graph
+                           <Graph
                             id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                             data={this.state.graph_data}
                             config={this.state.graph_config}
@@ -563,6 +598,11 @@ class Dashboard extends React.Component {
                               this.handleClickOpen(event, source, target)
                             }
                           />
+                          
+                        </div>
+                      ) : (
+                        <div>
+                          <MyDiagram></MyDiagram>
                         </div>
                       )}
                     </div>
