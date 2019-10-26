@@ -247,7 +247,7 @@ const getSwitchesCurrent = (curretTable) => {
   return arr
 }
 
-const generateMapState = (switchlist,nolist,branch, faultyLoc, reconfiguredPath) => {
+const generateMapState = (switchlist,nolist,branch,faultSwitch, faultyLoc, reconfiguredPath) => {
   let mapState = []
   console.log(faultyLoc)
   for(let i=0;i<switchlist.length;i++){
@@ -255,6 +255,8 @@ const generateMapState = (switchlist,nolist,branch, faultyLoc, reconfiguredPath)
       mapState[switchlist[i]] = 0
     }
     else if(faultyLoc.includes(switchlist[i])){
+      mapState[switchlist[i]] = 0
+    }else if(faultSwitch===switchlist[i]){
       mapState[switchlist[i]] = 0
     }else{
       mapState[switchlist[i]] = 1

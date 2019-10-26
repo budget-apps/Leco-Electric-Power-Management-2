@@ -287,7 +287,7 @@ class Dashboard extends React.Component {
 
         //Map State
         this.setState({
-          mapState: generateMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch, this.state.faultLoc, this.state.faultLoc),
+          mapState: generateMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch,this.state.faultSwitch, this.state.faultLoc, this.state.faultLoc),
         })
 
         //Draw graph
