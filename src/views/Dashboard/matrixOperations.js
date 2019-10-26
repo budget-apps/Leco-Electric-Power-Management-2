@@ -1,3 +1,4 @@
+var firebase = require("firebase");
 const getSwitches = (switchtable) => {
   let switch_list = []
   for (let i = 0; i < switchtable.length; i++) {
@@ -246,7 +247,25 @@ const getSwitchesCurrent = (curretTable) => {
   return arr
 }
 
+const generateMapState = (switchlist,nolist,branch, faultyLoc, reconfiguredPath) => {
+  let mapState = []
+  console.log(faultyLoc)
+  for(let i=0;i<switchlist.length;i++){
+    if(nolist.includes(switchlist[i])){
+      mapState[switchlist[i]] = 0
+    }
+    else if(faultyLoc.includes(switchlist[i])){
+      mapState[switchlist[i]] = 0
+    }else{
+      mapState[switchlist[i]] = 1
+    }
+    
+  }
+  firebase.database().ref().child(branch).child('mapState').set(mapState)
+  return mapState
+}
+
 
 export { getSwitches, getSections, getSectionOfSwitch, getNormallyOpenSwitches, getSwitchType, getFeedingPoints, generatePhysicalConMatrix };
 export { generateElectricConnectivityMatrix, generateFeedingMatrix, rowOperation, colOperation, findFeederInRow, findFeederInCol }
-export { getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix, getSwitchesFromSection, getSwitchesCurrent }
+export { getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix, getSwitchesFromSection, getSwitchesCurrent, generateMapState }

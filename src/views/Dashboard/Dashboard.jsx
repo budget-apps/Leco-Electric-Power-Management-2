@@ -27,7 +27,8 @@ import {
   generateElectricConnectivityMatrix,
   generateFeedingMatrix,
   generatePhysicalConnectionFeederMatrix,
-  getSwitchesCurrent
+  getSwitchesCurrent,
+  generateMapState
 } from "./matrixOperations";
 import {
   findFaultyFeeder,
@@ -65,7 +66,7 @@ class Dashboard extends React.Component {
       },
       faultyPathSwithces: [],
       faultyPathSections: [],
-      ButtonCaption: "View Manual Map"
+      ButtonCaption: "View Structural Map"
     };
     this.onChageNewID = this.onChageNewID.bind(this);
     this.onChageNewSection = this.onChageNewSection.bind(this);
@@ -284,6 +285,11 @@ class Dashboard extends React.Component {
           currentSwVal: getSwitchesCurrent(this.state.currentTable)
         })
 
+        //Map State
+        this.setState({
+          mapState: generateMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch, this.state.faultLoc, this.state.faultLoc),
+        })
+
         //Draw graph
         let graphData = drawGraph(
           this.state.feeding_list,
@@ -328,10 +334,10 @@ class Dashboard extends React.Component {
 
   chageMap=()=>{
     if(!this.state.manual){
-      this.setState({ButtonCaption:"View Remote Map"})
+      this.setState({ButtonCaption:"View Graph Map"})
     }
     else{
-      this.setState({ButtonCaption:"View Manual Map"})
+      this.setState({ButtonCaption:"View Structural Map"})
     }
     this.setState({manual:!this.state.manual});
 
