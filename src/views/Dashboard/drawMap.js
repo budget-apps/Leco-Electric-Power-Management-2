@@ -1,7 +1,7 @@
 import {getSectionOfSwitch, getSwitchType, getSwitchesFromSection} from "./matrixOperations"
 import Swal from "sweetalert2";
 
-const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, faultyPathSections, switchtable, faultSwitch) => {
+const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, faultyPathSections, switchtable, faultSwitch, prevReconfigure) => {
     let nodes_arr = []
     let link_arr = []
 
@@ -26,6 +26,18 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
         color = "red"
       }else if(faultyPathSwithces.includes(i)){
         color = "red"
+      }
+
+      if(prevReconfigure.length!==0){
+        for(let j=0;j<prevReconfigure.length;j++){
+          for(let k=0;k<prevReconfigure[j].length;k++){
+            console.log(sw_list[prevReconfigure[j][k][0]]+", "+sw_list[i])
+            if(sw_list[prevReconfigure[j][k][0]]===sw_list[i]){
+              color = "red"
+              break
+            }
+          }
+        }
       }
       nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
 

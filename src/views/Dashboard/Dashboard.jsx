@@ -29,7 +29,8 @@ import {
   generatePhysicalConnectionFeederMatrix,
   getSwitchesCurrent,
   generateMapState,
-  getSectionOfSwitch
+  getSectionOfSwitch,
+  processPrevReconfigure
 } from "./matrixOperations";
 import {
   findFaultyFeeder,
@@ -48,7 +49,7 @@ import { findRecofigurePaths, sendReconfigurePathsToDB } from "./reconfigure";
 import { InputLabel } from "@material-ui/core";
 //import Tree from 'react-d3-tree';
 var firebase = require("firebase");
-var i = 0;
+
 class Dashboard extends React.Component {
   constructor() {
     super();
@@ -74,7 +75,8 @@ class Dashboard extends React.Component {
       ],
       faultyPathSwithces: [],
       faultyPathSections: [],
-      ButtonCaption: "View Structural Map"
+      ButtonCaption: "View Structural Map",
+      faultLoc: []
     };
     this.onChageNewID = this.onChageNewID.bind(this);
     this.onChageNewSection = this.onChageNewSection.bind(this);
@@ -95,6 +97,7 @@ class Dashboard extends React.Component {
         sections: getSectionOfSwitch(this.state.switchtable, id)
       };
       affectnsections.push(obj);
+      return affectnsections
     });
     console.log(affectnsections);
     this.setState({ affectedSections: affectnsections });
@@ -257,14 +260,16 @@ class Dashboard extends React.Component {
           faultCurrentSwitches: val.faultCurrentRequest.switchIDValid.split(
             ","
           ),
-          currentTable: val.currentTable
+          currentTable: val.currentTable,
+          prevReconfigure: val.reconfigure
         });
 
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
           section_list: getSections(this.state.switchtable),
           noopensw_list: getNormallyOpenSwitches(this.state.noswitch),
-          feeding_list: getFeedingPoints(this.state.feedpoints)
+          feeding_list: getFeedingPoints(this.state.feedpoints),
+          allFaultPaths: processPrevReconfigure(this.state.prevReconfigure)
         });
 
         this.setState({
@@ -308,7 +313,7 @@ class Dashboard extends React.Component {
 
         //Map State
         this.setState({
-          mapState: generateMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch,this.state.faultSwitch, this.state.faultLoc, this.state.faultLoc),
+          mapState: generateMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch,this.state.faultSwitch, this.state.faultLoc, this.state.allFaultPaths),
         })
 
         //Draw graph
@@ -320,7 +325,8 @@ class Dashboard extends React.Component {
           this.state.faultyPathSwithces,
           this.state.faultyPathSections,
           this.state.switchtable,
-          this.state.faultSwitch
+          this.state.faultSwitch,
+          this.state.allFaultPaths
         )[0];
         let graphConfig = drawGraph(
           this.state.feeding_list,
@@ -330,7 +336,8 @@ class Dashboard extends React.Component {
           this.state.faultyPathSwithces,
           this.state.faultyPathSections,
           this.state.switchtable,
-          this.state.faultSwitch
+          this.state.faultSwitch,
+          this.state.allFaultPaths
         )[1];
         this.setState({
           graph_data: graphData,
@@ -351,7 +358,7 @@ class Dashboard extends React.Component {
     var arr = this.state.affectedSections;
     var sectionarr = node.sections;
     sectionarr[e.target.id] = e.target.value;
-    var index = arr.findIndex(x => x.id == node.id);
+    var index = arr.findIndex(x => x.id === node.id);
     var updateObject = {
       id: node.id,
       sections: sectionarr

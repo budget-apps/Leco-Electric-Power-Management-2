@@ -13,7 +13,7 @@ import CardBody from "components/Card/CardBody.jsx";
 import { Graph } from 'react-d3-graph';
 import Swal from "sweetalert2";
 import SelectBranch from "components/SelectBranch/selectBranch";
-import { getSwitches, getSections } from "../Dashboard/matrixOperations";
+import { getSwitches, getSections, getNormallyOpenSwitches, resetMapState } from "../Dashboard/matrixOperations";
 import {drawPath} from "../Dashboard/drawMap"
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -71,17 +71,17 @@ class PhysicalConnectivity extends React.Component {
     for(let i=1;i<reconfigure.length;i++){
       let faultSwitch = reconfigure[i]['faultSwitch']
       let faultyFeeder = JSON.parse(reconfigure[i]['faultyFeeder'])
-      let faultyPath = JSON.parse(reconfigure[i]['faultyPath'])
-      let faultySection = JSON.parse(reconfigure[i]['faultySection'])
+      //let faultyPath = JSON.parse(reconfigure[i]['faultyPath'])
+      //let faultySection = JSON.parse(reconfigure[i]['faultySection'])
       let isFaultRepaired = reconfigure[i]['isFaultRepaired']
       let reconfiguredPaths = JSON.parse(reconfigure[i]['reconfiguredPaths'])
       let time = reconfigure[i]['time']
-      console.log(faultSwitch)
-      console.log(faultyFeeder)
-      console.log(faultyPath)
-      console.log(faultySection)
-      console.log(isFaultRepaired)
-      console.log(reconfiguredPaths)
+      // console.log(faultSwitch)
+      // console.log(faultyFeeder)
+      // console.log(faultyPath)
+      // console.log(faultySection)
+      // console.log(isFaultRepaired)
+      // console.log(reconfiguredPaths)
       let graphDatas = []
       let viewBtn = []
       for(let j=0;j<reconfiguredPaths.length;j++){
@@ -134,6 +134,7 @@ class PhysicalConnectivity extends React.Component {
         if (result['dismiss']!=='cancel') {
           firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
           firebase.database().ref().child(this.state.branch).child('reconfigure').child(index).child('isFaultRepaired').set(true)
+          resetMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch)
           console.log("Updating "+index+" record...")
           Swal.fire({
             type: 'success',
@@ -164,10 +165,11 @@ class PhysicalConnectivity extends React.Component {
     .then((snapshot) => {
         const val = snapshot.val();
         
-        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable, logIndex: val.logIndex})
+        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable, logIndex: val.logIndex,  noswitch: val.noswitch,})
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
           section_list: getSections(this.state.switchtable),
+          noopensw_list: getNormallyOpenSwitches(this.state.noswitch),
         })
         console.log(this.state.log)
         console.log(this.state.section_list)
