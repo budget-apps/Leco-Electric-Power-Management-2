@@ -1,3 +1,4 @@
+var firebase = require("firebase");
 const getSwitches = (switchtable) => {
   let switch_list = []
   for (let i = 0; i < switchtable.length; i++) {
@@ -246,7 +247,65 @@ const getSwitchesCurrent = (curretTable) => {
   return arr
 }
 
+const generateMapState = (switchlist,nolist,branch,faultSwitch, faultyLoc, prevReconfigure) => {
+  let mapState = []
+  console.log(faultyLoc)
+  for(let i=0;i<switchlist.length;i++){
+    if(nolist.includes(switchlist[i])){
+      mapState[switchlist[i]] = 0
+    }
+    else if(faultyLoc.includes(switchlist[i])){
+      mapState[switchlist[i]] = 0
+    }else if(faultSwitch===switchlist[i]){
+      mapState[switchlist[i]] = 0
+    }else{
+      mapState[switchlist[i]] = 1
+    }
+
+    if(prevReconfigure.length!==0){
+      for(let j=0;j<prevReconfigure.length;j++){
+        for(let k=0;k<prevReconfigure[j].length;k++){
+          if(switchlist[prevReconfigure[j][k][0]]===switchlist[i]){
+            mapState[switchlist[i]] = 0
+            break
+          }
+        }
+      }
+    }
+    
+  }
+  firebase.database().ref().child(branch).child('mapState').set(mapState)
+  return mapState
+}
+
+const resetMapState = (switchlist,nolist,branch) => {
+  let mapState = []
+  for(let i=0;i<switchlist.length;i++){
+    if(nolist.includes(switchlist[i])){
+      mapState[switchlist[i]] = 0
+    }else{
+      mapState[switchlist[i]] = 1
+    }
+    
+  }
+  firebase.database().ref().child(branch).child('mapState').set(mapState)
+  return mapState
+}
+
+const processPrevReconfigure = ( prevReconfigure ) => {
+  let arr = []
+  for(let i=1;i<prevReconfigure.length;i++){
+    console.log(prevReconfigure[i]['isFaultRepaired'])
+    if(!prevReconfigure[i]['isFaultRepaired']){
+      arr.push(JSON.parse(prevReconfigure[i]['faultyPath']))
+    }
+  }
+  console.log(arr)
+  return arr
+}
+
 
 export { getSwitches, getSections, getSectionOfSwitch, getNormallyOpenSwitches, getSwitchType, getFeedingPoints, generatePhysicalConMatrix };
 export { generateElectricConnectivityMatrix, generateFeedingMatrix, rowOperation, colOperation, findFeederInRow, findFeederInCol }
-export { getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix, getSwitchesFromSection, getSwitchesCurrent }
+export { getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix, getSwitchesFromSection, getSwitchesCurrent, generateMapState }
+export { processPrevReconfigure, resetMapState }
