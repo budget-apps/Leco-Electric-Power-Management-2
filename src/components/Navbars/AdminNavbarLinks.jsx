@@ -145,8 +145,7 @@ class AdminNavbarLinks extends React.Component {
       });
       Swal.fire({
         type: "success",
-        title: "SwitchOFF",
-        text: " turned off."
+        
       });
     } catch (e) {
       Swal.fire({
