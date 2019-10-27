@@ -202,7 +202,7 @@ class Dashboard extends React.Component {
         this.setState({
           currentSwVal: getSwitchesCurrent(this.state.currentTable)
         });
-
+        
         //Map State
         this.setState({
           mapState: generateMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch,this.state.faultSwitch, this.state.faultLoc, this.state.allFaultPaths),
@@ -218,7 +218,8 @@ class Dashboard extends React.Component {
           this.state.faultyPathSections,
           this.state.switchtable,
           this.state.faultSwitch,
-          this.state.allFaultPaths
+          this.state.allFaultPaths,
+          this.state.mapState,
         )[0];
         let graphConfig = drawGraph(
           this.state.feeding_list,
@@ -229,7 +230,8 @@ class Dashboard extends React.Component {
           this.state.faultyPathSections,
           this.state.switchtable,
           this.state.faultSwitch,
-          this.state.allFaultPaths
+          this.state.allFaultPaths,
+          this.state.mapState,
         )[1];
         this.setState({
           graph_data: graphData,
@@ -590,7 +592,7 @@ class Dashboard extends React.Component {
                                 this.state.noopensw_list,
                                 this.state.feeding_list,
                                 this.state.currentSwVal,
-                                this.state.switch_list
+                                this.state.switch_list,
                               )
                             }
                             onRightClickNode={onRightClickNode}

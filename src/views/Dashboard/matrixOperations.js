@@ -1,4 +1,6 @@
+import Swal from "sweetalert2";
 var firebase = require("firebase");
+
 const getSwitches = (switchtable) => {
   let switch_list = []
   for (let i = 0; i < switchtable.length; i++) {
@@ -242,7 +244,11 @@ const getSwitchesCurrent = (curretTable) => {
     let vals = curretTable[i][index].split(',')
     let avg = (parseFloat(vals[0])+parseFloat(vals[1])+parseFloat(vals[2]))/3
     arr.push((Math.round(avg*100)/100))
-  }
+  }Swal.fire({
+    type: "error",
+    title: "Current",
+    text: arr.toString()
+  });
   console.log(arr)
   return arr
 }

@@ -1,7 +1,7 @@
 import {getSectionOfSwitch, getSwitchType, getSwitchesFromSection} from "./matrixOperations"
 import Swal from "sweetalert2";
 
-const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, faultyPathSections, switchtable, faultSwitch, prevReconfigure) => {
+const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, faultyPathSections, switchtable, faultSwitch, prevReconfigure, mapState) => {
     let nodes_arr = []
     let link_arr = []
 
@@ -14,19 +14,30 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
     }
 
     for(let i=0;i<sw_list.length;i++){
+      let typeofnode = ""
       let id = sw_list[i]
-      let color = "green"
+      let color = "#6fff6f"
       let size = 3000
       let symbolType = "square"
+      
       if(noopn_list.includes(sw_list[i])){
-        color = "orange"
+        color = "#ff4848"
       }else if(feed_list.includes(sw_list[i])){
-        color = "blue"
+        color = "#6fb7ff"
       }else if(faultSwitch===sw_list[i]){
         color = "red"
       }else if(faultyPathSwithces.includes(i)){
         color = "red"
       }
+      
+      if(mapState[sw_list[i]]===1){
+        typeofnode = "Close"
+      }
+      else{
+        typeofnode = "Open"
+      }
+
+      id = id + "\n" + typeofnode
 
       if(prevReconfigure.length!==0){
         for(let j=0;j<prevReconfigure.length;j++){
@@ -77,11 +88,11 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       node: {
           color: 'lightgreen',  
           size: 120,
-          highlightStrokeColor: 'blue',
+          highlightStrokeColor: 'red',
       },
       link: {
-        color: 'grey',
-        highlightColor: 'lightblue'
+        color: '#6fff6f',
+        highlightColor: 'green'
       }
     };
     console.log("Graph data")
@@ -155,22 +166,24 @@ const onClickGraph = () =>{
 
 const onClickNode = (nodeId, noopensw_list, feeding_list, crrntTable,sw_list) =>{
   
-  let type = getSwitchType(nodeId, noopensw_list, feeding_list)
+  let typef = getSwitchType(nodeId.split('\n')[0], noopensw_list, feeding_list)
+  console.log(typef)
   let swCurrent = 0
-  if(type!=='Feeder'){
-    swCurrent = crrntTable[sw_list.indexOf(nodeId)]
+  if(typef!=='Feeder'){
+    swCurrent = crrntTable[sw_list.indexOf(nodeId.split('\n')[0])]
   }else{
     swCurrent = 300
   }
 
   console.log(swCurrent)
-
+  let typeO = typef==="Close"?"Sectionalizing Switch":typef==="Open"?"Tie Switch":"Feeding Switch"
+  console.log(typeO)
   Swal.fire({
       type: 'info',
       title: nodeId,
       html:
-    'Switch Status: <b>'+type+'</b>, <br>'
-    +'Power Consupmtion: <b>'+swCurrent+'</b>, <br>',
+    'Switch Type: <b>'+typeO+'</b>, <br>'
+    +'Real Time Current (Avg.): <b>'+swCurrent+'</b>, <br>',
   showCloseButton: true,
   focusConfirm: false,
   })
