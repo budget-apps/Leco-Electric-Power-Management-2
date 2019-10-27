@@ -342,7 +342,7 @@ class AdminNavbarLinks extends React.Component {
 
                             className={classes.dropdownItem}
                         >
-                            <Link to="/faultgenerator"  style={{"color":"black"}}>Fault Generator</Link>
+                            <Link to="/faultgenerater"  style={{"color":"black"}}>Fault Generator</Link>
                         </MenuItem>
                         <MenuItem
 

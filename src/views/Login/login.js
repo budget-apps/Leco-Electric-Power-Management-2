@@ -53,11 +53,18 @@ password:''
           })
         }
     render(){
-      
+
         return(
+            <div>
+            <div>
+
+            </div>
             <Container style={{padding: 10}} component="main" maxWidth="xs">
+
             <CssBaseline />
+
             <div >
+                <img style={{width:'100%',height:'150px'}} src={require('./logo.jpeg')} className="center" />
         <Avatar >
                 <LockOutlinedIcon />
               </Avatar>
@@ -103,22 +110,11 @@ password:''
                 >
                   SignIn
                 </Button>
-                <Grid container>
-                  <Grid item xs>
-                    <Link href="#" variant="body2">
-                      Forgot password?
-                    </Link>
-                  </Grid>
-                  <Grid item>
-                    <Link href="#" variant="body2">
-                      {"Don't have an account? Sign Up"}
-                    </Link>
-                  </Grid>
-                </Grid>
               </form>
             </div>
            
           </Container>
+            </div>
         )
     }
 }
