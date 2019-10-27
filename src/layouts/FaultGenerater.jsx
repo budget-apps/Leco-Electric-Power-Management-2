@@ -34,6 +34,7 @@ import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboar
 
 import image from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/reactlogo.png";
+import {firebase} from "../firebase";
 
 let ps;
 
@@ -89,6 +90,12 @@ class Dashboard extends React.Component {
         }
     };
     componentDidMount() {
+        firebase.auth.onAuthStateChanged(authUser => {
+            authUser
+                ? this.setState(() => ({ authUser }))
+                : this.props.history.push('/');
+        });
+
         if (navigator.platform.indexOf("Win") > -1) {
             ps = new PerfectScrollbar(this.mainPanel.current);
         }

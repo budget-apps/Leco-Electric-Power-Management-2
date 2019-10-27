@@ -53,7 +53,7 @@ class FaultGenerator extends React.Component {
   }
 
   componentDidMount(){
-    this.onChangeDB()
+  //  this.onChangeDB()
   }
 
   /*Change map details on change of the drop down*/
@@ -95,18 +95,22 @@ class FaultGenerator extends React.Component {
 
   onChangeDB(){
     try{
-      firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').child('switchID').on('value', (snapshot)=> {
+
+      firebase.database().ref().child(this.state.branch+"/faultCurrentRequest/switchID").on('value', (snapshot)=> {
         // Do whatever
-        let switchids = snapshot.val().split(',')
-        console.log(switchids)
-        this.setState({
-          switchidss: switchids
-        })
+        var switchids=""
+        if(snapshot.val().includes(',')) {
+           switchids = snapshot.val().split(',')
+        }
+        else{
+          switchids = snapshot.val()
+        }
+         console.log(switchids)
         if(switchids!==''){
           Swal.fire({
             type: 'info',
             title: 'RequestFaultLocation',
-            text: 'Requesting switches are '+switchids.toString()+".",
+            text: 'Requesting switches are '+".",
             input: 'text',
             inputPlaceholder: 'Enter swithces',
             showCancelButton: true,
@@ -116,7 +120,7 @@ class FaultGenerator extends React.Component {
               // }
               // else{
               firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').child('switchIDValid').set(value)
-                
+
                 // Swal.fire({
                 //   type: 'success',
                 //   text: 'Fault location sent.'
@@ -127,12 +131,14 @@ class FaultGenerator extends React.Component {
         }
       })
     }catch(e){
-      console.log("Error couaght")
+      console.log(e.err)
     }
   }
 
   render() {
-    
+    if((this.state.branch.length>0)) {
+      this.onChangeDB()
+    }
     const { classes } = this.props;
     // const table_data= this.state===null?"":this.state.physicalConMatrix;
     //console.log("table data"+(this.state===null?"":this.state.electricConMatrix));
