@@ -6,7 +6,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
     let link_arr = []
 
     for(let i=0;i<se_list.length;i++){
-      let color = "black"
+      let color = "grey"
       if(faultyPathSections.includes(i)){
         color = "red"
       }
@@ -51,10 +51,14 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
         }
       }
       nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
-
+      let link_color ="#6fff6f"
       let section_list = getSectionOfSwitch(switchtable, sw_list[i])
       for(let j=0;j<section_list.length;j++){
-          link_arr.push({source: id, target: section_list[j]})
+        if(faultyPathSwithces.includes(sw_list.indexOf(sw_list[i]))){
+          link_color = "red"
+        }
+        link_arr.push({source: id, target: section_list[j], color: link_color})
+          
       }
     }
 
