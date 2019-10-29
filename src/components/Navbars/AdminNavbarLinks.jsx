@@ -137,7 +137,7 @@ class AdminNavbarLinks extends React.Component {
         .database()
         .ref()
         .child("Negambo")
-        .child("minOut:")
+        .child("minOut")
         .set(min);
 
       this.setState({

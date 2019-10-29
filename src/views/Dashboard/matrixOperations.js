@@ -233,17 +233,20 @@ const getSwitchesFromSection = (section_no, switch_list, switch_table) => {
 
 const getSwitchesCurrent = (curretTable) => {
   let d = new Date();
-  //let hrs = d.getHours(); // => 9
+  let hrs = d.getHours()*60; // => 9
   let mnts = d.getMinutes(); // =>  30
-  //let scnds = d.getSeconds(); // => 51
-  let index = mnts-(mnts%15)
+  let scnds = d.getSeconds()/60; // => 51
+
+  let timeNowMnts = hrs+mnts+scnds
+  console.log(timeNowMnts)
+  let index = timeNowMnts-(timeNowMnts%15)
   let arr = []
   console.log(index)
-  for(let i=0;i<curretTable.length;i++){
+  for(let i=0;i<curretTable.length-1;i++){
     console.log(curretTable[i][index].split(','))
     let vals = curretTable[i][index].split(',')
     let avg = (parseFloat(vals[0])+parseFloat(vals[1])+parseFloat(vals[2]))/3
-    arr.push((Math.round(avg*100)/100))
+    arr.push([curretTable[i]['switch'] ,(Math.round(avg*100)/100)])
   }Swal.fire({
     type: "error",
     title: "Current",

@@ -131,6 +131,51 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
     return allPaths
 }
 
+const optimalPath = (allPaths, faultySection, faultPathSwitches, currentTable, switch_list, minOut) => {
+  console.log(faultPathSwitches)
+  console.log(faultySection)
+  console.log(minOut)
+  for(let i=0;i<allPaths.length;i++){
+    console.log(allPaths[i][0][allPaths[i][0].length-1][0])
+    let tempNode = switch_list[allPaths[i][0][allPaths[i][0].length-1][0]]
+    let tempCrnt = 0
+    for(let j=0;j<currentTable.length;j++){
+      if(currentTable[j][0]===tempNode){
+        tempCrnt = currentTable[j][1]
+        console.log(tempCrnt)
+        break
+      }
+    }
+
+    let maxOut = minOut - tempCrnt 
+    console.log(maxOut)
+    faultPathSwitches = [...new Set(faultPathSwitches)]
+    console.log(faultPathSwitches)
+    let faultEnd = switch_list.indexOf(faultySection[0][1])
+    console.log(faultEnd)
+    let endInFp = faultPathSwitches.indexOf(faultEnd)
+    for(let j=faultPathSwitches.length-1;j>=endInFp;j++){
+      let tmp = faultPathSwitches[j]
+      console.log(tmp)
+      let tmpCrnt = 0
+      for(let k=0;k<currentTable.length;k++){
+        if(currentTable[k][0]===tmp){
+          tmpCrnt = currentTable[k][1]
+          console.log(tmpCrnt)
+          break
+        }
+      }
+      if(tmpCrnt<=maxOut){
+        continue
+      }else{
+        console.log(tmp)
+        console.log('Cannot reconfigure')
+        break
+      }
+    }
+  }
+}
+
 const sendReconfigurePathsToDB = (switch_list, logIndex, branch, faultSwitch, faultyFeeder, faultyPath, faultySection, time, isFaultRepaired, reconfiguredPaths) => {
     console.log("Sending recnfigured paths to DB...")
     
@@ -141,11 +186,12 @@ const sendReconfigurePathsToDB = (switch_list, logIndex, branch, faultSwitch, fa
         .then((snapshot, key) => {
         const val = snapshot.val();
         let prevFaultPath = JSON.parse(val[logIndex]['faultyPath'])
+        let isRep = val[logIndex]['isFaultRepaired']
         let faultSwitchID = switch_list.indexOf(faultSwitch)
         let sameFault = false
         for(let i=0;i<prevFaultPath.length;i++){
           console.log(prevFaultPath[i][0]+", "+faultSwitchID)
-          if(prevFaultPath[i][0]===faultSwitchID){
+          if(prevFaultPath[i][0]===faultSwitchID && !isRep){
             sameFault = true
             break
           }
@@ -177,4 +223,4 @@ const sendReconfigurePathsToDB = (switch_list, logIndex, branch, faultSwitch, fa
       }
 }
 
-export {findRecofigurePaths, sendReconfigurePathsToDB}
+export {findRecofigurePaths, sendReconfigurePathsToDB, optimalPath}

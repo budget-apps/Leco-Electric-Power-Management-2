@@ -42,7 +42,6 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       if(prevReconfigure.length!==0){
         for(let j=0;j<prevReconfigure.length;j++){
           for(let k=0;k<prevReconfigure[j].length;k++){
-            console.log(sw_list[prevReconfigure[j][k][0]]+", "+sw_list[i])
             if(sw_list[prevReconfigure[j][k][0]]===sw_list[i]){
               color = "red"
               break
@@ -172,11 +171,16 @@ const onClickNode = (nodeId, noopensw_list, feeding_list, crrntTable,sw_list) =>
   
   let typef = getSwitchType(nodeId.split('\n')[0], noopensw_list, feeding_list)
   console.log(typef)
-  let swCurrent = 0
-  if(typef!=='Feeder'){
-    swCurrent = crrntTable[sw_list.indexOf(nodeId.split('\n')[0])]
-  }else{
-    swCurrent = 300
+  let swCurrent = ""
+  for(let i=0;i<crrntTable.length;i++){
+    if(crrntTable[i][0]===nodeId.split('\n')[0]){
+      swCurrent = crrntTable[i][1]
+      break
+    }
+  }
+  
+  if(swCurrent===""){
+    swCurrent = "Not Available"
   }
 
   console.log(swCurrent)
