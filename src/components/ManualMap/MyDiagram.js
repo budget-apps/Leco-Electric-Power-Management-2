@@ -5,7 +5,8 @@ import { GojsDiagram, ModelChangeEventType } from "react-gojs";
 import DiagramButtons from "./DiagramButtons";
 import "./MyDiagram.css";
 import { getRandomColor } from "../Helpers/ColorHelper";
-import SelectionDetails from "./SelectionDetails";
+import { getSwitchType} from "../../views/Dashboard/matrixOperations"
+import Swal from "sweetalert2";
 
 class MyDiagram extends React.Component {
   nodeId = 0;
@@ -42,11 +43,7 @@ class MyDiagram extends React.Component {
         onUpdateColor={this.updateColorHandler}
         onAddNode={this.addNode}
       />,
-      <SelectionDetails
-        key="selectionDetails"
-        selectedNodes={this.state.selectedNodeKeys}
-
-      />,
+      
       <GojsDiagram
         key="gojsDiagram"
         diagramId="myDiagramDiv"
@@ -210,7 +207,7 @@ class MyDiagram extends React.Component {
       "Auto",
       {
         selectionChanged: node =>
-          this.nodeSelectionHandler(node.key, node.isSelected)
+          this.nodeSelectionHandler(node.key, node.isSelected, this.props.no_list, this.props.feed_list, this.props.crnt_tbl, this.props.sw_list)
       },
       $(
         go.Shape,
@@ -326,12 +323,41 @@ class MyDiagram extends React.Component {
     });
   }
 
-  nodeSelectionHandler(nodeKey, isSelected) {
+  nodeSelectionHandler(nodeKey, isSelected, noopensw_list, feeding_list, crrntTable,sw_list) {
+
     if (isSelected) {
       this.setState({
         ...this.state,
         selectedNodeKeys: [...this.state.selectedNodeKeys, nodeKey]
       });
+      let typef = getSwitchType(nodeKey, noopensw_list, feeding_list)
+      console.log(typef)
+      console.log(nodeKey)
+      let swCurrent = ""
+      for(let i=0;i<crrntTable.length;i++){
+        console.log(crrntTable[i][0]+","+nodeKey)
+        if(crrntTable[i][0]===nodeKey){
+          swCurrent = crrntTable[i][1]
+          break
+        }
+      }
+      
+      if(swCurrent===""){
+        swCurrent = "Not Available"
+      }
+
+      console.log(swCurrent)
+      let typeO = typef==="Close"?"Sectionalizing Switch":typef==="Open"?"Tie Switch":"Feeding Switch"
+      console.log(typeO)
+      Swal.fire({
+          type: 'info',
+          title: nodeKey,
+          html:
+        'Switch Type: <b>'+typeO+'</b>, <br>'
+        +'Real Time Current (Avg.): <b>'+swCurrent+'</b>, <br>',
+      showCloseButton: true,
+      focusConfirm: false,
+      })
     } else {
       const nodeIndexToRemove = this.state.selectedNodeKeys.findIndex(
         key => key === nodeKey

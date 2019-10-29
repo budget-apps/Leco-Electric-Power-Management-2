@@ -136,7 +136,7 @@ class FaultGenerator extends React.Component {
             Swal.fire({
               type: "info",
               title: "RequestFaultLocation",
-              text: "Requesting switches are " + ".",
+              text: "Requesting switches are " + switchids+ ".",
               input: "text",
               inputPlaceholder: "Enter swithces",
               showCancelButton: true,

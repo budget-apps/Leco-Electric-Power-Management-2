@@ -45,7 +45,7 @@ import {
   onRightClickNode,
   onRightClickLink
 } from "./drawMap";
-import { findRecofigurePaths, sendReconfigurePathsToDB } from "./reconfigure";
+import { findRecofigurePaths, sendReconfigurePathsToDB, optimalPath } from "./reconfigure";
 import { InputLabel } from "@material-ui/core";
 //import Tree from 'react-d3-tree';
 var firebase = require("firebase");
@@ -123,6 +123,7 @@ class Dashboard extends React.Component {
 
         .then(snapshot => {
           const val = snapshot.val();
+          console.log(val.minOut)
           this.setState({
             logIndex: val.logIndex,
             switchtable: val.switchtable,
@@ -130,7 +131,8 @@ class Dashboard extends React.Component {
             feedpoints: val.feedpoints,
             faultSwitch: val.faultSwitch,
             currentTable: val.currentTable,
-            prevReconfigure: val.reconfigure
+            prevReconfigure: val.reconfigure,
+            minOut: val.minOut
           });
 
           this.setState({
@@ -342,6 +344,8 @@ class Dashboard extends React.Component {
           this.state.section_list
         )
       });
+      console.log(this.state.minOut)
+      optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
 
       sendReconfigurePathsToDB(
         this.state.switch_list,
@@ -605,7 +609,7 @@ class Dashboard extends React.Component {
                         </div>
                       ) : (
                         <div>
-                          <MyDiagram></MyDiagram>
+                          <MyDiagram no_list={this.state.noopensw_list} feed_list={this.state.feeding_list} crnt_tbl={this.state.currentSwVal} sw_list={this.state.switch_list}></MyDiagram>
                         </div>
                       )}
                     </div>
