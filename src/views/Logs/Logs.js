@@ -13,7 +13,7 @@ import CardBody from "components/Card/CardBody.jsx";
 import { Graph } from 'react-d3-graph';
 import Swal from "sweetalert2";
 import SelectBranch from "components/SelectBranch/selectBranch";
-import { getSwitches, getSections, getNormallyOpenSwitches, resetMapState } from "../Dashboard/matrixOperations";
+import { getSwitches, getSections, getNormallyOpenSwitches, resetMapState, reconfigureMapState } from "../Dashboard/matrixOperations";
 import {drawPath} from "../Dashboard/drawMap"
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -119,7 +119,7 @@ class PhysicalConnectivity extends React.Component {
         opindex = <div>No Optimal path </div>
       }
       details.push(opindex)
-      details.push(<button onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, faultySection[0], isFaultRepaired)}> Reconfigure </button>)
+      details.push(<button onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </button>)
       let row = [time, details, <button onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>Repaired</button>]
       tableData.push(row)
       
@@ -129,12 +129,25 @@ class PhysicalConnectivity extends React.Component {
       tableData: tableData
     })
   }
-  handleReconfigure = (optimalPath, reconfiguredPaths, faultySection, isFaultRepaired) => {
+  handleReconfigure = (optimalPath, reconfiguredPaths, faultySection, isFaultRepaired, switch_list, faultSwitch, logIndex) => {
     let path = reconfiguredPaths[optimalPath[0]]
     let upto = optimalPath[2]
+    let affected = []
+    let normal = []
     console.log(isFaultRepaired)
-    if(!isFaultRepaired && faultySection[1]===upto){
+    if(!isFaultRepaired && faultySection[1]===upto && !faultySection.includes(faultSwitch)){
+      console.log(path[0][0][0])
+      affected.push(faultySection[0], faultySection[1])
+      normal.push(faultSwitch, switch_list[path[0][0][0]])
+      console.log(affected)
+      reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
+    }else if(!isFaultRepaired && faultySection[1]==upto && faultySection.includes(faultSwitch)){
+
       console.log(path[0][0])
+      affected.push(faultySection[0], faultySection[1])
+      normal.push(switch_list[path[0][0][0]])
+      console.log(affected)
+      reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
     }
 
   }

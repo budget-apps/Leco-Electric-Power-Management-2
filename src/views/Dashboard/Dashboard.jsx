@@ -131,7 +131,8 @@ class Dashboard extends React.Component {
             faultSwitch: val.faultSwitch,
             currentTable: val.currentTable,
             prevReconfigure: val.reconfigure,
-            minOut: val.minOut
+            minOut: val.minOut,
+            prevMapState: val.mapState
           });
 
           this.setState({
@@ -180,11 +181,13 @@ class Dashboard extends React.Component {
           this.setState({
             currentSwVal: getSwitchesCurrent(this.state.currentTable)
           });
-
+          console.log(this.state.prevMapState)
           //Map State
           this.setState({
-            mapState: generateMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch,this.state.faultSwitch, this.state.faultLoc, this.state.allFaultPaths),
+            mapState: generateMapState(this.state.mapState),
           })
+
+          
 
           //Draw graph
           let graphData = drawGraph(

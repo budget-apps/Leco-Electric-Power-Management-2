@@ -260,35 +260,44 @@ const getSwitchCurrent = (switchid, currentTable) => {
   return -1
 }
 
-const generateMapState = (switchlist,nolist,branch,faultSwitch, faultyLoc, prevReconfigure) => {
-  let mapState = []
-  console.log(faultyLoc)
-  for(let i=0;i<switchlist.length;i++){
-    if(nolist.includes(switchlist[i])){
-      mapState[switchlist[i]] = 0
-    }
-    else if(faultyLoc.includes(switchlist[i])){
-      mapState[switchlist[i]] = 0
-    }else if(faultSwitch===switchlist[i]){
-      mapState[switchlist[i]] = 0
-    }else{
-      mapState[switchlist[i]] = 1
-    }
+// const generateMapState = (switchlist,nolist,branch,faultSwitch, faultyLoc, prevReconfigure) => {
+//   let mapState = []
+//   console.log(faultyLoc)
+//   for(let i=0;i<switchlist.length;i++){
+//     if(nolist.includes(switchlist[i])){
+//       mapState[switchlist[i]] = 0
+//     }
+//     else if(faultyLoc.includes(switchlist[i])){
+//       mapState[switchlist[i]] = 0
+//     }else if(faultSwitch===switchlist[i]){
+//       mapState[switchlist[i]] = 0
+//     }else{
+//       mapState[switchlist[i]] = 1
+//     }
 
-    if(prevReconfigure.length!==0){
-      for(let j=0;j<prevReconfigure.length;j++){
-        for(let k=0;k<prevReconfigure[j].length;k++){
-          if(switchlist[prevReconfigure[j][k][0]]===switchlist[i]){
-            mapState[switchlist[i]] = 0
-            break
-          }
-        }
-      }
-    }
+//     if(prevReconfigure.length!==0){
+//       for(let j=0;j<prevReconfigure.length;j++){
+//         for(let k=0;k<prevReconfigure[j].length;k++){
+//           if(switchlist[prevReconfigure[j][k][0]]===switchlist[i]){
+//             mapState[switchlist[i]] = 0
+//             break
+//           }
+//         }
+//       }
+//     }
+    
+//   }
+//   return mapState
+// }
+
+const generateMapState = (mapState, switch_list) => {
+  let mapStated = []
+
+  for(let i=0;i<mapState.length;i++){
+    
     
   }
-  firebase.database().ref().child(branch).child('mapState').set(mapState)
-  return mapState
+  return mapStated
 }
 
 const resetMapState = (switchlist,nolist,branch) => {
@@ -305,8 +314,26 @@ const resetMapState = (switchlist,nolist,branch) => {
   return mapState
 }
 
-const reconfigureMapState = (affectedlist, switch_list) => {
-  
+const reconfigureMapState = (affectedlist, normal, switchlist,nolist,branch, logIndex) => {
+  let mapState = []
+  for(let i=0;i<switchlist.length;i++){
+    if(nolist.includes(switchlist[i])){
+      mapState[switchlist[i]] = 0
+    }
+    else if(affectedlist.includes(switchlist[i])){
+      mapState[switchlist[i]] = 0
+    }
+    else if(normal.includes(switchlist[i])){
+      mapState[switchlist[i]] = 1
+    }
+    else{
+      mapState[switchlist[i]] = 1
+    }
+    
+  }
+  firebase.database().ref().child(branch).child('mapState').set(mapState)
+  firebase.database().ref().child(branch).child('reconfigure').child(logIndex).child('isReconfigured').set(true)
+  return mapState
 }
 
 const processPrevReconfigure = ( prevReconfigure ) => {
@@ -325,4 +352,4 @@ const processPrevReconfigure = ( prevReconfigure ) => {
 export { getSwitches, getSections, getSectionOfSwitch, getNormallyOpenSwitches, getSwitchType, getFeedingPoints, generatePhysicalConMatrix };
 export { generateElectricConnectivityMatrix, generateFeedingMatrix, rowOperation, colOperation, findFeederInRow, findFeederInCol }
 export { getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix, getSwitchesFromSection, getSwitchesCurrent, generateMapState }
-export { processPrevReconfigure, resetMapState, getSwitchCurrent }
+export { processPrevReconfigure, resetMapState, getSwitchCurrent, reconfigureMapState }
