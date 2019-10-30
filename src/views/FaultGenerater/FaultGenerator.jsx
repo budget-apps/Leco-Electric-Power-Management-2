@@ -48,7 +48,7 @@ const styles = {
   }
 };
 var switchId;
-var value = true;
+//var value = true;
 class FaultGenerator extends React.Component {
   constructor(props) {
     super(props);

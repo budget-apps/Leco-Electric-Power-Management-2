@@ -132,7 +132,8 @@ class Dashboard extends React.Component {
             currentTable: val.currentTable,
             prevReconfigure: val.reconfigure,
             minOut: val.minOut,
-            prevMapState: val.mapState
+            prevMapState: val.mapState,
+            isGenerated: val.isGenerated
           });
 
           this.setState({
@@ -184,7 +185,7 @@ class Dashboard extends React.Component {
           console.log(this.state.prevMapState)
           //Map State
           this.setState({
-            mapState: generateMapState(this.state.mapState),
+            mapState: generateMapState(this.state.prevMapState, this.state.switch_list, this.state.isGenerated, this.state.noopensw_list,this.state.branch,this.state.faultSwitch, this.state.faultLoc, this.state.prevReconfigure),
           })
 
           

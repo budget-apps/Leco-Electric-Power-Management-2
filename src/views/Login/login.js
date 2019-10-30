@@ -73,7 +73,7 @@ password:''
 
             <div style={{display: 'flex', alignItems:'center', height: '100vh'}}>
 
-              <form  noValidate onSubmit={this.onSubmit} style={{backgroundColor:'rgba(247, 247, 247, 0.8)',borderRadius: "25px"}} >
+              <form  noValidate onSubmit={this.onSubmit} style={{backgroundColor:'rgba(247, 247, 247, 0.8)',borderRadius: "25px", padding: "20px"}} >
                   <div style={{ alignItems:'center'}}>
                   <Avatar >
                       <LockOutlinedIcon />

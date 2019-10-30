@@ -1,7 +1,7 @@
 {
-  "name": "material-dashboard-react",
+  "name": "electric-fault-management-system",
   "version": "1.7.0",
-  "description": "Material Dashboard React. Coded by Creative Tim",
+  "description": "Coded by Budget Apps",
   "private": false,
   "main": "dist/index.js",
   "dependencies": {

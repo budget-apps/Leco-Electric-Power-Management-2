@@ -135,20 +135,72 @@ class PhysicalConnectivity extends React.Component {
     let affected = []
     let normal = []
     console.log(isFaultRepaired)
-    if(!isFaultRepaired && faultySection[1]===upto && !faultySection.includes(faultSwitch)){
-      console.log(path[0][0][0])
-      affected.push(faultySection[0], faultySection[1])
-      normal.push(faultSwitch, switch_list[path[0][0][0]])
-      console.log(affected)
-      reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
-    }else if(!isFaultRepaired && faultySection[1]==upto && faultySection.includes(faultSwitch)){
-
-      console.log(path[0][0])
-      affected.push(faultySection[0], faultySection[1])
-      normal.push(switch_list[path[0][0][0]])
-      console.log(affected)
-      reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Reconfigure!'
+    }).then((result) => {
+      if (result['dismiss']!=='cancel') {
+        if(!isFaultRepaired && faultySection[1]===upto && !faultySection.includes(faultSwitch)){
+          console.log(path[0][0][0])
+          affected.push(faultySection[0], faultySection[1])
+          normal.push(faultSwitch, switch_list[path[0][0][0]])
+          console.log(affected)
+          reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
+          Swal.fire({
+            type: 'success',
+            
+          })
+        }else if(!isFaultRepaired && faultySection[1]===upto && faultySection.includes(faultSwitch)){
+    
+          console.log(path[0][0])
+          affected.push(faultySection[0], faultySection[1])
+          normal.push(switch_list[path[0][0][0]])
+          console.log(affected)
+          reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
+          Swal.fire({
+            type: 'success',
+            
+          })
+        }
+        else if(!isFaultRepaired && faultySection[1]!==upto && !faultySection.includes(faultSwitch)){
+    
+          console.log(path[0][0])
+          affected.push(faultySection[0], faultySection[1])
+          normal.push(switch_list[path[0][0][0]])
+          console.log(affected)
+          reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
+          Swal.fire({
+            type: 'success',
+            
+          })
+        }
+        else if(!isFaultRepaired && faultySection[1]!==upto && faultySection.includes(faultSwitch)){
+    
+          console.log(path[0][0])
+          affected.push(faultySection[0], faultySection[1])
+          normal.push(switch_list[path[0][0][0]])
+          console.log(affected)
+          reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
+          Swal.fire({
+            type: 'success',
+            
+          })
+        }
+        else{
+          Swal.fire({
+            type: 'error',
+            title: 'Unsuccessfull!!!',
+            text: 'Cannot reconfigured!',
+          })
+        }
+      }
+    })
+    
 
   }
 
@@ -166,6 +218,7 @@ class PhysicalConnectivity extends React.Component {
       if(!isFaultRepaired){
         if (result['dismiss']!=='cancel') {
           firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
+          firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').child("switchID").set("")
           firebase.database().ref().child(this.state.branch).child('reconfigure').child(index).child('isFaultRepaired').set(true)
           resetMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch)
           console.log("Updating "+index+" record...")
@@ -309,9 +362,6 @@ class PhysicalConnectivity extends React.Component {
         <DialogActions>
           <Button onClick={this.handleCloseOp} color="danger">
             Close
-          </Button>
-          <Button color="success">
-            Reconfigure
           </Button>
         </DialogActions>
        </Dialog>

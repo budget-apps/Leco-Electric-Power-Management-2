@@ -290,14 +290,44 @@ const getSwitchCurrent = (switchid, currentTable) => {
 //   return mapState
 // }
 
-const generateMapState = (mapState, switch_list) => {
-  let mapStated = []
-
-  for(let i=0;i<mapState.length;i++){
-    
-    
+const generateMapState = (mapStated, switchlist, isGenerated, nolist,branch,faultSwitch, faultyLoc, prevReconfigure) => {
+  let mapState = []
+  if(isGenerated){
+    for(let i=0;i<switchlist.length;i++){
+      mapState[switchlist[i]]= mapStated[switchlist[i]]
+      
+    }
+    console.log(mapState)
+    return mapState
+  }else{
+    for(let i=0;i<switchlist.length;i++){
+      if(nolist.includes(switchlist[i])){
+        mapState[switchlist[i]] = 0
+      }
+      else if(faultyLoc.includes(switchlist[i])){
+        mapState[switchlist[i]] = 0
+      }else if(faultSwitch===switchlist[i]){
+        mapState[switchlist[i]] = 0
+      }else{
+        mapState[switchlist[i]] = 1
+      }
+  
+      if(prevReconfigure.length!==0){
+        for(let j=0;j<prevReconfigure.length;j++){
+          for(let k=0;k<prevReconfigure[j].length;k++){
+            if(switchlist[prevReconfigure[j][k][0]]===switchlist[i]){
+              mapState[switchlist[i]] = 0
+              break
+            }
+          }
+        }
+      }
+      
+    }
+    firebase.database().ref().child(branch).child('mapState').set(mapState)
+    return mapState
   }
-  return mapStated
+  
 }
 
 const resetMapState = (switchlist,nolist,branch) => {
@@ -317,16 +347,14 @@ const resetMapState = (switchlist,nolist,branch) => {
 const reconfigureMapState = (affectedlist, normal, switchlist,nolist,branch, logIndex) => {
   let mapState = []
   for(let i=0;i<switchlist.length;i++){
+    mapState[switchlist[i]] = 1
     if(nolist.includes(switchlist[i])){
       mapState[switchlist[i]] = 0
     }
-    else if(affectedlist.includes(switchlist[i])){
+    if(affectedlist.includes(switchlist[i])){
       mapState[switchlist[i]] = 0
     }
-    else if(normal.includes(switchlist[i])){
-      mapState[switchlist[i]] = 1
-    }
-    else{
+    if(normal.includes(switchlist[i])){
       mapState[switchlist[i]] = 1
     }
     
