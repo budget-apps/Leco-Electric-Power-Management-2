@@ -10,6 +10,16 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {auth} from '../../firebase'
 import swal from 'sweetalert'
+import Background from './login1.jpg'
+
+var sectionStyle = {
+    width: "100%",
+    height: "800px",
+    backgroundImage: "url(" +Background+ ")",
+    backgroundPosition:"center",
+    backgroundRepeat:"no-repeat",
+    backgroundSize:"cover"
+};
 
 class Login extends React.Component{
     constructor(){
@@ -53,7 +63,7 @@ password:''
     render(){
 
         return(
-            <div>
+            <div style={sectionStyle}>
             <div>
 
             </div>
@@ -61,15 +71,15 @@ password:''
 
             <CssBaseline />
 
-            <div >
-                <img alt="img" style={{width:'100%',height:'150px'}} src={require('./logo.jpeg')} className="center" />
-        <Avatar >
-                <LockOutlinedIcon />
-              </Avatar>
-              <Typography component="h1" variant="h5">
-                Sign in
-              </Typography>
-              <form  noValidate onSubmit={this.onSubmit} >
+            <div style={{display: 'flex', alignItems:'center', height: '100vh'}}>
+
+              <form  noValidate onSubmit={this.onSubmit}  >
+                  <Avatar >
+                      <LockOutlinedIcon />
+                  </Avatar>
+                  <Typography component="h1" variant="h5">
+                      Sign in
+                  </Typography>
                 <TextField
                   variant="outlined"
                   margin="normal"

@@ -107,12 +107,12 @@ class SwitchTable extends React.Component {
     })
   }
 
-  generateSwitchTable(){
+  generateSwitchTable(swit){
     let new_swithch_table = []
     let sw_list = this.state.switch_list
     let feed_list = this.state.feeding_list
     let no_open_list = this.state.noopensw_list
-    let action = this.state.filterAction
+    let action = swit
     console.log("Action"+action)
     if(action === "Feeders"){
       for(let i=0;i<feed_list.length;i++){
@@ -158,7 +158,7 @@ class SwitchTable extends React.Component {
       filterAction: event.target.value
     })
     try{
-      this.generateSwitchTable()
+      this.generateSwitchTable(event.target.value)
     }catch(err){
       console.log(err)
       Swal.fire({

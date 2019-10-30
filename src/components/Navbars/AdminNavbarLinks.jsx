@@ -192,47 +192,47 @@ class AdminNavbarLinks extends React.Component {
               </p>
             </Hidden>
           </Button>
-          <Poppers
-            open={openNotifcation}
-            anchorEl={this.anchorNotification}
-            transition
-            disablePortal
-            className={
-              classNames({ [classes.popperClose]: !openNotifcation }) +
-              " " +
-              classes.popperNav
-            }
-          >
-            {({ TransitionProps, placement }) => (
-              <Grow
-                {...TransitionProps}
-                id="notification-menu-list-grow"
-                style={{
-                  transformOrigin:
-                    placement === "bottom" ? "center top" : "center bottom"
-                }}
-              >
-                <Paper>
-                  <ClickAwayListener onClickAway={this.handleCloseNotification}>
-                    <MenuList role="menu">
-                      <MenuItem
-                        onClick={this.handleCloseNotification}
-                        className={classes.dropdownItem}
-                      >
-                        Mike John responded to your email
-                      </MenuItem>
-                      <MenuItem
-                        onClick={this.handleCloseNotification}
-                        className={classes.dropdownItem}
-                      >
-                        You have 5 new tasks
-                      </MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
-            )}
-          </Poppers>
+          {/*<Poppers*/}
+          {/*  open={openNotifcation}*/}
+          {/*  anchorEl={this.anchorNotification}*/}
+          {/*  transition*/}
+          {/*  disablePortal*/}
+          {/*  className={*/}
+          {/*    classNames({ [classes.popperClose]: !openNotifcation }) +*/}
+          {/*    " " +*/}
+          {/*    classes.popperNav*/}
+          {/*  }*/}
+          {/*>*/}
+          {/*  {({ TransitionProps, placement }) => (*/}
+          {/*    <Grow*/}
+          {/*      {...TransitionProps}*/}
+          {/*      id="notification-menu-list-grow"*/}
+          {/*      style={{*/}
+          {/*        transformOrigin:*/}
+          {/*          placement === "bottom" ? "center top" : "center bottom"*/}
+          {/*      }}*/}
+          {/*    >*/}
+          {/*      <Paper>*/}
+          {/*        <ClickAwayListener onClickAway={this.handleCloseNotification}>*/}
+          {/*          /!*<MenuList role="menu">*!/*/}
+          {/*          /!*  <MenuItem*!/*/}
+          {/*          /!*    onClick={this.handleCloseNotification}*!/*/}
+          {/*          /!*    className={classes.dropdownItem}*!/*/}
+          {/*          /!*  >*!/*/}
+          {/*          /!*    Mike John responded to your email*!/*/}
+          {/*          /!*  </MenuItem>*!/*/}
+          {/*          /!*  <MenuItem*!/*/}
+          {/*          /!*    onClick={this.handleCloseNotification}*!/*/}
+          {/*          /!*    className={classes.dropdownItem}*!/*/}
+          {/*          /!*  >*!/*/}
+          {/*          /!*    You have 5 new tasks*!/*/}
+          {/*          /!*  </MenuItem>*!/*/}
+          {/*          /!*</MenuList>*!/*/}
+          {/*        </ClickAwayListener>*/}
+          {/*      </Paper>*/}
+          {/*    </Grow>*/}
+          {/*  )}*/}
+          {/*</Poppers>*/}
         </div>
         <div className={classes.manager}>
           <Button
@@ -355,16 +355,10 @@ class AdminNavbarLinks extends React.Component {
                             onClick={this.handleShowWeight}
                             className={classes.dropdownItem}
                         >
-                            Manage Weighig Factors
+                            Manage Weight Factors
                         </MenuItem>
 
 
-                      <MenuItem
-                        onClick={this.handleShowWeight}
-                        className={classes.dropdownItem}
-                      >
-                        Manage Weighig Factors
-                      </MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>

@@ -48,6 +48,7 @@ const styles = {
   }
 };
 var switchId;
+var onChange = false;
 class FaultGenerator extends React.Component {
   constructor(props) {
     super(props);
@@ -126,11 +127,8 @@ class FaultGenerator extends React.Component {
         .on("value", snapshot => {
           // Do whatever
           var switchids = "";
-          if (snapshot.val().includes(",")) {
-            switchids = snapshot.val().split(",");
-          } else {
-            switchids = snapshot.val();
-          }
+          switchids = snapshot.val();
+
           console.log(switchids);
           if (switchids !== "") {
             Swal.fire({
@@ -168,9 +166,11 @@ class FaultGenerator extends React.Component {
   }
 
   render() {
-    if (this.state.branch.length > 0) {
-      this.onChangeDB();
-    }
+      if(this.state.branch.length>0) {
+          this.onChangeDB();
+      }
+
+
     const { classes } = this.props;
     // const table_data= this.state===null?"":this.state.physicalConMatrix;
     //console.log("table data"+(this.state===null?"":this.state.electricConMatrix));

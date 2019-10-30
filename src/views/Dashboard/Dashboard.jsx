@@ -120,7 +120,6 @@ class Dashboard extends React.Component {
         .ref()
         .child(branch)
         .once("value")
-
         .then(snapshot => {
           const val = snapshot.val();
           console.log(val.minOut)
