@@ -48,7 +48,7 @@ const styles = {
   }
 };
 var switchId;
-var onChange = false;
+var value = true;
 class FaultGenerator extends React.Component {
   constructor(props) {
     super(props);
@@ -88,6 +88,7 @@ class FaultGenerator extends React.Component {
   };
 
   sendFault = () => {
+
     let branch = this.state.branch;
     let switchid = switchId;
 
@@ -110,15 +111,12 @@ class FaultGenerator extends React.Component {
         text: "Please select a branch"
       });
     }
-    this.setState({
-      switchId: ""
-    });
   };
   handleChange = e => {
     switchId = e.target.value;
   };
 
-  onChangeDB() {
+  onChangeDB(value) {
     try {
       firebase
         .database()

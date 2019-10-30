@@ -48,6 +48,12 @@ const styles = {
 
 
 class SwitchTable extends React.Component {
+  constructor(props){
+    super(props)
+    this.state={
+      branch:""
+    }
+  }
   
   getSwitches(switchtable){
     let switch_list = []
@@ -154,18 +160,37 @@ class SwitchTable extends React.Component {
 
 
   filterSwitchEventHandler=(event)=>{
-    this.setState({
-      filterAction: event.target.value
-    })
-    try{
-      this.generateSwitchTable(event.target.value)
-    }catch(err){
-      console.log(err)
+
+    if(!this.state.branch.length>0){
       Swal.fire({
         type: 'error',
         title: 'Oops...',
         text: 'Please select a branch!',
-    })
+      })
+      return
+    }
+
+    if(this.state.switch_list!=null) {
+      this.setState({
+        filterAction: event.target.value
+      })
+      try {
+        this.generateSwitchTable(event.target.value)
+      } catch (err) {
+        console.log(err)
+        Swal.fire({
+          type: "info",
+          title: 'Oops...',
+          text: 'Please select a branch!',
+        })
+      }
+    }
+    else{
+      Swal.fire({
+        type: "error",
+        title: "Please Wait",
+        text: "Please wait a while after selecting branch"
+      });
     }
     
 
