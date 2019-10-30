@@ -119,6 +119,7 @@ class PhysicalConnectivity extends React.Component {
         opindex = <div>No Optimal path </div>
       }
       details.push(opindex)
+      details.push(<button onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths)}> Reconfigure </button>)
       let row = [time, details, <button onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>Repaired</button>]
       tableData.push(row)
       
@@ -127,6 +128,14 @@ class PhysicalConnectivity extends React.Component {
     this.setState({
       tableData: tableData
     })
+  }
+  handleReconfigure = (optimalPath, reconfiguredPaths, faultySection) => {
+    let path = reconfiguredPaths[optimalPath[0]]
+    let upto = optimalPath[2]
+    if(faultySection.includes(upto)){
+      
+    }
+
   }
 
   repairedBtnHandler = (index, isFaultRepaired) =>{
@@ -287,7 +296,7 @@ class PhysicalConnectivity extends React.Component {
           <Button onClick={this.handleCloseOp} color="danger">
             Close
           </Button>
-          <Button onClick={this.handleCloseOp} color="success">
+          <Button onClick={this.handleReconfigure} color="success">
             Reconfigure
           </Button>
         </DialogActions>

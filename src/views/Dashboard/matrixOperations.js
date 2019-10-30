@@ -305,6 +305,10 @@ const resetMapState = (switchlist,nolist,branch) => {
   return mapState
 }
 
+const reconfigureMapState = (affectedlist, switch_list) => {
+  
+}
+
 const processPrevReconfigure = ( prevReconfigure ) => {
   let arr = []
   for(let i=1;i<prevReconfigure.length;i++){
