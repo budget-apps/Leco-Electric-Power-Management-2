@@ -158,7 +158,6 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
         highlightColor: 'lightblue'
       }
     };
-    console.log("Graph data")
     return [graph_data, graph_config]
   }
 

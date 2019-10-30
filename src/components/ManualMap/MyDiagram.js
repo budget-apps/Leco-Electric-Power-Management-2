@@ -331,11 +331,8 @@ class MyDiagram extends React.Component {
         selectedNodeKeys: [...this.state.selectedNodeKeys, nodeKey]
       });
       let typef = getSwitchType(nodeKey, noopensw_list, feeding_list)
-      console.log(typef)
-      console.log(nodeKey)
       let swCurrent = ""
       for(let i=0;i<crrntTable.length;i++){
-        console.log(crrntTable[i][0]+","+nodeKey)
         if(crrntTable[i][0]===nodeKey){
           swCurrent = crrntTable[i][1]
           break
@@ -346,9 +343,8 @@ class MyDiagram extends React.Component {
         swCurrent = "Not Available"
       }
 
-      console.log(swCurrent)
       let typeO = typef==="Close"?"Sectionalizing Switch":typef==="Open"?"Tie Switch":"Feeding Switch"
-      console.log(typeO)
+
       Swal.fire({
           type: 'info',
           title: nodeKey,

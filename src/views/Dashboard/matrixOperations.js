@@ -1,4 +1,3 @@
-import Swal from "sweetalert2";
 var firebase = require("firebase");
 
 const getSwitches = (switchtable) => {
@@ -247,13 +246,18 @@ const getSwitchesCurrent = (curretTable) => {
     let vals = curretTable[i][index].split(',')
     let avg = (parseFloat(vals[0])+parseFloat(vals[1])+parseFloat(vals[2]))/3
     arr.push([curretTable[i]['switch'] ,(Math.round(avg*100)/100)])
-  }Swal.fire({
-    type: "error",
-    title: "Current",
-    text: arr.toString()
-  });
+  }
   console.log(arr)
   return arr
+}
+
+const getSwitchCurrent = (switchid, currentTable) => {
+  for(let i=0;i<currentTable.length;i++){
+    if(currentTable[i][0]===switchid){
+      return currentTable[i][1]
+    }
+  }
+  return -1
 }
 
 const generateMapState = (switchlist,nolist,branch,faultSwitch, faultyLoc, prevReconfigure) => {
@@ -317,4 +321,4 @@ const processPrevReconfigure = ( prevReconfigure ) => {
 export { getSwitches, getSections, getSectionOfSwitch, getNormallyOpenSwitches, getSwitchType, getFeedingPoints, generatePhysicalConMatrix };
 export { generateElectricConnectivityMatrix, generateFeedingMatrix, rowOperation, colOperation, findFeederInRow, findFeederInCol }
 export { getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix, getSwitchesFromSection, getSwitchesCurrent, generateMapState }
-export { processPrevReconfigure, resetMapState }
+export { processPrevReconfigure, resetMapState, getSwitchCurrent }

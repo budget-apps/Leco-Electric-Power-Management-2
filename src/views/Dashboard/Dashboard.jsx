@@ -344,8 +344,10 @@ class Dashboard extends React.Component {
           this.state.section_list
         )
       });
-      console.log(this.state.minOut)
-      optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
+
+      this.setState({
+        optimalPath: optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
+      }) 
 
       sendReconfigurePathsToDB(
         this.state.switch_list,
@@ -357,7 +359,8 @@ class Dashboard extends React.Component {
         this.state.faultLoc,
         Date(),
         false,
-        this.state.reconfigurePaths
+        this.state.reconfigurePaths,
+        this.state.optimalPath
       );
 
       Swal.fire({
@@ -453,7 +456,6 @@ class Dashboard extends React.Component {
   hadleOnclickErrorBtn = () => {};
 
   render() {
-    this.onChangeDB();
     const { classes } = this.props;
     return (
       <div>

@@ -1,4 +1,6 @@
-import {getSwitchsToSwitch, getSectionOfSwitch, getRow, rowOperation, colOperation,findFeederInCol, findFeederInRow } from "./matrixOperations"
+import {getSwitchsToSwitch, getSectionOfSwitch, getRow, rowOperation, colOperation,findFeederInCol, findFeederInRow, getSwitchCurrent } from "./matrixOperations"
+import {getFaultPathCurrent} from './faultFinder'
+
 var firebase = require("firebase");
 
 const findEndConnectedNOs = (faultLoc, noList, switch_table, switch_list) => {
@@ -132,51 +134,61 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
 }
 
 const optimalPath = (allPaths, faultySection, faultPathSwitches, currentTable, switch_list, minOut) => {
-  console.log(faultPathSwitches)
-  console.log(faultySection)
-  console.log(minOut)
+  //console.log(faultPathSwitches)
+  //console.log(faultySection)
+  //console.log(minOut)
+  let diff = 0
+  let maxDiffPath = 0
+  let uptoo = ""
   for(let i=0;i<allPaths.length;i++){
-    console.log(allPaths[i][0][allPaths[i][0].length-1][0])
+    //console.log(allPaths[i][0][allPaths[i][0].length-1][0])
     let tempNode = switch_list[allPaths[i][0][allPaths[i][0].length-1][0]]
-    let tempCrnt = 0
-    for(let j=0;j<currentTable.length;j++){
-      if(currentTable[j][0]===tempNode){
-        tempCrnt = currentTable[j][1]
-        console.log(tempCrnt)
-        break
-      }
-    }
+    let tempCrnt = getSwitchCurrent(tempNode, currentTable)
+    
 
     let maxOut = minOut - tempCrnt 
-    console.log(maxOut)
+    //console.log(maxOut)
     faultPathSwitches = [...new Set(faultPathSwitches)]
-    console.log(faultPathSwitches)
+    //console.log(faultPathSwitches)
     let faultEnd = switch_list.indexOf(faultySection[0][1])
-    console.log(faultEnd)
+    //console.log(faultEnd)
     let endInFp = faultPathSwitches.indexOf(faultEnd)
-    for(let j=faultPathSwitches.length-1;j>=endInFp;j++){
-      let tmp = faultPathSwitches[j]
-      console.log(tmp)
-      let tmpCrnt = 0
-      for(let k=0;k<currentTable.length;k++){
-        if(currentTable[k][0]===tmp){
-          tmpCrnt = currentTable[k][1]
-          console.log(tmpCrnt)
+    let endInFpCrnt = getSwitchCurrent(switch_list[faultPathSwitches[endInFp]], currentTable)
+
+    if(endInFpCrnt<maxOut){
+      console.log("Valid path")
+      if(diff<(maxOut-endInFpCrnt)){
+        diff = maxOut-endInFpCrnt
+        maxDiffPath = i
+        uptoo = switch_list[faultPathSwitches[endInFp]]
+      }
+    }else{
+      let fcrnt = getFaultPathCurrent(faultPathSwitches, currentTable, switch_list)
+      let found = false
+      for(let j=endInFp+1;j<fcrnt.length;j++){
+        if(fcrnt[j]<maxOut){
+          if(diff<(maxOut-fcrnt[j])){
+            maxDiffPath = i
+            uptoo = switch_list[faultPathSwitches[j]]
+          }
+          found = true
           break
         }
       }
-      if(tmpCrnt<=maxOut){
-        continue
-      }else{
-        console.log(tmp)
-        console.log('Cannot reconfigure')
-        break
+      if(!found){
+        maxDiffPath = -1
       }
-    }
+    }  
   }
+  console.log(diff)
+  console.log(maxDiffPath)
+  console.log(allPaths[maxDiffPath][0])
+  console.log(uptoo)
+  return [maxDiffPath, diff, uptoo]
+  
 }
 
-const sendReconfigurePathsToDB = (switch_list, logIndex, branch, faultSwitch, faultyFeeder, faultyPath, faultySection, time, isFaultRepaired, reconfiguredPaths) => {
+const sendReconfigurePathsToDB = (switch_list, logIndex, branch, faultSwitch, faultyFeeder, faultyPath, faultySection, time, isFaultRepaired, reconfiguredPaths, optimalPath) => {
     console.log("Sending recnfigured paths to DB...")
     
     try{
@@ -205,12 +217,13 @@ const sendReconfigurePathsToDB = (switch_list, logIndex, branch, faultSwitch, fa
         faultyPath = JSON.stringify(faultyPath)
         faultySection = JSON.stringify(faultySection)
         reconfiguredPaths = JSON.stringify(reconfiguredPaths)
+        optimalPath[0] = JSON.stringify(optimalPath[0])
 
         if(!sameFault){
           //console.log(val[logIndex]['isFaultRepaired'])
           logIndex = logIndex+1
           console.log("OK. Sending new reconfiguartions...")
-          firebase.database().ref().child(branch).child('reconfigure').child(logIndex).set({faultSwitch: faultSwitch, faultyFeeder: faultyFeeder, faultyPath: faultyPath, faultySection: faultySection, time: time, isFaultRepaired: isFaultRepaired, reconfiguredPaths: reconfiguredPaths})
+          firebase.database().ref().child(branch).child('reconfigure').child(logIndex).set({faultSwitch: faultSwitch, faultyFeeder: faultyFeeder, faultyPath: faultyPath, faultySection: faultySection, time: time, isFaultRepaired: isFaultRepaired, reconfiguredPaths: reconfiguredPaths, optimalPath: optimalPath})
           firebase.database().ref().child(branch).child('logIndex').set(logIndex)
 
           }

@@ -66,7 +66,7 @@ class PhysicalConnectivity extends React.Component {
   }
 
   processLogs(reconfigure, switch_list, section_list, switchtable){
-    console.log(reconfigure)
+
     let tableData = []
     for(let i=1;i<reconfigure.length;i++){
       let faultSwitch = reconfigure[i]['faultSwitch']
@@ -76,12 +76,14 @@ class PhysicalConnectivity extends React.Component {
       let isFaultRepaired = reconfigure[i]['isFaultRepaired']
       let reconfiguredPaths = JSON.parse(reconfigure[i]['reconfiguredPaths'])
       let time = reconfigure[i]['time']
+      let optimalPath = reconfigure[i]['optimalPath']
       // console.log(faultSwitch)
       // console.log(faultyFeeder)
       // console.log(faultyPath)
       // console.log(faultySection)
       // console.log(isFaultRepaired)
       // console.log(reconfiguredPaths)
+      console.log(optimalPath)
       let graphDatas = []
       let viewBtn = []
       for(let j=0;j<reconfiguredPaths.length;j++){
@@ -109,11 +111,19 @@ class PhysicalConnectivity extends React.Component {
       let dts = <div>Fault switch is {faultSwitch}. Faulty Feeder is {faultyFeeder[0]}.</div>
       details.push(dts)
       details.push(viewBtn)
-      details.push(<button onClick={this.handleShowOp}>Optimal path </button>)
+      let opindex = <div>No Optimal path </div>
+      if(optimalPath[0]!==undefined && optimalPath[0]!==-1){
+        opindex = <button onClick={()=>this.handleShowOp(i-1, optimalPath[0])}>Optimal path </button>
+      }
+      else{
+        opindex = <div>No Optimal path </div>
+      }
+      details.push(opindex)
       let row = [time, details, <button onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>Repaired</button>]
       tableData.push(row)
       
     }
+
     this.setState({
       tableData: tableData
     })
@@ -165,7 +175,7 @@ class PhysicalConnectivity extends React.Component {
     .then((snapshot) => {
         const val = snapshot.val();
         
-        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable, logIndex: val.logIndex,  noswitch: val.noswitch,})
+        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable, logIndex: val.logIndex,  noswitch: val.noswitch})
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
           section_list: getSections(this.state.switchtable),
@@ -208,9 +218,11 @@ class PhysicalConnectivity extends React.Component {
   });
   }
 
-  handleShowOp = () => {
+  handleShowOp = (viewIndex, subIndex) => {
     this.setState({
       showOp: true,
+      viewIndex: viewIndex,
+      subIndex: subIndex
   });
     
   }
@@ -250,9 +262,6 @@ class PhysicalConnectivity extends React.Component {
           <Button onClick={this.handleClose} color="danger">
             Close
           </Button>
-          <Button onClick={this.handleClose} color="success">
-            Reconfigure
-          </Button>
         </DialogActions>
        </Dialog>
       </div>  
@@ -267,7 +276,11 @@ class PhysicalConnectivity extends React.Component {
         <DialogTitle id="alert-dialog-title">{"Reconfigurations paths"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            No optimal path.
+            <Graph
+              id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+              data={this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][0]:"No":"Noo":"Nooo"}
+              config={this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][1]:"No":"Noo":"Nooo"}
+            />
           </DialogContentText>
         </DialogContent>
         <DialogActions>

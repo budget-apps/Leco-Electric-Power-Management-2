@@ -1,4 +1,4 @@
-import {findFeederInRow, findFeederInCol, getRow, rowOperation, colOperation, getSwitchsToSwitch} from "./matrixOperations"
+import {findFeederInRow, findFeederInCol, getRow, rowOperation, colOperation, getSwitchsToSwitch, getSwitchCurrent} from "./matrixOperations"
 var firebase = require("firebase");
 
 const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
@@ -174,4 +174,15 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
     return loc
   }
 
-export {findFaultyFeeder, findFaultyPath, checkFaults, sendFaultCurrentRequest, getFaultLoc}
+
+
+  const getFaultPathCurrent = (faultPathSwitches, currentTable, switch_list) => {
+    let arr = []
+    for(let i=0;i<faultPathSwitches.length;i++){
+      arr.push(getSwitchCurrent(switch_list[faultPathSwitches[i]], currentTable))
+    }
+    console.log(arr)
+    return arr
+  }
+
+export {findFaultyFeeder, findFaultyPath, checkFaults, sendFaultCurrentRequest, getFaultLoc, getFaultPathCurrent}
