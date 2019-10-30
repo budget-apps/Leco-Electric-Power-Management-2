@@ -72,7 +72,7 @@ class PhysicalConnectivity extends React.Component {
       let faultSwitch = reconfigure[i]['faultSwitch']
       let faultyFeeder = JSON.parse(reconfigure[i]['faultyFeeder'])
       //let faultyPath = JSON.parse(reconfigure[i]['faultyPath'])
-      //let faultySection = JSON.parse(reconfigure[i]['faultySection'])
+      let faultySection = JSON.parse(reconfigure[i]['faultySection'])
       let isFaultRepaired = reconfigure[i]['isFaultRepaired']
       let reconfiguredPaths = JSON.parse(reconfigure[i]['reconfiguredPaths'])
       let time = reconfigure[i]['time']
@@ -80,7 +80,7 @@ class PhysicalConnectivity extends React.Component {
       // console.log(faultSwitch)
       // console.log(faultyFeeder)
       // console.log(faultyPath)
-      // console.log(faultySection)
+      console.log(faultySection)
       // console.log(isFaultRepaired)
       // console.log(reconfiguredPaths)
       console.log(optimalPath)
@@ -119,7 +119,7 @@ class PhysicalConnectivity extends React.Component {
         opindex = <div>No Optimal path </div>
       }
       details.push(opindex)
-      details.push(<button onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths)}> Reconfigure </button>)
+      details.push(<button onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, faultySection[0], isFaultRepaired)}> Reconfigure </button>)
       let row = [time, details, <button onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>Repaired</button>]
       tableData.push(row)
       
@@ -129,11 +129,12 @@ class PhysicalConnectivity extends React.Component {
       tableData: tableData
     })
   }
-  handleReconfigure = (optimalPath, reconfiguredPaths, faultySection) => {
+  handleReconfigure = (optimalPath, reconfiguredPaths, faultySection, isFaultRepaired) => {
     let path = reconfiguredPaths[optimalPath[0]]
     let upto = optimalPath[2]
-    if(faultySection.includes(upto)){
-      
+    console.log(isFaultRepaired)
+    if(!isFaultRepaired && faultySection[1]===upto){
+      console.log(path[0][0])
     }
 
   }
@@ -296,7 +297,7 @@ class PhysicalConnectivity extends React.Component {
           <Button onClick={this.handleCloseOp} color="danger">
             Close
           </Button>
-          <Button onClick={this.handleReconfigure} color="success">
+          <Button color="success">
             Reconfigure
           </Button>
         </DialogActions>
