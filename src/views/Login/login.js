@@ -67,19 +67,21 @@ password:''
             <div>
 
             </div>
-            <Container style={{padding: 10}} component="main" maxWidth="xs">
+            <Container style={{padding: 10,}} component="main" maxWidth="xs">
 
             <CssBaseline />
 
             <div style={{display: 'flex', alignItems:'center', height: '100vh'}}>
 
-              <form  noValidate onSubmit={this.onSubmit}  >
+              <form  noValidate onSubmit={this.onSubmit} style={{backgroundColor:'rgba(247, 247, 247, 0.8)'}} >
+                  <div style={{ alignItems:'center'}}>
                   <Avatar >
                       <LockOutlinedIcon />
                   </Avatar>
                   <Typography component="h1" variant="h5">
                       Sign in
                   </Typography>
+                  </div>
                 <TextField
                   variant="outlined"
                   margin="normal"
