@@ -257,6 +257,16 @@ class Dashboard extends React.Component {
 
   findingFaults = () => {
     if (checkFaults(this.state.faultSwitch)) {
+      Swal.fire({
+        type: "error",
+        title: "NodeFailure",
+        text:
+          "At " +
+          this.state.faultSwitch +
+          ".(*" +
+          this.state.faultyFeeder[0] +
+          "*)"
+      });
       this.setState({
         faultyFeeder: findFaultyFeeder(
           this.state.faultSwitch,
@@ -304,79 +314,80 @@ class Dashboard extends React.Component {
           ),
         })
 
-        //Find Loc
-      let validSet = [];
-      console.log(this.state.faultCurrentSwitchesNotValid[0]);
-      console.log(this.state.faultCurrentSwitches[0]);
-      if (this.state.faultCurrentSwitchesNotValid[0] === "") {
-        console.log("In 1st condition")
-        validSet = [];
-      } else {
-        if (this.state.faultCurrentSwitches[0] !== "") {
-          console.log("In 2nd condition")
-          validSet = this.state.faultCurrentSwitches;
-        } else {
-          console.log("In 3rd condition")
-          console.log(this.state.faultSwitch.split(","))
-          validSet = this.state.faultSwitch.split(",");
-        }
-      }
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, I got messages from switches!'
+        }).then((result) => {
+          console.log(result['dismiss']==='cancel')
+          if (result['dismiss']!=='cancel') {
+            //Find Loc
+            let validSet = [];
+            console.log(this.state.faultCurrentSwitchesNotValid[0]);
+            console.log(this.state.faultCurrentSwitches[0]);
+            if (this.state.faultCurrentSwitchesNotValid[0] === "") {
+              console.log("In 1st condition")
+              validSet = [];
+            } else {
+              if (this.state.faultCurrentSwitches[0] !== "") {
+                console.log("In 2nd condition")
+                validSet = this.state.faultCurrentSwitches;
+              } else {
+                console.log("In 3rd condition")
+                console.log(this.state.faultSwitch.split(","))
+                validSet = this.state.faultSwitch.split(",");
+              }
+            }
 
-      console.log(validSet);
-      let loc = getFaultLoc(
-        this.state.faultyPathSwithces,
-        validSet,
-        this.state.switch_list,
-        this.state.switchtable
-      );
-      this.setState({
-        faultLoc: loc
-      });
-      console.log(this.state.faultLoc);
+            console.log(validSet);
+            let loc = getFaultLoc(
+              this.state.faultyPathSwithces,
+              validSet,
+              this.state.switch_list,
+              this.state.switchtable
+            );
+            this.setState({
+              faultLoc: loc
+            });
+            console.log(this.state.faultLoc);
 
-      //reconfigure
-      this.setState({
-        reconfigurePaths: findRecofigurePaths(
-          this.state.faultLoc,
-          this.state.noopensw_list,
-          this.state.switchtable,
-          this.state.switch_list,
-          this.state.physicalConFeedMatrix,
-          this.state.faultSwitch,
-          this.state.faultyPathSections,
-          this.state.section_list
-        )
-      });
+            //reconfigure
+            this.setState({
+              reconfigurePaths: findRecofigurePaths(
+                this.state.faultLoc,
+                this.state.noopensw_list,
+                this.state.switchtable,
+                this.state.switch_list,
+                this.state.physicalConFeedMatrix,
+                this.state.faultSwitch,
+                this.state.faultyPathSections,
+                this.state.section_list
+              )
+            });
 
-      this.setState({
-        optimalPath: optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
-      }) 
+            this.setState({
+              optimalPath: optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
+            }) 
 
-      sendReconfigurePathsToDB(
-        this.state.switch_list,
-        this.state.logIndex,
-        this.state.branch,
-        this.state.faultSwitch,
-        this.state.faultyFeeder,
-        this.state.path,
-        this.state.faultLoc,
-        Date(),
-        false,
-        this.state.reconfigurePaths,
-        this.state.optimalPath
-      );
-
-      Swal.fire({
-        type: "error",
-        title: "NodeFailure",
-        text:
-          "At " +
-          this.state.faultSwitch +
-          ".(*" +
-          this.state.faultyFeeder[0] +
-          "*)"
-      });
-
+            sendReconfigurePathsToDB(
+              this.state.switch_list,
+              this.state.logIndex,
+              this.state.branch,
+              this.state.faultSwitch,
+              this.state.faultyFeeder,
+              this.state.path,
+              this.state.faultLoc,
+              Date(),
+              false,
+              this.state.reconfigurePaths,
+              this.state.optimalPath
+            );
+                }
+        })
       })
 
       
