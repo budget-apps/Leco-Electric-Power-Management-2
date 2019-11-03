@@ -552,7 +552,7 @@ class Dashboard extends React.Component {
           </DialogActions>
         </Dialog>
         <div className="row">
-          <div className="col-md-3">
+          <div className="col-md-3" style={{marginTop:'50px'}}>
             <SelectBranch changed={this.selectMapEventHandler} />
           </div>
           <div>

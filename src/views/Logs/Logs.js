@@ -367,7 +367,7 @@ class PhysicalConnectivity extends React.Component {
        </Dialog>
       </div>  
 
-      <div>
+      <div style={{marginTop:'40px'}}>
       <SelectBranch changed={this.selectMapEventHandler}/>
     </div>
       <div>

@@ -175,7 +175,7 @@ class FaultGenerator extends React.Component {
     return (
       <div>
         <div>
-          <div className="col-md-3">
+          <div className="col-md-3" style={{marginTop:'40px'}}>
             <SelectBranch changed={this.selectMapEventHandler} />
           </div>
           <GridContainer>

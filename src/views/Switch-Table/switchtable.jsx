@@ -233,7 +233,7 @@ class SwitchTable extends React.Component {
     const { classes } = this.props;
     return (
     <div>
-      <div>
+      <div style={{marginTop:'40px'}}>
       <SelectBranch changed={this.selectMapEventHandler}/>
     </div>
       <div>

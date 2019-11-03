@@ -168,7 +168,7 @@ class PhysicalConnectivity extends React.Component {
     console.log("table data"+(this.state===null?"":this.state.physicalConMatrix));
     return (
     <div>
-      <div>
+      <div style={{marginTop:'40px'}}>
       <SelectBranch changed={this.selectMapEventHandler}/>
     </div>
       <div>

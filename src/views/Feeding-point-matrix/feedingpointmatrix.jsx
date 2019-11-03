@@ -244,7 +244,7 @@ class FeedingPointsMatrix extends React.Component {
     //console.log("table data"+(this.state===null?"":this.state.feedMatrix));
     return (
     <div>
-      <div>
+      <div style={{marginTop:'40px'}}>
       <SelectBranch changed={this.selectMapEventHandler}/>
     </div>
       <div>
