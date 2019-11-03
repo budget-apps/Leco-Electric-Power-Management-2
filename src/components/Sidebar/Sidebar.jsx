@@ -33,12 +33,14 @@ import AdminNavbarLinks from "components/Navbars/AdminNavbarLinks.jsx";
 import RTLNavbarLinks from "components/Navbars/RTLNavbarLinks.jsx";
 
 import sidebarStyle from "assets/jss/material-dashboard-react/components/sidebarStyle.jsx";
-
+import Button from "@material-ui/core/Button";
 const Sidebar = ({ ...props }) => {
   // verifies if routeName is the one active (in browser input)
   function activeRoute(routeName) {
     return window.location.href.indexOf(routeName) > -1 ? true : false;
   }
+
+
   const { classes, color, logo, image, logoText, routes } = props;
   var links = (
     <List className={classes.list}>
@@ -104,7 +106,9 @@ const Sidebar = ({ ...props }) => {
         target="_blank"
       >
         {"LECO ELECTRIC"}
+
       </a>
+
     </div>
   );
   return (

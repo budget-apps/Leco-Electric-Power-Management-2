@@ -41,12 +41,39 @@ function Header({ ...props }) {
     });
     return name;
   }
+
+  function onclick1 ()  {
+    // eslint-disable-next-line react/prop-types
+    props.changeSidebar1();
+  }
+  function onclick ()  {
+    // eslint-disable-next-line react/prop-types
+    props.changeSidebar();
+  }
+
   const { classes, color } = props;
   const appBarClasses = classNames({
     [" " + classes[color]]: color
   });
   return (
     <AppBar className={classes.appBar + appBarClasses}>
+      <Button
+          style={{ float: "right"}}
+          color="primary"
+          onClick={onclick}
+      >
+        {" "}
+        -
+      </Button>
+      <Button
+          style={{ float: "right" }}
+
+          color="primary"
+          onClick={onclick1}
+      >
+        {" "}
+        +
+      </Button>
       <Toolbar className={classes.container}>
         <div className={classes.flex}>
           {/* Here we create navbar brand, based on route name */}
@@ -57,7 +84,7 @@ function Header({ ...props }) {
         <Hidden smDown implementation="css">
           {props.rtlActive ? <RTLNavbarLinks /> : <AdminNavbarLinks />}
         </Hidden>
-       
+
       </Toolbar>
     </AppBar>
   );

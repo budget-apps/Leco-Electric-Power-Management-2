@@ -34,7 +34,8 @@ import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboar
 
 import image from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/reactlogo.png";
-import {firebase} from "../firebase";
+
+import { firebase } from "../firebase";
 
 let ps;
 
@@ -62,7 +63,8 @@ class Dashboard extends React.Component {
     color: "blue",
     hasImage: true,
     fixedClasses: "dropdown show",
-    mobileOpen: false
+    mobileOpen: false,
+    show: true
   };
   mainPanel = React.createRef();
   handleImageClick = image => {
@@ -70,6 +72,12 @@ class Dashboard extends React.Component {
   };
   handleColorClick = color => {
     this.setState({ color: color });
+  };
+  change = () => {
+    this.setState({ show: false });
+  };
+  change1 = () => {
+    this.setState({ show: true });
   };
   handleFixedClick = () => {
     if (this.state.fixedClasses === "dropdown") {
@@ -90,15 +98,11 @@ class Dashboard extends React.Component {
     }
   };
   componentDidMount() {
-
-      firebase.auth.onAuthStateChanged(authUser => {
-        authUser
-            ? this.setState(() => ({ authUser }))
-            : this.props.history.push('/');
-      });
-
-
-
+    firebase.auth.onAuthStateChanged(authUser => {
+      authUser
+        ? this.setState(() => ({ authUser }))
+        : this.props.history.push("/");
+    });
 
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.mainPanel.current);
@@ -123,22 +127,36 @@ class Dashboard extends React.Component {
     const { classes, ...rest } = this.props;
     return (
       <div className={classes.wrapper}>
-        <Sidebar
-          routes={routes}
-          logoText={"Creative Tim"}
-          logo={logo}
-          image={this.state.image}
-          handleDrawerToggle={this.handleDrawerToggle}
-          open={this.state.mobileOpen}
-          color={this.state.color}
-          {...rest}
-        />
-        <div className={classes.mainPanel} ref={this.mainPanel}>
+        {this.state.show ? (
+          <Sidebar
+            routes={routes}
+            logoText={"Creative Tim"}
+            logo={logo}
+            image={this.state.image}
+            handleDrawerToggle={this.handleDrawerToggle}
+            open={this.state.mobileOpen}
+            color={this.state.color}
+
+
+            {...rest}
+          />
+        ) : (
+          <div></div>
+        )}
+        {this.state.show}
+
+        <div
+          className={this.state.show ? classes.mainPanel : ""}
+          ref={this.mainPanel}
+        >
           <Navbar
             routes={routes}
             handleDrawerToggle={this.handleDrawerToggle}
+            changeSidebar={this.change}
+            changeSidebar1={this.change1}
             {...rest}
           />
+
           {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
           {this.getRoute() ? (
             <div className={classes.content}>
@@ -148,7 +166,6 @@ class Dashboard extends React.Component {
             <div className={classes.map}>{switchRoutes}</div>
           )}
           {this.getRoute() ? <Footer /> : null}
-         
         </div>
       </div>
     );
