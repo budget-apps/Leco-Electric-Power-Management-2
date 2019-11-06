@@ -41,7 +41,7 @@ const Sidebar = ({ ...props }) => {
   }
 
 
-  const { classes, color, logo, image, logoText, routes } = props;
+  const { classes, color, logo, image, logoText, routes, } = props;
   var links = (
     <List className={classes.list}>
       {routes.map((prop, key) => {
@@ -99,21 +99,28 @@ const Sidebar = ({ ...props }) => {
   var brand = (
     <div className={classes.logo}>
       <a
-        href="https://www.creative-tim.com?ref=mdr-sidebar"
+        
         className={classNames(classes.logoLink, {
           [classes.logoLinkRTL]: props.rtlActive
         })}
         target="_blank"
       >
-        {"LECO ELECTRIC"}
-
+        {"EDIFIER-V3"}
       </a>
 
     </div>
   );
+
+  function changeView() {
+    var elem = document.getElementById("sidebar");
+    if(typeof elem !== 'undefined' && elem !== null) {
+      elem.style.display = "none";
+    }
+  }
+
   return (
-    <div>
-      <Hidden mdUp implementation="css">
+    <div id="sidebar">
+      <Hidden xlUp implementation="css">
         <Drawer
           variant="temporary"
           anchor={props.rtlActive ? "left" : "right"}

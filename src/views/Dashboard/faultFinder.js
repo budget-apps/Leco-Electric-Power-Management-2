@@ -1,8 +1,16 @@
-import {findFeederInRow, findFeederInCol, getRow, rowOperation, colOperation, getSwitchsToSwitch, getSwitchCurrent} from "./matrixOperations"
+import {findFeederInRow, findFeederInCol, getRow, rowOperation, colOperation, getSwitchsToSwitch, getSwitchCurrent, getSectionOfSwitch} from "./matrixOperations"
 var firebase = require("firebase");
 
-const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
+const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list, feed_list, section_list, switchtable) => {
     console.log("+++++++++++++++++++++++Find faulty feeder++++++++++++++++++++++++++++++")
+
+    if(feed_list.includes(faultSwitch)){
+      let rowidd = switch_list.indexOf(faultSwitch)
+      let colidd = section_list.indexOf(getSectionOfSwitch(switchtable, faultSwitch)[0])
+      console.log(colidd)
+      return [faultSwitch, [rowidd,colidd]]
+    }
+
     let faultSwitchRowId = getRow(faultSwitch, switch_list)
     let matrix = JSON.parse(JSON.stringify(feedMatrix))
     let faultSections = rowOperation(faultSwitchRowId, matrix)
@@ -10,6 +18,7 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list) => {
     for(let i=0;i<faultSections.length;i++){
       sw_queue.push(faultSections[i])
     }
+    console.log(sw_queue)
     while(sw_queue.length>0){
       
       let item = sw_queue.pop()

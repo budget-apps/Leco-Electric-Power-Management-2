@@ -374,7 +374,7 @@ class PhysicalConnectivity extends React.Component {
       <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
-          <CardHeader color="warning">
+          <CardHeader color="primary">
             <h4 className={classes.cardTitleWhite}>Logs</h4>
             <p className={classes.cardCategoryWhite}>
               Here is a subtitle for this table

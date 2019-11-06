@@ -57,15 +57,15 @@ function Header({ ...props }) {
   });
   return (
     <AppBar className={classes.appBar + appBarClasses}>
-      <Button
-          style={{ float: "right"}}
+      <button
+          style={{ float: "right" }}
           color="primary"
           onClick={onclick}
       >
         {" "}
         -
-      </Button>
-      <Button
+      </button>
+      <button
           style={{ float: "right" }}
 
           color="primary"
@@ -73,7 +73,7 @@ function Header({ ...props }) {
       >
         {" "}
         +
-      </Button>
+      </button>
       <Toolbar className={classes.container}>
         <div className={classes.flex}>
           {/* Here we create navbar brand, based on route name */}

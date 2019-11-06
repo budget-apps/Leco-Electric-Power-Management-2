@@ -146,9 +146,12 @@ class Dashboard extends React.Component {
         {this.state.show}
 
         <div
+          style={{marginTop: 0, height: "100%"}}
           className={this.state.show ? classes.mainPanel : ""}
           ref={this.mainPanel}
         >
+
+         
           <Navbar
             routes={routes}
             handleDrawerToggle={this.handleDrawerToggle}
@@ -156,6 +159,7 @@ class Dashboard extends React.Component {
             changeSidebar1={this.change1}
             {...rest}
           />
+           
 
           {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
           {this.getRoute() ? (

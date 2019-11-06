@@ -51,7 +51,8 @@ class SwitchTable extends React.Component {
   constructor(props){
     super(props)
     this.state={
-      branch:""
+      branch:"",
+      color: "primary"
     }
   }
   
@@ -129,7 +130,8 @@ class SwitchTable extends React.Component {
       console.log("Selected : Feeders")
       console.log(new_swithch_table)
       this.setState({
-        new_swithch_table: new_swithch_table
+        new_swithch_table: new_swithch_table,
+        color: '#6fb7ff'
       })
     }else if(action === "NOOpenSwithces"){
       for(let i=0;i<sw_list.length;i++){
@@ -140,7 +142,8 @@ class SwitchTable extends React.Component {
         console.log("Selected : NOOpenSwithces")
         console.log(new_swithch_table)
         this.setState({
-          new_swithch_table: new_swithch_table
+          new_swithch_table: new_swithch_table,
+          color: '#ff4848'
         })
     }else{
       for(let i=0;i<sw_list.length;i++){
@@ -151,11 +154,10 @@ class SwitchTable extends React.Component {
         console.log("Selected : AllSwithces")
         console.log(new_swithch_table)
         this.setState({
-          new_swithch_table: new_swithch_table
+          new_swithch_table: new_swithch_table,
+          color: '#6fff6f'
         })
     }
-
-    
   }
 
 
@@ -240,7 +242,7 @@ class SwitchTable extends React.Component {
       <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
-          <CardHeader color="info">
+          <CardHeader color='primary'>
             <h4 className={classes.cardTitleWhite}>Switch Table</h4>
             <p className={classes.cardCategoryWhite}>
               Here is the table for {this.state===null?"":this.state.filterAction}

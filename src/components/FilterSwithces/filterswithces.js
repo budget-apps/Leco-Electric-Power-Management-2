@@ -6,9 +6,9 @@ class FilterSwithces extends React.Component {
         return (
             <div>
                 <select onChange={this.props.changed}>
-                <option defaultValue={"default"}>Filter switches</option>
+                <option defaultValue={"default"}>Select</option>
                   <option value="AllSwithces">All swithces</option>
-                  <option value="Feeders">Feeders</option>
+                  <option value="Feeders">Feeding Switches</option>
                   <option value="NOOpenSwithces">Normally Open Switches</option>
                 </select>
             </div>

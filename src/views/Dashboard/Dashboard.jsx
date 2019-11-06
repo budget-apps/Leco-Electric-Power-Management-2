@@ -271,7 +271,10 @@ class Dashboard extends React.Component {
         faultyFeeder: findFaultyFeeder(
           this.state.faultSwitch,
           this.state.feedMatrix,
-          this.state.switch_list
+          this.state.switch_list,
+          this.state.feeding_list,
+          this.state.section_list,
+          this.state.switchtable
         )
       });
 
