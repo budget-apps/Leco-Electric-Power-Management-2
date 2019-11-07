@@ -27,6 +27,8 @@ import Hidden from "@material-ui/core/Hidden";
 import AdminNavbarLinks from "./AdminNavbarLinks.jsx";
 import RTLNavbarLinks from "./RTLNavbarLinks.jsx";
 import Button from "components/CustomButtons/Button.jsx";
+import MenuIcon from '@material-ui/icons/Menu';
+
 
 import headerStyle from "assets/jss/material-dashboard-react/components/headerStyle.jsx";
 
@@ -42,10 +44,6 @@ function Header({ ...props }) {
     return name;
   }
 
-  function onclick1 ()  {
-    // eslint-disable-next-line react/prop-types
-    props.changeSidebar1();
-  }
   function onclick ()  {
     // eslint-disable-next-line react/prop-types
     props.changeSidebar();
@@ -56,24 +54,9 @@ function Header({ ...props }) {
     [" " + classes[color]]: color
   });
   return (
-    <AppBar className={classes.appBar + appBarClasses}>
-      <button
-          style={{ float: "right" }}
-          color="primary"
-          onClick={onclick}
-      >
-        {" "}
-        -
-      </button>
-      <button
-          style={{ float: "right" }}
-
-          color="primary"
-          onClick={onclick1}
-      >
-        {" "}
-        +
-      </button>
+    <AppBar style={{backgroundColor: "white", borderRadius: 0, padding: 5, marginBottom: 0}} className={classes.appBar + appBarClasses}>
+     
+      <MenuIcon style={{ float: "left", marginTop: 15 }} onClick={onclick}/>
       <Toolbar className={classes.container}>
         <div className={classes.flex}>
           {/* Here we create navbar brand, based on route name */}

@@ -105,7 +105,7 @@ const Sidebar = ({ ...props }) => {
         })}
         target="_blank"
       >
-        {"EDIFIER-V3"}
+        {"EDIFER-V3"}
       </a>
 
     </div>

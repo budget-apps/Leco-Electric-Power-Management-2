@@ -21,6 +21,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from "components/CustomButtons/Button.jsx";
+import CheckIcon from '@material-ui/icons/Check';
+
+
 var firebase = require("firebase");
 
 const styles = {
@@ -102,25 +105,25 @@ class PhysicalConnectivity extends React.Component {
         let graphConfig  = drawPath(se, sw, switchtable)[1]
 
         graphDatas.push([graphData,graphConfig])
-        viewBtn.push(<button onClick={()=>this.handleShow(i-1, j)}>View Reconfigure {j+1}</button>)
+        viewBtn.push(<Button onClick={()=>this.handleShow(i-1, j)}>View Reconfigure {j+1}</Button>)
       }
       let gphs = this.state.graphs
       gphs.push(graphDatas)
       console.log(gphs[0][0][0])
       let details = []  
-      let dts = <div>Fault switch is {faultSwitch}. Faulty Feeder is {faultyFeeder[0]}.</div>
+      let dts = <div>Fault switch is {faultSwitch}. Faulty Feeder is {faultyFeeder[0]}. Fault section is {JSON.stringify(faultySection[0])}.</div>
       details.push(dts)
       details.push(viewBtn)
       let opindex = <div>No Optimal path </div>
       if(optimalPath[0]!==undefined && optimalPath[0]!==-1){
-        opindex = <button onClick={()=>this.handleShowOp(i-1, optimalPath[0])}>Optimal path </button>
+        opindex = <Button onClick={()=>this.handleShowOp(i-1, optimalPath[0])}>Optimal path </Button>
       }
       else{
-        opindex = <div>No Optimal path </div>
+        opindex = <Button > No optimal path </Button>
       }
       details.push(opindex)
-      details.push(<button onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </button>)
-      let row = [time, details, <button onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>Repaired</button>]
+      details.push(<Button onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </Button>)
+      let row = [time, details, <Button onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Repaired <CheckIcon/></div>:"Repair"}</Button>]
       tableData.push(row)
       
     }
@@ -380,11 +383,12 @@ class PhysicalConnectivity extends React.Component {
               Here is a subtitle for this table
             </p>
           </CardHeader>
-          <CardBody>
+          <CardBody style={{maxHeight: 800, overflow: 'auto'}}>
           <Table
               tableHeaderColor="primary"
-              tableHead={['Timestamp', 'Details', 'Repaired']}
+              tableHead={['Timestamp', 'Details', 'Current Status']}
               tableData={this.state.tableData}
+              
             />
             
           </CardBody>

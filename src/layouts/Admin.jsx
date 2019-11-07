@@ -25,9 +25,9 @@ import "perfect-scrollbar/css/perfect-scrollbar.css";
 import withStyles from "@material-ui/core/styles/withStyles";
 // core components
 import Navbar from "components/Navbars/Navbar.jsx";
-import Footer from "components/Footer/Footer.jsx";
+// import Footer from "components/Footer/Footer.jsx";
 import Sidebar from "components/Sidebar/Sidebar.jsx";
-
+import PanelBackground from "../assets/img/back3.jpg"
 import routes from "routes.js";
 
 import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboardStyle.jsx";
@@ -64,7 +64,8 @@ class Dashboard extends React.Component {
     hasImage: true,
     fixedClasses: "dropdown show",
     mobileOpen: false,
-    show: true
+    show: true,
+    visible: true,
   };
   mainPanel = React.createRef();
   handleImageClick = image => {
@@ -74,11 +75,9 @@ class Dashboard extends React.Component {
     this.setState({ color: color });
   };
   change = () => {
-    this.setState({ show: false });
+    this.setState({ show: !this.state.show });
   };
-  change1 = () => {
-    this.setState({ show: true });
-  };
+
   handleFixedClick = () => {
     if (this.state.fixedClasses === "dropdown") {
       this.setState({ fixedClasses: "dropdown show" });
@@ -128,25 +127,25 @@ class Dashboard extends React.Component {
     return (
       <div className={classes.wrapper}>
         {this.state.show ? (
-          <Sidebar
-            routes={routes}
-            logoText={"Creative Tim"}
-            logo={logo}
-            image={this.state.image}
-            handleDrawerToggle={this.handleDrawerToggle}
-            open={this.state.mobileOpen}
-            color={this.state.color}
+          <di><Sidebar
+          routes={routes}
+          logoText={"Creative Tim"}
+          logo={logo}
+          image={this.state.image}
+          handleDrawerToggle={this.handleDrawerToggle}
+          open={this.state.mobileOpen}
+          color={this.state.color}
 
 
-            {...rest}
-          />
+          {...rest}
+        /></di>
         ) : (
           <div></div>
         )}
         {this.state.show}
 
         <div
-          style={{marginTop: 0, height: "100%"}}
+          style={{marginTop: 0, height: "100%",backgroundImage: `url(${PanelBackground})`}}
           className={this.state.show ? classes.mainPanel : ""}
           ref={this.mainPanel}
         >
@@ -156,7 +155,6 @@ class Dashboard extends React.Component {
             routes={routes}
             handleDrawerToggle={this.handleDrawerToggle}
             changeSidebar={this.change}
-            changeSidebar1={this.change1}
             {...rest}
           />
            
@@ -169,7 +167,8 @@ class Dashboard extends React.Component {
           ) : (
             <div className={classes.map}>{switchRoutes}</div>
           )}
-          {this.getRoute() ? <Footer /> : null}
+          {/* {this.getRoute() ? <Footer /> : null} */}
+          {this.getRoute() ? <div></div> : null}
         </div>
       </div>
     );

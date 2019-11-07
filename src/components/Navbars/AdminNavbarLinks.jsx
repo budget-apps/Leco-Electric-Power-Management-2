@@ -155,10 +155,25 @@ class AdminNavbarLinks extends React.Component {
   };
 
   render() {
+    // firebase
+    //   .database()
+    //   .ref()
+    //   .child("Negambo/faultSwitch")
+    //   .on("value", function(snapshot) {
+    //     //Do whatever
+    //     let switchids = snapshot.val().faultSwitch
+    //     Swal.fire({
+    //       type: "info",
+    //       title: "DBChanged",
+    //       text: switchids
+    //     });
+        
+    //   });
+
     const { classes } = this.props;
     const { openNotifcation, openProfile, openSettings } = this.state;
     return (
-      <div>
+      <div style={{backgroundColor: "white"}}>
         {/* <Button
           color={window.innerWidth > 959 ? "transparent" : "white"}
           justIcon={window.innerWidth > 959}
@@ -185,7 +200,7 @@ class AdminNavbarLinks extends React.Component {
             className={classes.buttonLink}
           >
             <Notifications className={classes.icons} />
-            <span className={classes.notifications}>2</span>
+            {/* <span className={classes.notifications}></span> */}
             <Hidden mdUp implementation="css">
               <p onClick={this.handleClick} className={classes.linkText}>
                 Notification

@@ -36,11 +36,18 @@ const NOToFeederPath = (switchID, faultSwitch, feedMatrix, switch_list, noList) 
       let item = sw_queue.pop()
       let row_1 = item[0]
       let col_1 = item[1]
+      
+      // console.log("-------------------------")
+      // console.log(sw_queue)
+      // for(let h=0;h<sw_queue.length;h++){
+      //   console.log(switch_list[sw_queue[h][0]])
+      // }
+      // console.log("-------------------------")
       //console.log("Line 34-> Switch: "+switch_list[row_1]+"Fault Switch: "+faultSwitch+ " isEqual: "+(switch_list[row_1] !== faultSwitch))
       if(noList.includes(switch_list[row_1]) && switch_list[row_1]!==switchID && switch_list[row_1] !== faultSwitch){
-          break
+        continue
       }
-      //console.log(item)
+      
       path.push(item)
       let temp_feeder_col = findFeederInRow(row_1, matrix)
       let temp_feeder_row = findFeederInCol(col_1, matrix)
@@ -52,7 +59,7 @@ const NOToFeederPath = (switchID, faultSwitch, feedMatrix, switch_list, noList) 
         //console.log("Name",sw_name)
         //console.log(matrix)
         path.push([row_1, temp_feeder_col])
-        //console.log(path)
+        //console.log(switch_list[row_1])
         allPaths.push(path)
         path = []
         //return [sw_name, [row_1, temp_feeder_col]]
@@ -65,6 +72,7 @@ const NOToFeederPath = (switchID, faultSwitch, feedMatrix, switch_list, noList) 
         //console.log(matrix)
         path.push([temp_feeder_row, col_1])
         //console.log(path)
+        //console.log(switch_list[temp_feeder_row])
         allPaths.push(path)
         path = []
         //return [sw_name, [temp_feeder_row, col_1]]
@@ -101,36 +109,50 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
         for(let j=0;j<noSet[i].length;j++){
             
             let feederPaths = NOToFeederPath(noSet[i][j],faultSwitch, feedMatrix, switch_list, noList)
-            allPaths.push(feederPaths)
+            //console.log(feederPaths[0].length)
+            for(let k=0;k<feederPaths.length;k++){
+              allPaths.push(feederPaths[k])
+            }
+            
+            //console.log(feederPaths)
+            
         }
     }
-    console.log(allPaths)
+    let new_path = []
+    //console.log(allPaths)
     faultyPathSections.pop()
     for(let i=0;i<allPaths.length;i++){
-      let removed = false
-      for(let j=0;j<allPaths[i].length;j++){
-        let se = allPaths[i][j][0][0]
-        console.log(switch_list[se])
-        let seSec = getSectionOfSwitch(switch_table, switch_list[se])
-        console.log(seSec)
-        for(let k=0;k<faultyPathSections.length;k++){
-          console.log(section_list[faultyPathSections[k]])
-          if(seSec.includes(section_list[faultyPathSections[k]])){
-            allPaths.splice(i,1)
-            removed=true
-            break
-          }
+      let se = allPaths[i][0][0]
+      let found = false
+      
+      //console.log("Cheking sw: "+switch_list[se]+"----------------")
+      let seSec = getSectionOfSwitch(switch_table, switch_list[se])
+      //console.log(seSec)
+      for(let k=0;k<faultyPathSections.length;k++){
+        //console.log(section_list[faultyPathSections[k]])
+        if(seSec.includes(section_list[faultyPathSections[k]])){
+          
+          found = true
         }
-        if(removed){
-          break
-        }
-        
       }
+
+      for(let k=0;k<allPaths[i].length;k++){
+       // console.log(switch_list[allPaths[i][k][0]]+", "+faultLoc[0][0]+","+faultLoc[0][1])
+        if(switch_list[allPaths[i][k][0]]===faultLoc[0][0] || switch_list[allPaths[i][k][0]]===faultLoc[0][1]){
+          found = true
+        }
+      }
+      let temp = []
+      temp.push(allPaths[i])
+      if(!found){
+        new_path.push(temp)
+      }
+      //console.log("End check")
     }
 
     console.log("All reconfigure paths")
-    console.log(allPaths)
-    return allPaths
+    console.log(new_path)
+    return new_path
 }
 
 const optimalPath = (allPaths, faultySection, faultPathSwitches, currentTable, switch_list, minOut) => {
