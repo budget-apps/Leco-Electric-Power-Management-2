@@ -32,7 +32,7 @@ import routes from "faultGeneratorRotes.js";
 
 import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboardStyle.jsx";
 
-import image from "assets/img/sidebar-2.jpg";
+import image from "assets/img/sidebar_backgroud.jpg";
 import logo from "assets/img/reactlogo.png";
 import {firebase} from "../firebase";
 
@@ -135,7 +135,7 @@ class Dashboard extends React.Component {
                         handleDrawerToggle={this.handleDrawerToggle}
                         {...rest}
                     />
-                    {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
+          {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
                     {this.getRoute() ? (
                         <div className={classes.content}>
                             <div className={classes.container}>{switchRoutes}</div>
