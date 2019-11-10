@@ -137,15 +137,16 @@ class Dashboard extends React.Component {
           prevReconfigure: val.reconfigure,
           minOut: val.minOut,
           prevMapState: val.mapState,
-          isGenerated: val.isGenerated
+          isGenerated: val.isGenerated,
+          mapUpdated: val.mapUpdated
         });
-
+        console.log(val.reconfigure)
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
           section_list: getSections(this.state.switchtable),
           noopensw_list: getNormallyOpenSwitches(this.state.noswitch),
           feeding_list: getFeedingPoints(this.state.feedpoints),
-          allFaultPaths: processPrevReconfigure(this.state.prevReconfigure)
+          allFaultPaths: this.state.prevReconfigure!==undefined?processPrevReconfigure(this.state.prevReconfigure):[]
         });
 
         this.setState({
@@ -197,7 +198,8 @@ class Dashboard extends React.Component {
             this.state.branch,
             this.state.faultSwitch,
             this.state.faultLoc,
-            this.state.prevReconfigure
+            this.state.prevReconfigure,
+            this.state.mapUpdated
           )
         });
 

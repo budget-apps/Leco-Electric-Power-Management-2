@@ -104,7 +104,7 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list, feed_list, secti
     return [path, faultyPathSwithces, faultyPathSections]
   }
   const checkFaults = (faultSwitch) => {
-    if(faultSwitch===""){
+    if(faultSwitch==="" || faultSwitch===undefined){
       return false
     }
     

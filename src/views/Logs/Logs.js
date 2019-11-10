@@ -155,7 +155,14 @@ class PhysicalConnectivity extends React.Component {
           console.log(affected)
           reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
           Swal.fire({
+            title: 'Reconfiguration Report',
             type: 'success',
+            html:
+              'Isolation: <b>'+faultySection[0]+',</b>'+faultySection[1]+'<br>'+
+              'Upstream restored<br>'+
+              'Reconfiguration<br>'
+              +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
+              +'Opened: <b></b> <br>',
             
           })
         }else if(!isFaultRepaired && faultySection[1]===upto && faultySection.includes(faultSwitch)){
@@ -166,7 +173,14 @@ class PhysicalConnectivity extends React.Component {
           console.log(affected)
           reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
           Swal.fire({
+            title: 'Reconfiguration Report',
             type: 'success',
+            html:
+              'Isolation: <b>'+faultySection[0]+',</b>'+faultySection[1]+'<br>'+
+              'Upstream restored<br>'+
+              'Reconfiguration<br>'
+              +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
+              +'Opened: <b></b> <br>',
             
           })
         }
@@ -178,7 +192,14 @@ class PhysicalConnectivity extends React.Component {
           console.log(affected)
           reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
           Swal.fire({
+            title: 'Reconfiguration Report',
             type: 'success',
+            html:
+              'Isolation: <b>'+faultySection[0]+',</b>'+faultySection[1]+'<br>'+
+              'Upstream restored<br>'+
+              'Reconfiguration<br>'
+              +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
+              +'Opened: <b></b> <br>',
             
           })
         }
@@ -190,7 +211,14 @@ class PhysicalConnectivity extends React.Component {
           console.log(affected)
           reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
           Swal.fire({
+            title: 'Reconfiguration Report',
             type: 'success',
+            html:
+              'Isolation: <b>'+faultySection[0]+',</b>'+faultySection[1]+'<br>'+
+              'Upstream restored<br>'+
+              'Reconfiguration<br>'
+              +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
+              +'Opened: <b></b> <br>',
             
           })
         }
@@ -222,7 +250,9 @@ class PhysicalConnectivity extends React.Component {
         if (result['dismiss']!=='cancel') {
           firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
           firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').child("switchID").set("")
+          firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').child("switchIDValid").set("")
           firebase.database().ref().child(this.state.branch).child('reconfigure').child(index).child('isFaultRepaired').set(true)
+          firebase.database().ref().child(this.state.branch).child('mapUpdated').set(false)
           resetMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch)
           console.log("Updating "+index+" record...")
           Swal.fire({
@@ -315,9 +345,9 @@ class PhysicalConnectivity extends React.Component {
   }
   render(){
     const { classes } = this.props;
-    console.log(this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][0]:"No":"Noo":"Nooo")
+    //console.log(this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][0]:"No":"Noo":"Nooo")
     // const table_data= this.state===null?"":this.state.physicalConMatrix;
-    console.log("table data"+(this.state===null?"":this.state.physicalConMatrix));
+    //console.log("table data"+(this.state===null?"":this.state.physicalConMatrix));
     return (
     <div>
       <div>
@@ -327,7 +357,7 @@ class PhysicalConnectivity extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-        <DialogTitle id="alert-dialog-title">{"Reconfigurations paths"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Reconfiguration path"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
           <Graph
@@ -352,7 +382,7 @@ class PhysicalConnectivity extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-        <DialogTitle id="alert-dialog-title">{"Reconfigurations paths"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Optimal path"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <Graph
@@ -380,7 +410,7 @@ class PhysicalConnectivity extends React.Component {
           <CardHeader color="primary">
             <h4 className={classes.cardTitleWhite}>Logs</h4>
             <p className={classes.cardCategoryWhite}>
-              Here is a subtitle for this table
+              Fault log of the {this.state.branch} branch.
             </p>
           </CardHeader>
           <CardBody style={{maxHeight: 800, overflow: 'auto'}}>
