@@ -34,125 +34,144 @@ import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboar
 
 import image from "assets/img/sidebar_backgroud.jpg";
 import logo from "assets/img/reactlogo.png";
-import {firebase} from "../firebase";
+import { firebase } from "../firebase";
+import PanelBackground from "../assets/img/back8.jpg";
 
 let ps;
 
 const switchRoutes = (
-    <Switch>
-        {routes.map((prop, key) => {
-            if (prop.layout === "/faultgenerater") {
-                return (
-                    <Route
-                        path={prop.layout + prop.path}
-                        component={prop.component}
-                        key={key}
-                    />
-                );
-            }
-            return null;
-        })}
-        <Redirect from="/admin" to="/admin/dashboard" />
-    </Switch>
+  <Switch>
+    {routes.map((prop, key) => {
+      if (prop.layout === "/faultgenerater") {
+        return (
+          <Route
+            path={prop.layout + prop.path}
+            component={prop.component}
+            key={key}
+          />
+        );
+      }
+      return null;
+    })}
+    <Redirect from="/admin" to="/admin/dashboard" />
+  </Switch>
 );
 
 class Dashboard extends React.Component {
-    state = {
-        image: image,
-        color: "blue",
-        hasImage: true,
-        fixedClasses: "dropdown show",
-        mobileOpen: false
-    };
-    mainPanel = React.createRef();
-    handleImageClick = image => {
-        this.setState({ image: image });
-    };
-    handleColorClick = color => {
-        this.setState({ color: color });
-    };
-    handleFixedClick = () => {
-        if (this.state.fixedClasses === "dropdown") {
-            this.setState({ fixedClasses: "dropdown show" });
-        } else {
-            this.setState({ fixedClasses: "dropdown" });
-        }
-    };
-    handleDrawerToggle = () => {
-        this.setState({ mobileOpen: !this.state.mobileOpen });
-    };
-    getRoute() {
-        return window.location.pathname !== "/admin/maps";
+  state = {
+    show: true,
+    image: image,
+    color: "blue",
+    hasImage: true,
+    fixedClasses: "dropdown show",
+    mobileOpen: false
+  };
+  mainPanel = React.createRef();
+  handleImageClick = image => {
+    this.setState({ image: image });
+  };
+  handleColorClick = color => {
+    this.setState({ color: color });
+  };
+  change = () => {
+    this.setState({ show: !this.state.show });
+  };
+  handleFixedClick = () => {
+    if (this.state.fixedClasses === "dropdown") {
+      this.setState({ fixedClasses: "dropdown show" });
+    } else {
+      this.setState({ fixedClasses: "dropdown" });
     }
-    resizeFunction = () => {
-        if (window.innerWidth >= 960) {
-            this.setState({ mobileOpen: false });
-        }
-    };
-    componentDidMount() {
-        firebase.auth.onAuthStateChanged(authUser => {
-            authUser
-                ? this.setState(() => ({ authUser }))
-                : this.props.history.push('/');
-        });
+  };
+  handleDrawerToggle = () => {
+    this.setState({ mobileOpen: !this.state.mobileOpen });
+  };
+  getRoute() {
+    return window.location.pathname !== "/admin/maps";
+  }
+  resizeFunction = () => {
+    if (window.innerWidth >= 960) {
+      this.setState({ mobileOpen: false });
+    }
+  };
+  componentDidMount() {
+    firebase.auth.onAuthStateChanged(authUser => {
+      authUser
+        ? this.setState(() => ({ authUser }))
+        : this.props.history.push("/");
+    });
 
-        if (navigator.platform.indexOf("Win") > -1) {
-            ps = new PerfectScrollbar(this.mainPanel.current);
-        }
-        window.addEventListener("resize", this.resizeFunction);
+    if (navigator.platform.indexOf("Win") > -1) {
+      ps = new PerfectScrollbar(this.mainPanel.current);
     }
-    componentDidUpdate(e) {
-        if (e.history.location.pathname !== e.location.pathname) {
-            this.mainPanel.current.scrollTop = 0;
-            if (this.state.mobileOpen) {
-                this.setState({ mobileOpen: false });
-            }
-        }
+    window.addEventListener("resize", this.resizeFunction);
+  }
+  componentDidUpdate(e) {
+    if (e.history.location.pathname !== e.location.pathname) {
+      this.mainPanel.current.scrollTop = 0;
+      if (this.state.mobileOpen) {
+        this.setState({ mobileOpen: false });
+      }
     }
-    componentWillUnmount() {
-        if (navigator.platform.indexOf("Win") > -1) {
-            ps.destroy();
-        }
-        window.removeEventListener("resize", this.resizeFunction);
+  }
+  componentWillUnmount() {
+    if (navigator.platform.indexOf("Win") > -1) {
+      ps.destroy();
     }
-    render() {
-        const { classes, ...rest } = this.props;
-        return (
-            <div className={classes.wrapper}>
-                <Sidebar
-                    routes={routes}
-                    logoText={"Creative Tim"}
-                    logo={logo}
-                    image={this.state.image}
-                    handleDrawerToggle={this.handleDrawerToggle}
-                    open={this.state.mobileOpen}
-                    color={this.state.color}
-                    {...rest}
-                />
-                <div className={classes.mainPanel} ref={this.mainPanel}>
-                    <Navbar
-                        routes={routes}
-                        handleDrawerToggle={this.handleDrawerToggle}
-                        {...rest}
-                    />
-          {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
-                    {this.getRoute() ? (
-                        <div className={classes.content}>
-                            <div className={classes.container}>{switchRoutes}</div>
-                        </div>
-                    ) : (
-                        <div className={classes.map}>{switchRoutes}</div>
-                    )}
-                    {this.getRoute() ? <Footer /> : null}
-
-                </div>
-            </div>
-        );
-    }
+    window.removeEventListener("resize", this.resizeFunction);
+  }
+  render() {
+    const { classes, ...rest } = this.props;
+    return (
+      <div className={classes.wrapper}>
+        <div
+          style={{
+            marginTop: 0,
+            height: "100%",
+            backgroundImage: `url(${PanelBackground})`
+          }}
+          className={this.state.show ? classes.mainPanel : ""}
+          ref={this.mainPanel}
+        >
+          {this.state.show ? (
+            <Sidebar
+              routes={routes}
+              logoText={"Creative Tim"}
+              logo={logo}
+              image={this.state.image}
+              handleDrawerToggle={this.handleDrawerToggle}
+              open={this.state.mobileOpen}
+              color={this.state.color}
+              {...rest}
+            />
+          ) : (
+            <div></div>
+          )}
+          <div className={classes.mainPanel} ref={this.mainPanel}>
+            <Navbar
+              routes={routes}
+              changeSidebar={this.change}
+              handleDrawerToggle={this.handleDrawerToggle}
+              {...rest}
+            />
+            {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
+            {this.getRoute() ? (
+              <div className={classes.content}>
+                <div className={classes.container}>{switchRoutes}</div>
+              </div>
+            ) : (
+              <div className={classes.map}>{switchRoutes}</div>
+            )}
+            {this.getRoute() ? <Footer /> : null}
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
 Dashboard.propTypes = {
-    classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(dashboardStyle)(Dashboard);

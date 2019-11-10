@@ -18,6 +18,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import FormLabel from "@material-ui/core/FormLabel";
 import MyDiagram from "../../components/ManualMap/MyDiagram";
+import MyDiagramsmall from "../../components/Manual Small map/MyDiagram.js";
 import {
   getSwitches,
   getSections,
@@ -649,12 +650,23 @@ class Dashboard extends React.Component {
                             position: "absolute",
                             right: "0%"
                           }}/>
-                          <MyDiagram
-                            no_list={this.state.noopensw_list}
-                            feed_list={this.state.feeding_list}
-                            crnt_tbl={this.state.currentSwVal}
-                            sw_list={this.state.switch_list}
-                          ></MyDiagram>
+                          {this.state.branch == "Negambo-2" ?
+                              <MyDiagram
+                                  no_list={this.state.noopensw_list}
+                                  feed_list={this.state.feeding_list}
+                                  crnt_tbl={this.state.currentSwVal}
+                                  sw_list={this.state.switch_list}
+                              />
+                              :
+                              <MyDiagramsmall
+                                  no_list={this.state.noopensw_list}
+                                  feed_list={this.state.feeding_list}
+                                  crnt_tbl={this.state.currentSwVal}
+                                  sw_list={this.state.switch_list}
+                              ></MyDiagramsmall>
+                          }
+
+
 
 
                         </div>
