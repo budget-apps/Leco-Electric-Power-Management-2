@@ -312,7 +312,7 @@ const generateMapState = (mapStated, switchlist, isGenerated, nolist,branch,faul
         mapState[switchlist[i]] = 1
       }
   
-      if(prevReconfigure.length!==0){
+      if(prevReconfigure!==undefined && prevReconfigure.length!==0){
         for(let j=0;j<prevReconfigure.length;j++){
           for(let k=0;k<prevReconfigure[j].length;k++){
             if(switchlist[prevReconfigure[j][k][0]]===switchlist[i]){

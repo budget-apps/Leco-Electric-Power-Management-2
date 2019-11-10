@@ -81,7 +81,7 @@ class  AddExelSheet extends React.Component{
     submitFile=()=>{
         firebase.database().ref().child(this.state.branch).child('switchtable').set(this.state.arr_1,(err,doc)=>{
             if(!err){
-                console.log("File added")
+                console.log("1File added")
                 //swal("File added to database!!!")
             }
             else{
@@ -90,7 +90,7 @@ class  AddExelSheet extends React.Component{
         })
         firebase.database().ref().child(this.state.branch).child('feedpoints').set(this.state.arr_2,(err,doc)=>{
             if(!err){
-                console.log("File added")
+                console.log("2File added")
                 //swal("File added to database!!!")
             }
             else{
@@ -99,7 +99,7 @@ class  AddExelSheet extends React.Component{
         })
         firebase.database().ref().child(this.state.branch).child('noswitch').set(this.state.arr_3,(err,doc)=>{
             if(!err){
-                swal("Files added to database!!!")
+                swal("3Files added to database!!!")
             }
             else{
                 console.log(err)

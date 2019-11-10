@@ -187,7 +187,7 @@ class FaultGenerator extends React.Component {
                 <CardBody>
                   <GridContainer>
                     <GridItem xs={6} sm={6} md={12}>
-                      <p>1. Create a fault</p>
+                      <p>1. Generate a fault</p>
                       {/*<input*/}
                       {/*    type='text'*/}
                       {/*    value={this.state.switchId}*/}

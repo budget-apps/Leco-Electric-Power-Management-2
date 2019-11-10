@@ -200,8 +200,8 @@ const onClickNode = (nodeId, noopensw_list, feeding_list, crrntTable,sw_list) =>
       type: 'info',
       title: nodeId,
       html:
-    'Switch Type: <b>'+typeO+'</b>, <br>'
-    +'Real Time Current (Avg.): <b>'+swCurrent+'</b>, <br>',
+    'Switch Type: <b>'+typeO+'</b> <br>'
+    +'Real Time Current (Avg.): <b>'+swCurrent+'</b> <br>',
   showCloseButton: true,
   focusConfirm: false,
   })

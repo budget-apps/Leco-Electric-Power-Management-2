@@ -315,9 +315,9 @@ class PhysicalConnectivity extends React.Component {
   }
   render(){
     const { classes } = this.props;
-    console.log(this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][0]:"No":"Noo":"Nooo")
+    //console.log(this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][0]:"No":"Noo":"Nooo")
     // const table_data= this.state===null?"":this.state.physicalConMatrix;
-    console.log("table data"+(this.state===null?"":this.state.physicalConMatrix));
+    //console.log("table data"+(this.state===null?"":this.state.physicalConMatrix));
     return (
     <div>
       <div>
@@ -327,7 +327,7 @@ class PhysicalConnectivity extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-        <DialogTitle id="alert-dialog-title">{"Reconfigurations paths"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Reconfiguration path"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
           <Graph
@@ -352,7 +352,7 @@ class PhysicalConnectivity extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-        <DialogTitle id="alert-dialog-title">{"Reconfigurations paths"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Optimal path"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <Graph
@@ -380,7 +380,7 @@ class PhysicalConnectivity extends React.Component {
           <CardHeader color="primary">
             <h4 className={classes.cardTitleWhite}>Logs</h4>
             <p className={classes.cardCategoryWhite}>
-              Here is a subtitle for this table
+              Fault log of the {this.state.branch} branch.
             </p>
           </CardHeader>
           <CardBody style={{maxHeight: 800, overflow: 'auto'}}>
