@@ -5,6 +5,7 @@ import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import TableChartIcon from '@material-ui/icons/TableChart';
 import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
+import MyLocationIcon from '@material-ui/icons/MyLocation';
 
 // core components/views for Admin layout
 import ElectricalConnectivity from "views/Electrical-connectivity/econnectivity";
@@ -31,7 +32,7 @@ const dashboardRoutes = [
     path: "/singlemap",
     name: "Single LIne Map",
     rtlName: "طباعة",
-    icon: AccessAlarmIcon,
+    icon: MyLocationIcon,
     component: SingleLineMap,
     layout: "/admin"
   },
