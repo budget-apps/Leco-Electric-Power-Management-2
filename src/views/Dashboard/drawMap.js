@@ -8,7 +8,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
     for(let i=0;i<se_list.length;i++){
       let color = "grey"
       if(faultyPathSections.includes(i)){
-        color = "red"
+        color = "brown"
       }
       nodes_arr.push({id: se_list[i],color: color, size: 200, symbolType: "circle"})
     }
@@ -25,9 +25,9 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       }else if(feed_list.includes(sw_list[i])){
         color = "#6fb7ff"
       }else if(faultSwitch===sw_list[i]){
-        color = "red"
+        color = "brown"
       }else if(faultyPathSwithces.includes(i)){
-        color = "red"
+        color = "brown"
       }
       
       if(mapState[sw_list[i]]===1){
@@ -43,7 +43,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
         for(let j=0;j<prevReconfigure.length;j++){
           for(let k=0;k<prevReconfigure[j].length;k++){
             if(sw_list[prevReconfigure[j][k][0]]===sw_list[i]){
-              color = "red"
+              color = "brown"
               break
             }
           }
@@ -54,7 +54,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       let section_list = getSectionOfSwitch(switchtable, sw_list[i])
       for(let j=0;j<section_list.length;j++){
         if(faultyPathSwithces.includes(sw_list.indexOf(sw_list[i]))){
-          link_color = "red"
+          link_color = "brown"
         }
         link_arr.push({source: id, target: section_list[j], color: link_color})
           
@@ -150,7 +150,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       },
       node: {
           color: 'lightgreen',
-          size: 120,
+          size: 300,
           highlightStrokeColor: 'blue',
       },
       link: {
@@ -171,11 +171,22 @@ const onClickNode = (nodeId, noopensw_list, feeding_list, crrntTable,sw_list) =>
   let typef = getSwitchType(nodeId.split('\n')[0], noopensw_list, feeding_list)
   console.log(typef)
   let swCurrent = ""
+  let found = false
   for(let i=0;i<crrntTable.length;i++){
     if(crrntTable[i][0]===nodeId.split('\n')[0]){
       swCurrent = crrntTable[i][1]
+      found = true
       break
     }
+  }
+
+  if(!found){
+    Swal.fire({
+      type: 'info',
+      title: nodeId,
+  showCloseButton: true,
+  })
+  return 
   }
   
   if(swCurrent===""){
@@ -183,7 +194,7 @@ const onClickNode = (nodeId, noopensw_list, feeding_list, crrntTable,sw_list) =>
   }
 
   console.log(swCurrent)
-  let typeO = typef==="Close"?"Sectionalizing Switch":typef==="Open"?"Tie Switch":"Feeding Switch"
+  let typeO = typef==="Close" || typef==="Feeder"?"Sectionalizing Switch":"Tie Switch"
   console.log(typeO)
   Swal.fire({
       type: 'info',
