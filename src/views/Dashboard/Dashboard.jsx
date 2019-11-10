@@ -647,10 +647,12 @@ class Dashboard extends React.Component {
                         </div>
                       ) : (
                         <div>
-                          <img src={require("../../assets/img/Details.png")} style={{
-                            height: "20%",
-                            width:"30%"
 
+                          <img src={require("../../assets/img/Details.png")} style={{
+                            height: "24%",
+                            width:"30%",
+                            position: "absolute",
+                            right: "0%"
                           }}/>
                           <MyDiagram
                             no_list={this.state.noopensw_list}

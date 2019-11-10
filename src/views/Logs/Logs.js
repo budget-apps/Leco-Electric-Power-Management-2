@@ -383,7 +383,7 @@ class PhysicalConnectivity extends React.Component {
           <CardBody>
           <Table
               tableHeaderColor="primary"
-              tableHead={['Timestamp', 'Details', 'Repaired']}
+              tableHead={['Time', 'Details', 'Current Status']}
               tableData={this.state.tableData}
             />
             
