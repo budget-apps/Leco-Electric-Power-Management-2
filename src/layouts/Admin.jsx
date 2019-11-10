@@ -27,7 +27,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Navbar from "components/Navbars/Navbar.jsx";
 // import Footer from "components/Footer/Footer.jsx";
 import Sidebar from "components/Sidebar/Sidebar.jsx";
-import PanelBackground from "../assets/img/back3.jpg"
+import PanelBackground from "../assets/img/back8.jpg";
 import routes from "routes.js";
 
 import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboardStyle.jsx";
@@ -65,7 +65,7 @@ class Dashboard extends React.Component {
     fixedClasses: "dropdown show",
     mobileOpen: false,
     show: true,
-    visible: true,
+    visible: true
   };
   mainPanel = React.createRef();
   handleImageClick = image => {
@@ -127,37 +127,38 @@ class Dashboard extends React.Component {
     return (
       <div className={classes.wrapper}>
         {this.state.show ? (
-          <di><Sidebar
-          routes={routes}
-          logoText={"Creative Tim"}
-          logo={logo}
-          image={this.state.image}
-          handleDrawerToggle={this.handleDrawerToggle}
-          open={this.state.mobileOpen}
-          color={this.state.color}
-
-
-          {...rest}
-        /></di>
+          <di>
+            <Sidebar
+              routes={routes}
+              logoText={"Creative Tim"}
+              logo={logo}
+              image={this.state.image}
+              handleDrawerToggle={this.handleDrawerToggle}
+              open={this.state.mobileOpen}
+              color={this.state.color}
+              {...rest}
+            />
+          </di>
         ) : (
           <div></div>
         )}
         {this.state.show}
 
         <div
-          style={{marginTop: 0, height: "100%",backgroundImage: `url(${PanelBackground})`}}
+          style={{
+            marginTop: 0,
+            height: "100%",
+            backgroundImage: `url(${PanelBackground})`
+          }}
           className={this.state.show ? classes.mainPanel : ""}
           ref={this.mainPanel}
         >
-
-         
           <Navbar
             routes={routes}
             handleDrawerToggle={this.handleDrawerToggle}
             changeSidebar={this.change}
             {...rest}
           />
-           
 
           {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
           {this.getRoute() ? (
