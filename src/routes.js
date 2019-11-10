@@ -13,6 +13,7 @@ import FeedingPointMatrix from "views/Feeding-point-matrix/feedingpointmatrix";
 import DashboardPage from "views/Dashboard/Dashboard";
 import switchtable from "views/Switch-Table/switchtable";
 import logs from "views/Logs/Logs";
+import SingleLineMap from "./views/Single LIne Map/single_line_map";
 //import FaultGenerator from "views/FaultGenerater/FaultGenerator";
 
 // core components/views for RTL layout
@@ -24,6 +25,14 @@ const dashboardRoutes = [
     rtlName: "لوحة القيادة",
     icon: Dashboard,
     component: DashboardPage,
+    layout: "/admin"
+  },
+  {
+    path: "/singlemap",
+    name: "Single LIne Map",
+    rtlName: "طباعة",
+    icon: AccessAlarmIcon,
+    component: SingleLineMap,
     layout: "/admin"
   },
 

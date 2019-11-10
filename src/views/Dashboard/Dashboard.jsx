@@ -641,9 +641,9 @@ class Dashboard extends React.Component {
                       ) : (
                         <div>
 
-                          <img src={require("../../assets/img/Details.png")} style={{
-                            height: "24%",
-                            width:"30%",
+                          <img src={require("../../assets/img/Details1.png")} style={{
+                            height: "20%",
+                            width:"20%",
                             position: "absolute",
                             right: "0%"
                           }}/>
