@@ -8,7 +8,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
     for(let i=0;i<se_list.length;i++){
       let color = "grey"
       if(faultyPathSections.includes(i)){
-        color = "brown"
+        color = "#654321"
       }
       nodes_arr.push({id: se_list[i],color: color, size: 200, symbolType: "circle"})
     }
@@ -25,9 +25,9 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       }else if(feed_list.includes(sw_list[i])){
         color = "#6fb7ff"
       }else if(faultSwitch===sw_list[i]){
-        color = "brown"
+        color = "#654321"
       }else if(faultyPathSwithces.includes(i)){
-        color = "brown"
+        color = "#654321"
       }
       
       if(mapState[sw_list[i]]===1){
@@ -43,7 +43,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
         for(let j=0;j<prevReconfigure.length;j++){
           for(let k=0;k<prevReconfigure[j].length;k++){
             if(sw_list[prevReconfigure[j][k][0]]===sw_list[i]){
-              color = "brown"
+              color = "#654321"
               break
             }
           }
@@ -54,7 +54,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       let section_list = getSectionOfSwitch(switchtable, sw_list[i])
       for(let j=0;j<section_list.length;j++){
         if(faultyPathSwithces.includes(sw_list.indexOf(sw_list[i]))){
-          link_color = "brown"
+          link_color = "#654321"
         }
         link_arr.push({source: id, target: section_list[j], color: link_color})
           
@@ -152,6 +152,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
           color: 'lightgreen',
           size: 300,
           highlightStrokeColor: 'blue',
+          fontSize: 50
       },
       link: {
         color: 'grey',
@@ -201,7 +202,7 @@ const onClickNode = (nodeId, noopensw_list, feeding_list, crrntTable,sw_list) =>
       title: nodeId,
       html:
     'Switch Type: <b>'+typeO+'</b> <br>'
-    +'Real Time Current (Avg.): <b>'+swCurrent+'</b> <br>',
+    +'Real Time Current (Avg.): <b>'+swCurrent+' A</b> <br>',
   showCloseButton: true,
   focusConfirm: false,
   })

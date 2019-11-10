@@ -290,12 +290,29 @@ const getSwitchCurrent = (switchid, currentTable) => {
 //   return mapState
 // }
 
-const generateMapState = (mapStated, switchlist, isGenerated, nolist,branch,faultSwitch, faultyLoc, prevReconfigure) => {
+const generateMapState = (mapStated, switchlist, isGenerated, nolist,branch,faultSwitch, faultyLoc, prevReconfigure, mapUpdated) => {
   let mapState = []
   if(isGenerated){
     for(let i=0;i<switchlist.length;i++){
       mapState[switchlist[i]]= mapStated[switchlist[i]]
+      console.log(prevReconfigure)
       
+    }
+
+    if(prevReconfigure!==undefined && prevReconfigure.length!==0){
+      for(let j=1;j<prevReconfigure.length;j++){
+        console.log(prevReconfigure[j].faultSwitch)
+        if(!prevReconfigure[j].isFaultRepaired){
+          let faultLoc = JSON.parse(prevReconfigure[j].faultySection)[0]
+          console.log(faultLoc)
+          mapState[faultLoc[0]]= 0
+          mapState[faultLoc[1]]= 0
+        }
+      }
+    }
+    if(!mapUpdated){
+      firebase.database().ref().child(branch).child('mapState').set(mapState)
+      firebase.database().ref().child(branch).child('mapUpdated').set(true)
     }
     console.log(mapState)
     return mapState
@@ -313,7 +330,7 @@ const generateMapState = (mapStated, switchlist, isGenerated, nolist,branch,faul
       }
   
       if(prevReconfigure!==undefined && prevReconfigure.length!==0){
-        for(let j=0;j<prevReconfigure.length;j++){
+        for(let j=1;j<prevReconfigure.length;j++){
           for(let k=0;k<prevReconfigure[j].length;k++){
             if(switchlist[prevReconfigure[j][k][0]]===switchlist[i]){
               mapState[switchlist[i]] = 0

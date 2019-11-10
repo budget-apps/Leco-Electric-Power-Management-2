@@ -155,7 +155,14 @@ class PhysicalConnectivity extends React.Component {
           console.log(affected)
           reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
           Swal.fire({
+            title: 'Reconfiguration Report',
             type: 'success',
+            html:
+              'Isolation: <b>'+faultySection[0]+',</b>'+faultySection[1]+'<br>'+
+              'Upstream restored<br>'+
+              'Reconfiguration<br>'
+              +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
+              +'Opened: <b></b> <br>',
             
           })
         }else if(!isFaultRepaired && faultySection[1]===upto && faultySection.includes(faultSwitch)){
@@ -166,7 +173,14 @@ class PhysicalConnectivity extends React.Component {
           console.log(affected)
           reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
           Swal.fire({
+            title: 'Reconfiguration Report',
             type: 'success',
+            html:
+              'Isolation: <b>'+faultySection[0]+',</b>'+faultySection[1]+'<br>'+
+              'Upstream restored<br>'+
+              'Reconfiguration<br>'
+              +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
+              +'Opened: <b></b> <br>',
             
           })
         }
@@ -178,7 +192,14 @@ class PhysicalConnectivity extends React.Component {
           console.log(affected)
           reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
           Swal.fire({
+            title: 'Reconfiguration Report',
             type: 'success',
+            html:
+              'Isolation: <b>'+faultySection[0]+',</b>'+faultySection[1]+'<br>'+
+              'Upstream restored<br>'+
+              'Reconfiguration<br>'
+              +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
+              +'Opened: <b></b> <br>',
             
           })
         }
@@ -190,7 +211,14 @@ class PhysicalConnectivity extends React.Component {
           console.log(affected)
           reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
           Swal.fire({
+            title: 'Reconfiguration Report',
             type: 'success',
+            html:
+              'Isolation: <b>'+faultySection[0]+',</b>'+faultySection[1]+'<br>'+
+              'Upstream restored<br>'+
+              'Reconfiguration<br>'
+              +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
+              +'Opened: <b></b> <br>',
             
           })
         }
@@ -222,7 +250,9 @@ class PhysicalConnectivity extends React.Component {
         if (result['dismiss']!=='cancel') {
           firebase.database().ref().child(this.state.branch).child('faultSwitch').set("")
           firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').child("switchID").set("")
+          firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').child("switchIDValid").set("")
           firebase.database().ref().child(this.state.branch).child('reconfigure').child(index).child('isFaultRepaired').set(true)
+          firebase.database().ref().child(this.state.branch).child('mapUpdated').set(false)
           resetMapState(this.state.switch_list,this.state.noopensw_list,this.state.branch)
           console.log("Updating "+index+" record...")
           Swal.fire({
