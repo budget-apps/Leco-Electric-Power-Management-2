@@ -4,7 +4,7 @@ class SingleLineMap extends Component {
     render() {
         return (
             <div>
-                <img src={require("../../assets/img/single_map.png")} style={{
+                <img src={require("../../assets/img/output.png")} style={{
                     height: "100%",
                     width:"100%"
                 }}/>
