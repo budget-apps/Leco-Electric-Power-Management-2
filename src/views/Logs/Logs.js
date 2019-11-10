@@ -386,7 +386,7 @@ class PhysicalConnectivity extends React.Component {
           <CardBody style={{maxHeight: 800, overflow: 'auto'}}>
           <Table
               tableHeaderColor="primary"
-              tableHead={['Timestamp', 'Details', 'Current Status']}
+              tableHead={['Time', 'Details', 'Current Status']}
               tableData={this.state.tableData}
               
             />

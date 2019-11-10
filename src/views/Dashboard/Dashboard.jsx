@@ -45,7 +45,11 @@ import {
   onRightClickNode,
   onRightClickLink
 } from "./drawMap";
-import { findRecofigurePaths, sendReconfigurePathsToDB, optimalPath } from "./reconfigure";
+import {
+  findRecofigurePaths,
+  sendReconfigurePathsToDB,
+  optimalPath
+} from "./reconfigure";
 import { InputLabel } from "@material-ui/core";
 //import Tree from 'react-d3-tree';
 var firebase = require("firebase");
@@ -99,7 +103,7 @@ class Dashboard extends React.Component {
         sections: getSectionOfSwitch(this.state.switchtable, id)
       };
       affectnsections.push(obj);
-      return affectnsections
+      return affectnsections;
     });
     console.log(affectnsections);
     this.setState({ affectedSections: affectnsections });
@@ -113,124 +117,130 @@ class Dashboard extends React.Component {
   handleChangeIndex = index => {
     this.setState({ value: index });
   };
-  changeGrid=(branch)=>{
+  changeGrid = branch => {
     //console.log(this.state.branch)
     firebase
-        .database()
-        .ref()
-        .child(branch)
-        .once("value")
-        .then(snapshot => {
-          const val = snapshot.val();
-          console.log(val.minOut)
-          this.setState({
-            logIndex: val.logIndex,
-            switchtable: val.switchtable,
-            noswitch: val.noswitch,
-            feedpoints: val.feedpoints,
-            faultSwitch: val.faultSwitch,
-            currentTable: val.currentTable,
-            prevReconfigure: val.reconfigure,
-            minOut: val.minOut,
-            prevMapState: val.mapState,
-            isGenerated: val.isGenerated
-          });
-
-          this.setState({
-            switch_list: getSwitches(this.state.switchtable),
-            section_list: getSections(this.state.switchtable),
-            noopensw_list: getNormallyOpenSwitches(this.state.noswitch),
-            feeding_list: getFeedingPoints(this.state.feedpoints),
-            allFaultPaths: processPrevReconfigure(this.state.prevReconfigure)
-          });
-
-          this.setState({
-            physicalConMatrix: generatePhysicalConMatrix(
-                this.state.switchtable,
-                this.state.switch_list,
-                this.state.section_list
-            )
-          });
-          this.setState({
-            electricConMatrix: generateElectricConnectivityMatrix(
-                this.state.physicalConMatrix,
-                this.state.noopensw_list,
-                this.state.switch_list,
-                this.state.section_list
-            )
-          });
-          this.setState({
-            feedMatrix: generateFeedingMatrix(
-                this.state.electricConMatrix,
-                this.state.feeding_list,
-                this.state.switch_list,
-                this.state.section_list
-            )
-          });
-          this.setState({
-            physicalConFeedMatrix: generatePhysicalConnectionFeederMatrix(
-                this.state.physicalConMatrix,
-                this.state.feeding_list,
-                this.state.switch_list,
-                this.state.section_list
-            )
-          });
-
-          //Find Faults
-          this.findingFaults();
-
-          this.setState({
-            currentSwVal: getSwitchesCurrent(this.state.currentTable)
-          });
-          console.log(this.state.prevMapState)
-          //Map State
-          this.setState({
-            mapState: generateMapState(this.state.prevMapState, this.state.switch_list, this.state.isGenerated, this.state.noopensw_list,this.state.branch,this.state.faultSwitch, this.state.faultLoc, this.state.prevReconfigure),
-          })
-
-          
-
-          //Draw graph
-          let graphData = drawGraph(
-              this.state.feeding_list,
-              this.state.noopensw_list,
-              this.state.switch_list,
-              this.state.section_list,
-              this.state.faultyPathSwithces,
-              this.state.faultyPathSections,
-              this.state.switchtable,
-              this.state.faultSwitch,
-              this.state.allFaultPaths,
-              this.state.mapState,
-          )[0];
-          let graphConfig = drawGraph(
-              this.state.feeding_list,
-              this.state.noopensw_list,
-              this.state.switch_list,
-              this.state.section_list,
-              this.state.faultyPathSwithces,
-              this.state.faultyPathSections,
-              this.state.switchtable,
-              this.state.faultSwitch,
-              this.state.allFaultPaths,
-              this.state.mapState,
-          )[1];
-          this.setState({
-            graph_data: graphData,
-            graph_config: graphConfig
-          });
-          //this.drawTree()
-        })
-        .catch(e => {
-          console.log(e);
-          Swal.fire({
-            type: "error",
-            title: e.name,
-            text: e.message
-          });
+      .database()
+      .ref()
+      .child(branch)
+      .once("value")
+      .then(snapshot => {
+        const val = snapshot.val();
+        console.log(val.minOut);
+        this.setState({
+          logIndex: val.logIndex,
+          switchtable: val.switchtable,
+          noswitch: val.noswitch,
+          feedpoints: val.feedpoints,
+          faultSwitch: val.faultSwitch,
+          currentTable: val.currentTable,
+          prevReconfigure: val.reconfigure,
+          minOut: val.minOut,
+          prevMapState: val.mapState,
+          isGenerated: val.isGenerated
         });
-  }
 
+        this.setState({
+          switch_list: getSwitches(this.state.switchtable),
+          section_list: getSections(this.state.switchtable),
+          noopensw_list: getNormallyOpenSwitches(this.state.noswitch),
+          feeding_list: getFeedingPoints(this.state.feedpoints),
+          allFaultPaths: processPrevReconfigure(this.state.prevReconfigure)
+        });
+
+        this.setState({
+          physicalConMatrix: generatePhysicalConMatrix(
+            this.state.switchtable,
+            this.state.switch_list,
+            this.state.section_list
+          )
+        });
+        this.setState({
+          electricConMatrix: generateElectricConnectivityMatrix(
+            this.state.physicalConMatrix,
+            this.state.noopensw_list,
+            this.state.switch_list,
+            this.state.section_list
+          )
+        });
+        this.setState({
+          feedMatrix: generateFeedingMatrix(
+            this.state.electricConMatrix,
+            this.state.feeding_list,
+            this.state.switch_list,
+            this.state.section_list
+          )
+        });
+        this.setState({
+          physicalConFeedMatrix: generatePhysicalConnectionFeederMatrix(
+            this.state.physicalConMatrix,
+            this.state.feeding_list,
+            this.state.switch_list,
+            this.state.section_list
+          )
+        });
+
+        //Find Faults
+        this.findingFaults();
+
+        this.setState({
+          currentSwVal: getSwitchesCurrent(this.state.currentTable)
+        });
+        console.log(this.state.prevMapState);
+        //Map State
+        this.setState({
+          mapState: generateMapState(
+            this.state.prevMapState,
+            this.state.switch_list,
+            this.state.isGenerated,
+            this.state.noopensw_list,
+            this.state.branch,
+            this.state.faultSwitch,
+            this.state.faultLoc,
+            this.state.prevReconfigure
+          )
+        });
+
+        //Draw graph
+        let graphData = drawGraph(
+          this.state.feeding_list,
+          this.state.noopensw_list,
+          this.state.switch_list,
+          this.state.section_list,
+          this.state.faultyPathSwithces,
+          this.state.faultyPathSections,
+          this.state.switchtable,
+          this.state.faultSwitch,
+          this.state.allFaultPaths,
+          this.state.mapState
+        )[0];
+        let graphConfig = drawGraph(
+          this.state.feeding_list,
+          this.state.noopensw_list,
+          this.state.switch_list,
+          this.state.section_list,
+          this.state.faultyPathSwithces,
+          this.state.faultyPathSections,
+          this.state.switchtable,
+          this.state.faultSwitch,
+          this.state.allFaultPaths,
+          this.state.mapState
+        )[1];
+        this.setState({
+          graph_data: graphData,
+          graph_config: graphConfig
+        });
+        //this.drawTree()
+      })
+      .catch(e => {
+        console.log(e);
+        Swal.fire({
+          type: "error",
+          title: e.name,
+          text: e.message
+        });
+      });
+  };
 
   onChangeDB() {
     let branch = this.state.branch !== undefined ? this.state.branch : "";
@@ -252,8 +262,6 @@ class Dashboard extends React.Component {
     //     this.changeGrid(this.state.branch)
     //   });
   }
-
-
 
   findingFaults = () => {
     if (checkFaults(this.state.faultSwitch)) {
@@ -402,7 +410,7 @@ class Dashboard extends React.Component {
     this.setState({
       branch: event.target.value
     });
-    this.changeGrid(event.target.value)
+    this.changeGrid(event.target.value);
   };
   onChangeWithInput = (node, e) => {
     var arr = this.state.affectedSections;
@@ -417,17 +425,15 @@ class Dashboard extends React.Component {
     this.setState({ affectedSections: arr });
   };
 
-  chageMap=()=>{
-    if(this.state.branch!==""){
-      if(!this.state.manual){
-        this.setState({ButtonCaption:"View Structural Map"})
-      }
-      else{
-        this.setState({ButtonCaption:"View Graph Map"})
+  chageMap = () => {
+    if (this.state.branch !== "") {
+      if (!this.state.manual) {
+        this.setState({ ButtonCaption: "View Structural Map" });
+      } else {
+        this.setState({ ButtonCaption: "View Graph Map" });
       }
       this.setState({ manual: !this.state.manual });
-    }
-    else{
+    } else {
       Swal.fire({
         type: "error",
         title: "No Branch Selected",
@@ -555,7 +561,7 @@ class Dashboard extends React.Component {
           </DialogActions>
         </Dialog>
         <div className="row">
-          <div className="col-md-3" style={{marginTop:'50px'}}>
+          <div className="col-md-3" style={{ marginTop: "50px" }}>
             <SelectBranch changed={this.selectMapEventHandler} />
           </div>
           <div>
@@ -566,7 +572,10 @@ class Dashboard extends React.Component {
                     <CardHeader color="primary">
                       <h4 className={classes.cardTitleWhite}>
                         {this.state != null ? this.state.branch : ""} Electric
-                        Grid {this.state.manual?"(Graph View)":"(Structural View)"}
+                        Grid{" "}
+                        {this.state.manual
+                          ? "(Graph View)"
+                          : "(Structural View)"}
                       </h4>
 
                       <p className={classes.cardCategoryWhite}>
@@ -585,7 +594,11 @@ class Dashboard extends React.Component {
                     <CardHeader color="danger">
                       <h4 className={classes.cardTitleWhite}>
                         {this.state != null ? this.state.branch : ""} Electric
-                        Grid {this.state.manual?"(Graph View)":"(Structural View)"} <small>(Check logs)</small>
+                        Grid{" "}
+                        {this.state.manual
+                          ? "(Graph View)"
+                          : "(Structural View)"}{" "}
+                        <small>(Check logs)</small>
                       </h4>
                       <p className={classes.cardCategoryWhite}>
                         Physical connection graph will display here.(Click on
@@ -606,7 +619,7 @@ class Dashboard extends React.Component {
                         "Please select a branch"
                       ) : this.state.manual ? (
                         <div>
-                           <Graph
+                          <Graph
                             id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                             data={this.state.graph_data}
                             config={this.state.graph_config}
@@ -616,7 +629,7 @@ class Dashboard extends React.Component {
                                 this.state.noopensw_list,
                                 this.state.feeding_list,
                                 this.state.currentSwVal,
-                                this.state.switch_list,
+                                this.state.switch_list
                               )
                             }
                             onRightClickNode={onRightClickNode}
@@ -624,11 +637,24 @@ class Dashboard extends React.Component {
                               this.handleClickOpen(event, source, target)
                             }
                           />
-                          
                         </div>
                       ) : (
                         <div>
-                          <MyDiagram no_list={this.state.noopensw_list} feed_list={this.state.feeding_list} crnt_tbl={this.state.currentSwVal} sw_list={this.state.switch_list}></MyDiagram>
+
+                          <img src={require("../../assets/img/Details.png")} style={{
+                            height: "24%",
+                            width:"30%",
+                            position: "absolute",
+                            right: "0%"
+                          }}/>
+                          <MyDiagram
+                            no_list={this.state.noopensw_list}
+                            feed_list={this.state.feeding_list}
+                            crnt_tbl={this.state.currentSwVal}
+                            sw_list={this.state.switch_list}
+                          ></MyDiagram>
+
+
                         </div>
                       )}
                     </div>
