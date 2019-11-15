@@ -295,7 +295,7 @@ const generateMapState = (mapStated, switchlist, isGenerated, nolist,branch,faul
   if(isGenerated){
     for(let i=0;i<switchlist.length;i++){
       mapState[switchlist[i]]= mapStated[switchlist[i]]
-      console.log(prevReconfigure)
+      //console.log(prevReconfigure)
       
     }
 
@@ -361,13 +361,14 @@ const resetMapState = (switchlist,nolist,branch) => {
   return mapState
 }
 
-const reconfigureMapState = (affectedlist, normal, switchlist,nolist,branch, logIndex) => {
-  let mapState = []
+const reconfigureMapState = (affectedlist, normal, mapState, switchlist, branch, logIndex) => {
+  console.log(affectedlist)
+  console.log(normal)
+  console.log(mapState)
+  console.log(switchlist)
+  console.log(branch)
+  console.log(logIndex)
   for(let i=0;i<switchlist.length;i++){
-    mapState[switchlist[i]] = 1
-    if(nolist.includes(switchlist[i])){
-      mapState[switchlist[i]] = 0
-    }
     if(affectedlist.includes(switchlist[i])){
       mapState[switchlist[i]] = 0
     }
@@ -378,7 +379,16 @@ const reconfigureMapState = (affectedlist, normal, switchlist,nolist,branch, log
   }
   firebase.database().ref().child(branch).child('mapState').set(mapState)
   firebase.database().ref().child(branch).child('reconfigure').child(logIndex).child('isReconfigured').set(true)
-  return mapState
+}
+
+const isolateMapState = (faultSection, mapState, branch) => {
+  
+  mapState[faultSection[0]] = 0
+  mapState[faultSection[1]] = 0
+  console.log(mapState)
+  firebase.database().ref().child(branch).child('mapState').set(mapState)
+  //firebase.database().ref().child(branch).child('reconfigure').child(logIndex).child('isIsolated').set(true)
+
 }
 
 const processPrevReconfigure = ( prevReconfigure ) => {
@@ -397,4 +407,4 @@ const processPrevReconfigure = ( prevReconfigure ) => {
 export { getSwitches, getSections, getSectionOfSwitch, getNormallyOpenSwitches, getSwitchType, getFeedingPoints, generatePhysicalConMatrix };
 export { generateElectricConnectivityMatrix, generateFeedingMatrix, rowOperation, colOperation, findFeederInRow, findFeederInCol }
 export { getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix, getSwitchesFromSection, getSwitchesCurrent, generateMapState }
-export { processPrevReconfigure, resetMapState, getSwitchCurrent, reconfigureMapState }
+export { processPrevReconfigure, resetMapState, getSwitchCurrent, reconfigureMapState, isolateMapState }

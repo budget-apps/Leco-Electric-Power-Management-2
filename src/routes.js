@@ -14,7 +14,7 @@ import FeedingPointMatrix from "views/Feeding-point-matrix/feedingpointmatrix";
 import DashboardPage from "views/Dashboard/Dashboard";
 import switchtable from "views/Switch-Table/switchtable";
 import logs from "views/Logs/Logs";
-import SingleLineMap from "./views/Single LIne Map/single_line_map";
+import SingleLineMapScreen from "./views/SingleLineMapScreen/SingleLineMapScreen";
 //import FaultGenerator from "views/FaultGenerater/FaultGenerator";
 
 // core components/views for RTL layout
@@ -33,7 +33,7 @@ const dashboardRoutes = [
     name: "Single LIne Map",
     rtlName: "طباعة",
     icon: MyLocationIcon,
-    component: SingleLineMap,
+    component: SingleLineMapScreen,
     layout: "/admin"
   },
 

@@ -13,7 +13,7 @@ import CardBody from "components/Card/CardBody.jsx";
 import { Graph } from 'react-d3-graph';
 import Swal from "sweetalert2";
 import SelectBranch from "components/SelectBranch/selectBranch";
-import { getSwitches, getSections, getNormallyOpenSwitches, resetMapState, reconfigureMapState } from "../Dashboard/matrixOperations";
+import { getSwitches, getSections, getNormallyOpenSwitches, resetMapState, reconfigureMapState, isolateMapState } from "../Dashboard/matrixOperations";
 import {drawPath} from "../Dashboard/drawMap"
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -105,7 +105,7 @@ class PhysicalConnectivity extends React.Component {
         let graphConfig  = drawPath(se, sw, switchtable)[1]
 
         graphDatas.push([graphData,graphConfig])
-        viewBtn.push(<Button onClick={()=>this.handleShow(i-1, j)}>View Reconfigure {j+1}</Button>)
+        viewBtn.push(<Button color='info' onClick={()=>this.handleShow(i-1, j)}>View Reconfigure {j+1}</Button>)
       }
       let gphs = this.state.graphs
       gphs.push(graphDatas)
@@ -116,14 +116,17 @@ class PhysicalConnectivity extends React.Component {
       details.push(viewBtn)
       let opindex = <div>No Optimal path </div>
       if(optimalPath[0]!==undefined && optimalPath[0]!==-1){
-        opindex = <Button onClick={()=>this.handleShowOp(i-1, optimalPath[0])}>Optimal path </Button>
+        opindex = <Button color='primary' onClick={()=>this.handleShowOp(i-1, optimalPath[0])}>Optimal path </Button>
       }
       else{
-        opindex = <Button > No optimal path </Button>
+        opindex = <Button color='primary' > No optimal path </Button>
       }
       details.push(opindex)
-      details.push(<Button onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </Button>)
-      let row = [time, details, <Button onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Repaired <CheckIcon/></div>:"Repair"}</Button>]
+      details.push(<div>
+                      <Button color='warning' onClick={()=>this.isolateBtnHandler(faultySection[0], this.state.mapState,this.state.branch, isFaultRepaired)}> Isolate </Button>
+                      <Button color='success' onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, this.state.mapState, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </Button>
+                  </div>)
+      let row = [time, details, <Button color={isFaultRepaired?"success":"default"} onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Repaired <CheckIcon/></div>:"Repair"}</Button>]
       tableData.push(row)
       
     }
@@ -131,13 +134,33 @@ class PhysicalConnectivity extends React.Component {
     this.setState({
       tableData: tableData
     })
+
   }
-  handleReconfigure = (optimalPath, reconfiguredPaths, faultySection, isFaultRepaired, switch_list, faultSwitch, logIndex) => {
+
+  isolateBtnHandler= (faultSection, mapState, branch, isFaultRepaired) => {
+    if(!isFaultRepaired){
+      isolateMapState(faultSection, mapState, branch)
+      Swal.fire({
+        title: 'Success!',
+        text: "Fault section isolated successfully!",
+        type: 'success',
+      })
+    }else{
+      Swal.fire({
+        title: 'Sorry!',
+        text: "Fault repaired already!",
+        type: 'error',
+      })
+    }
+    
+  }
+
+  handleReconfigure = (optimalPath, reconfiguredPaths, mapState, faultySection, isFaultRepaired, switch_list, faultSwitch, logIndex) => {
     let path = reconfiguredPaths[optimalPath[0]]
     let upto = optimalPath[2]
     let affected = []
     let normal = []
-    console.log(isFaultRepaired)
+    console.log(mapState)
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -153,7 +176,7 @@ class PhysicalConnectivity extends React.Component {
           affected.push(faultySection[0], faultySection[1])
           normal.push(faultSwitch, switch_list[path[0][0][0]])
           console.log(affected)
-          reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
+          reconfigureMapState(affected, normal, mapState, switch_list,this.state.branch, logIndex)
           Swal.fire({
             title: 'Reconfiguration Report',
             type: 'success',
@@ -171,7 +194,7 @@ class PhysicalConnectivity extends React.Component {
           affected.push(faultySection[0], faultySection[1])
           normal.push(switch_list[path[0][0][0]])
           console.log(affected)
-          reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
+          reconfigureMapState(affected, normal, mapState, switch_list,this.state.branch, logIndex)
           Swal.fire({
             title: 'Reconfiguration Report',
             type: 'success',
@@ -190,7 +213,7 @@ class PhysicalConnectivity extends React.Component {
           affected.push(faultySection[0], faultySection[1])
           normal.push(switch_list[path[0][0][0]])
           console.log(affected)
-          reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
+          reconfigureMapState(affected, normal, mapState, switch_list,this.state.branch, logIndex)
           Swal.fire({
             title: 'Reconfiguration Report',
             type: 'success',
@@ -209,7 +232,7 @@ class PhysicalConnectivity extends React.Component {
           affected.push(faultySection[0], faultySection[1])
           normal.push(switch_list[path[0][0][0]])
           console.log(affected)
-          reconfigureMapState(affected, normal, switch_list, this.state.noopensw_list,this.state.branch, logIndex)
+          reconfigureMapState(affected, normal, mapState, switch_list,this.state.branch, logIndex)
           Swal.fire({
             title: 'Reconfiguration Report',
             type: 'success',
@@ -284,7 +307,7 @@ class PhysicalConnectivity extends React.Component {
     .then((snapshot) => {
         const val = snapshot.val();
         
-        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable, logIndex: val.logIndex,  noswitch: val.noswitch})
+        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable, logIndex: val.logIndex,  noswitch: val.noswitch, mapState: val.mapState})
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
           section_list: getSections(this.state.switchtable),

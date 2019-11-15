@@ -1,15 +1,13 @@
 import {getSectionOfSwitch, getSwitchType, getSwitchesFromSection} from "./matrixOperations"
 import Swal from "sweetalert2";
 
-const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, faultyPathSections, switchtable, faultSwitch, prevReconfigure, mapState) => {
+const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, faultyPathSections, switchtable, faultSwitch, prevReconfigure, mapState) => {
     let nodes_arr = []
     let link_arr = []
-
+    console.log(faultLoc)
     for(let i=0;i<se_list.length;i++){
       let color = "grey"
-      if(faultyPathSections.includes(i)){
-        color = "#654321"
-      }
+    
       nodes_arr.push({id: se_list[i],color: color, size: 200, symbolType: "circle"})
     }
 
@@ -24,14 +22,26 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
         color = "#ff4848"
       }else if(feed_list.includes(sw_list[i])){
         color = "#6fb7ff"
-      }else if(faultSwitch===sw_list[i]){
+      }else{
+
+      }
+
+      if(faultLoc.includes(sw_list[i])){
+        color = "#ffff00"
+      }
+      else{
+        
+      }
+
+      if(faultyFeeder===sw_list[i]){
         color = "#654321"
-      }else if(faultyPathSwithces.includes(i)){
-        color = "#654321"
+      }else{
+
       }
       
-      if(mapState[sw_list[i]]===1){
+      if(mapState[sw_list[i]]===1 && noopn_list.includes(sw_list[i])){
         typeofnode = "Close"
+        color = "#003366"
       }
       else{
         typeofnode = "Open"
@@ -40,7 +50,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       id = id + "\n" + typeofnode
 
       if(prevReconfigure.length!==0){
-        for(let j=0;j<prevReconfigure.length;j++){
+        for(let j=0;j<prevReconfigure.length-1;j++){
           for(let k=0;k<prevReconfigure[j].length;k++){
             if(sw_list[prevReconfigure[j][k][0]]===sw_list[i]){
               color = "#654321"
@@ -55,6 +65,24 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       for(let j=0;j<section_list.length;j++){
         if(faultyPathSwithces.includes(sw_list.indexOf(sw_list[i]))){
           link_color = "#654321"
+        }
+        if(faultLoc.includes(sw_list[i])){
+          link_color = "#ffff00"
+        }
+        else{
+          
+        }
+
+        if(faultyFeeder===sw_list[i]){
+          link_color = "#654321"
+        }else{
+          
+        }
+
+        if(mapState[sw_list[i]]===1 && noopn_list.includes(sw_list[i])){
+          link_color = "#003366"
+        }
+        else{
         }
         link_arr.push({source: id, target: section_list[j], color: link_color})
           
@@ -84,16 +112,17 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
       "width": 1000,
       "d3": {
         "alphaTarget": 0.05,
-        "gravity": -400,
-        "linkLength": 90,
-        "linkStrength": 2
+        "gravity": -600,
+        "linkLength": 120,
+        "linkStrength": 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
       },
       node: {
           color: 'lightgreen',  
           size: 120,
           highlightStrokeColor: 'red',
+          fontSize: 20                                                                        
       },
-      link: {
+      link: {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
         color: '#6fff6f',
         highlightColor: 'green'
       }
@@ -152,7 +181,7 @@ const drawGraph = (feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, 
           color: 'lightgreen',
           size: 300,
           highlightStrokeColor: 'blue',
-          fontSize: 50
+          fontSize: 10
       },
       link: {
         color: 'grey',

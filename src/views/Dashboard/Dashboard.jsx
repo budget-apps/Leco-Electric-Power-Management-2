@@ -189,7 +189,19 @@ class Dashboard extends React.Component {
           currentSwVal: getSwitchesCurrent(this.state.currentTable)
         });
         console.log(this.state.prevMapState);
-        //Map State
+
+        firebase
+        .database()
+        .ref()
+        .child(branch)
+        .once("value")
+        .then(snapshot => {
+          const val = snapshot.val();
+          console.log(JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]);
+
+          let faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
+          let faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
+           //Map State
         this.setState({
           mapState: generateMapState(
             this.state.prevMapState,
@@ -198,7 +210,7 @@ class Dashboard extends React.Component {
             this.state.noopensw_list,
             this.state.branch,
             this.state.faultSwitch,
-            this.state.faultLoc,
+            faultLoc,
             this.state.prevReconfigure,
             this.state.mapUpdated
           )
@@ -206,6 +218,8 @@ class Dashboard extends React.Component {
 
         //Draw graph
         let graphData = drawGraph(
+          faultFeeder,
+          faultLoc,
           this.state.feeding_list,
           this.state.noopensw_list,
           this.state.switch_list,
@@ -218,6 +232,8 @@ class Dashboard extends React.Component {
           this.state.mapState
         )[0];
         let graphConfig = drawGraph(
+          faultFeeder,
+          faultLoc,
           this.state.feeding_list,
           this.state.noopensw_list,
           this.state.switch_list,
@@ -233,6 +249,10 @@ class Dashboard extends React.Component {
           graph_data: graphData,
           graph_config: graphConfig
         });
+
+        })
+
+       
         //this.drawTree()
       })
       .catch(e => {
@@ -245,28 +265,23 @@ class Dashboard extends React.Component {
       });
   };
 
-  onChangeDB() {
-    let branch = this.state.branch !== undefined ? this.state.branch : "";
-    if (branch === "") {
-      return "";
-    }
-    // firebase
-    //   .database()
-    //   .ref()
-    //   .child(branch+"/faultSwitch")
-    //   .on("value", function(snapshot) {
-    //     //Do whatever
-    //     let switchids = snapshot.val()
-    //     Swal.fire({
-    //       type: "info",
-    //       title: "DBChanged",
-    //       text: switchids
-    //     });
-    //     this.changeGrid(this.state.branch)
-    //   });
+  onChangeDB =()=> {
+    
+    firebase
+      .database()
+      .ref()
+      .child(this.state.branch+"/mapState")
+      .on("value", function(snapshot) {
+        //Do whatever
+        Swal.fire({
+          type: "info",
+          title: "DBChanged",
+          text: "Please refresh the screen"
+        });
+      });
   }
 
-  findingFaults = () => {
+  findingFaults(){
     if (checkFaults(this.state.faultSwitch)) {
       Swal.fire({
         type: "error",
@@ -366,10 +381,12 @@ class Dashboard extends React.Component {
             this.state.switch_list,
             this.state.switchtable
           );
-          this.setState({
-            faultLoc: loc
-          });
-          console.log(this.state.faultLoc);
+          
+            this.setState({
+              faultLoc: loc
+            });
+            console.log(this.state.faultLoc);
+          
 
           //reconfigure
           this.setState({
@@ -482,6 +499,7 @@ class Dashboard extends React.Component {
   hadleOnclickErrorBtn = () => {};
 
   render() {
+    this.onChangeDB()
     const { classes } = this.props;
     return (
       <div>
@@ -622,6 +640,12 @@ class Dashboard extends React.Component {
                         "Please select a branch"
                       ) : this.state.manual ? (
                         <div>
+                          <img alt={''} src={require("../../assets/img/Details1.png")} style={{
+                           height: 180,
+                           width:300,
+                            position: "absolute",
+                            right: "0%"
+                          }}/>
                           <Graph
                             id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                             data={this.state.graph_data}
@@ -644,13 +668,13 @@ class Dashboard extends React.Component {
                       ) : (
                         <div>
 
-                          <img src={require("../../assets/img/Details1.png")} style={{
-                            height: "20%",
-                            width:"20%",
+                          <img alt={''} src={require("../../assets/img/Details1.png")} style={{
+                            height: 180,
+                            width:300,
                             position: "absolute",
                             right: "0%"
                           }}/>
-                          {this.state.branch == "Negambo-2" ?
+                          {this.state.branch === "Negambo-2" ?
                               <MyDiagram
                                   no_list={this.state.noopensw_list}
                                   feed_list={this.state.feeding_list}
