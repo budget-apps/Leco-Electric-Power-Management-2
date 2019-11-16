@@ -199,8 +199,15 @@ class Dashboard extends React.Component {
           const val = snapshot.val();
           console.log(JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]);
 
-          let faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
-          let faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
+          let isRepaired = val.reconfigure[this.state.logIndex].isFaultRepaired
+          let faultLoc = []
+          let faultFeeder = []
+          console.log(isRepaired)
+          if(!isRepaired){
+            faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
+            faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
+          }
+          
            //Map State
         this.setState({
           mapState: generateMapState(
@@ -499,7 +506,7 @@ class Dashboard extends React.Component {
   hadleOnclickErrorBtn = () => {};
 
   render() {
-    this.onChangeDB()
+    //this.onChangeDB()
     const { classes } = this.props;
     return (
       <div>
@@ -574,10 +581,10 @@ class Dashboard extends React.Component {
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleClose} color="primary">
-              Disagree
+              Add
             </Button>
             <Button onClick={this.submit} color="primary" autoFocus>
-              Agree
+              Cancle
             </Button>
           </DialogActions>
         </Dialog>
@@ -640,8 +647,8 @@ class Dashboard extends React.Component {
                         "Please select a branch"
                       ) : this.state.manual ? (
                         <div>
-                          <img alt={''} src={require("../../assets/img/Details1.png")} style={{
-                           height: 180,
+                          <img alt={''} src={require("../../assets/img/Details2.png")} style={{
+                           height: 200,
                            width:300,
                             position: "absolute",
                             right: "0%"
@@ -668,9 +675,10 @@ class Dashboard extends React.Component {
                       ) : (
                         <div>
 
-                          <img alt={''} src={require("../../assets/img/Details1.png")} style={{
-                            height: 180,
+                          <img alt={''} src={require("../../assets/img/Details2.png")} style={{
+                            height: 200,
                             width:300,
+                            margin: 10,
                             position: "absolute",
                             right: "0%"
                           }}/>
