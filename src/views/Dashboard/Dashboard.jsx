@@ -648,7 +648,7 @@ class Dashboard extends React.Component {
                       ) : this.state.manual ? (
                         <div>
                           <img alt={''} src={require("../../assets/img/Details2.png")} style={{
-                           height: 200,
+                           height: 300,
                            width:300,
                             position: "absolute",
                             right: "0%"
@@ -676,7 +676,7 @@ class Dashboard extends React.Component {
                         <div>
 
                           <img alt={''} src={require("../../assets/img/Details2.png")} style={{
-                            height: 200,
+                            height: 300,
                             width:300,
                             margin: 10,
                             position: "absolute",
