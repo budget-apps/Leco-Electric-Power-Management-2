@@ -97,7 +97,7 @@ class SingleLineMapScreen extends React.Component {
                     <ImageZoom
                       image={{
                         src: require("../../assets/img/enlarge1.jpg"),
-                        alt: "Golden Gate Bridge",
+                        alt: "Negambo",
                         className: "img",
                         style: { width: "50em" }
                       }}
@@ -111,7 +111,7 @@ class SingleLineMapScreen extends React.Component {
                       <ImageZoom
                         image={{
                           src: require("../../assets/img/enlarge2.jpg"),
-                          alt: "Golden Gate Bridge",
+                          alt: "Negamobo2",
                           className: "img",
                           style: { width: "50em" }
                         }}
