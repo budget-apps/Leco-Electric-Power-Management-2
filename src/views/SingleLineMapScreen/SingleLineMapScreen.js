@@ -27,6 +27,8 @@ import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import SelectBranch from "components/SelectBranch/selectBranch";
+import ImageZoom from 'react-medium-image-zoom'
+
 
 const styles = {
   cardCategoryWhite: {
@@ -58,54 +60,80 @@ const styles = {
   }
 };
 
-
-
 class SingleLineMapScreen extends React.Component {
-
-  /*Change map details on change of the drop down*/
-  selectMapEventHandler=(event)=>{
-
-    console.log(event.target.value)
-    
-
+  // eslint-disable-next-line constructor-super
+  constructor() {
+    super();
+    this.state = {
+      branch: ""
+    };
   }
 
-  render(){
+  /*Change map details on change of the drop down*/
+  selectMapEventHandler = event => {
+    this.setState({ branch: event.target.value });
+  };
+
+  render() {
     const { classes } = this.props;
     return (
-    <div>
-      <div style={{marginTop:'40px'}}>
-      <SelectBranch changed={this.selectMapEventHandler}/>
-    </div>
       <div>
-      <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
-        <Card>
-          <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>Single Line Diagram</h4>
-            <p className={classes.cardCategoryWhite}>
-              Here is a single line diagram
-            </p>
-          </CardHeader>
-          <CardBody>
-          <div>
-            <img alt={''} src={require("../../assets/img/output.png")} style={{
-                    height: "100%",
-                    width:"100%"
-                }}/>
-            </div>
-          </CardBody>
-        </Card>
-      </GridItem>
-     
-    </GridContainer>
+        <div style={{ marginTop: "40px" }}>
+          <SelectBranch changed={this.selectMapEventHandler} />
+        </div>
+        <div>
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={12}>
+              <Card>
+                <CardHeader color="primary">
+                  <h4 className={classes.cardTitleWhite}>
+                    Single Line Diagram
+                  </h4>
+                  <p className={classes.cardCategoryWhite}>
+                    Here is a single line diagram
+                  </p>
+                </CardHeader>
+                <CardBody>
+                  {this.state.branch == "Negambo" ? (
+
+                      <ImageZoom
+                          image={{
+                            src:require("../../assets/img/enlarge1.jpg"),
+                            alt: 'Golden Gate Bridge',
+                            className: 'img',
+                            style: { width: '50em' }
+                          }}
+                          zoomImage={{
+                            src: '../../assets/img/enlarge1.png',
+                            alt: 'Golden Gate Bridge'
+                          }}
+                      />
+                  ) : this.state.branch == "Negambo-2" ? (
+                    <div>
+                      <ImageZoom
+                          image={{
+                            src:require("../../assets/img/enlarge2.jpg"),
+                            alt: 'Golden Gate Bridge',
+                            className: 'img',
+                            style: { width: '50em' }
+                          }}
+                          zoomImage={{
+                            src: '../../assets/img/enlarge2.png',
+                            alt: 'Golden Gate Bridge'
+                          }}
+                      />
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                </CardBody>
+              </Card>
+            </GridItem>
+          </GridContainer>
+        </div>
       </div>
-      
-    
-    </div>
-    
-  );
-}
+    );
+  }
 }
 
 SingleLineMapScreen.propTypes = {
