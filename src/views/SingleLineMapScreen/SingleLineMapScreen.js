@@ -27,8 +27,7 @@ import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import SelectBranch from "components/SelectBranch/selectBranch";
-import ImageZoom from 'react-medium-image-zoom'
-
+import ImageZoom from "react-medium-image-zoom";
 
 const styles = {
   cardCategoryWhite: {
@@ -95,32 +94,31 @@ class SingleLineMapScreen extends React.Component {
                 </CardHeader>
                 <CardBody>
                   {this.state.branch == "Negambo" ? (
-
-                      <ImageZoom
-                          image={{
-                            src:require("../../assets/img/enlarge1.jpg"),
-                            alt: 'Golden Gate Bridge',
-                            className: 'img',
-                            style: { width: '50em' }
-                          }}
-                          zoomImage={{
-                            src: '../../assets/img/enlarge1.png',
-                            alt: 'Golden Gate Bridge'
-                          }}
-                      />
+                    <ImageZoom
+                      image={{
+                        src: require("../../assets/img/enlarge1.jpg"),
+                        alt: "Golden Gate Bridge",
+                        className: "img",
+                        style: { width: "50em" }
+                      }}
+                      zoomImage={{
+                        src: "../../assets/img/enlarge1.png",
+                        alt: "Golden Gate Bridge"
+                      }}
+                    />
                   ) : this.state.branch == "Negambo-2" ? (
                     <div>
                       <ImageZoom
-                          image={{
-                            src:require("../../assets/img/enlarge2.jpg"),
-                            alt: 'Golden Gate Bridge',
-                            className: 'img',
-                            style: { width: '50em' }
-                          }}
-                          zoomImage={{
-                            src: '../../assets/img/enlarge2.png',
-                            alt: 'Golden Gate Bridge'
-                          }}
+                        image={{
+                          src: require("../../assets/img/enlarge2.jpg"),
+                          alt: "Golden Gate Bridge",
+                          className: "img",
+                          style: { width: "50em" }
+                        }}
+                        zoomImage={{
+                          src: "../../assets/img/enlarge2.png",
+                          alt: "Golden Gate Bridge"
+                        }}
                       />
                     </div>
                   ) : (
