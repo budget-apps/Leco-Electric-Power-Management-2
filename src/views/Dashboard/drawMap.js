@@ -104,7 +104,7 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       "highlightOpacity": 1,
       "linkHighlightBehavior": true,
       "maxZoom": 1,
-      "minZoom": 0.8,
+      "minZoom": 0.3,
       "nodeHighlightBehavior": false,
       "panAndZoom": false,
       "staticGraph": false,
