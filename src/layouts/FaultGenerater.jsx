@@ -124,6 +124,20 @@ class Dashboard extends React.Component {
     const { classes, ...rest } = this.props;
     return (
       <div className={classes.wrapper}>
+        {this.state.show ? (
+          <Sidebar
+            routes={routes}
+            logoText={"Creative Tim"}
+            logo={logo}
+            image={this.state.image}
+            handleDrawerToggle={this.handleDrawerToggle}
+            open={this.state.mobileOpen}
+            color={this.state.color}
+            {...rest}
+          />
+        ) : (
+          <div></div>
+        )}
         <div
           style={{
             marginTop: 0,
@@ -133,37 +147,21 @@ class Dashboard extends React.Component {
           className={this.state.show ? classes.mainPanel : ""}
           ref={this.mainPanel}
         >
-          {this.state.show ? (
-            <Sidebar
-              routes={routes}
-              logoText={"Creative Tim"}
-              logo={logo}
-              image={this.state.image}
-              handleDrawerToggle={this.handleDrawerToggle}
-              open={this.state.mobileOpen}
-              color={this.state.color}
-              {...rest}
-            />
+          <Navbar
+            routes={routes}
+            changeSidebar={this.change}
+            handleDrawerToggle={this.handleDrawerToggle}
+            {...rest}
+          />
+          {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
+          {this.getRoute() ? (
+            <div className={classes.content}>
+              <div className={classes.container}>{switchRoutes}</div>
+            </div>
           ) : (
-            <div></div>
+            <div className={classes.map}>{switchRoutes}</div>
           )}
-          <div className={classes.mainPanel} ref={this.mainPanel}>
-            <Navbar
-              routes={routes}
-              changeSidebar={this.change}
-              handleDrawerToggle={this.handleDrawerToggle}
-              {...rest}
-            />
-            {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
-            {this.getRoute() ? (
-              <div className={classes.content}>
-                <div className={classes.container}>{switchRoutes}</div>
-              </div>
-            ) : (
-              <div className={classes.map}>{switchRoutes}</div>
-            )}
-            {this.getRoute() ? <Footer /> : null}
-          </div>
+          {this.getRoute() ? <Footer /> : null}
         </div>
       </div>
     );
