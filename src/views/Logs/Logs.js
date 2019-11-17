@@ -156,6 +156,16 @@ class PhysicalConnectivity extends React.Component {
   }
 
   handleReconfigure = (optimalPath, reconfiguredPaths, mapState, faultySection, isFaultRepaired, switch_list, faultSwitch, logIndex) => {
+    
+    if(optimalPath[0]==="-1"){
+      Swal.fire({
+        type: 'error',
+        title: 'NO Optimal Path',
+        text: 'Optimal path does not exist at the moment due to the power consumption in the reconfigure path.',
+      })
+      return
+    }
+
     let path = reconfiguredPaths[optimalPath[0]]
     let upto = optimalPath[2]
     let affected = []
@@ -351,11 +361,20 @@ class PhysicalConnectivity extends React.Component {
   }
 
   handleShowOp = (viewIndex, subIndex) => {
-    this.setState({
-      showOp: true,
-      viewIndex: viewIndex,
-      subIndex: subIndex
-  });
+    if(subIndex!=="-1"){
+      this.setState({
+        showOp: true,
+        viewIndex: viewIndex,
+        subIndex: subIndex
+      });
+    }else{
+      Swal.fire({
+        type: 'error',
+        title: 'NO Optimal Path',
+        text: 'Optimal path does not exist at the moment due to the power consumption in the reconfigure path.',
+      })
+    }
+    
     
   }
 

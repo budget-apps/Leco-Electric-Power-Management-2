@@ -437,7 +437,16 @@ class Dashboard extends React.Component {
     this.setState({
       branch: event.target.value
     });
-    this.changeGrid(event.target.value);
+    try{
+      this.changeGrid(event.target.value);
+    }catch(err){
+      Swal.fire({
+        type: "error",
+        title: "Fatal error",
+        text: err.message+'. Please contact the system admin.'
+      });
+    }
+    
   };
   onChangeWithInput = (node, e) => {
     var arr = this.state.affectedSections;

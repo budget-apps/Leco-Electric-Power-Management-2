@@ -43,22 +43,29 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
         typeofnode = "Close"
         color = "#003366"
       }
-      else{
+      else if(mapState[sw_list[i]]===0 && noopn_list.includes(sw_list[i])){
         typeofnode = "Open"
-      }
+      }else if(mapState[sw_list[i]]===1 && !noopn_list.includes(sw_list[i])){
+        typeofnode = "Close"
+      }else if(mapState[sw_list[i]]===0 && !noopn_list.includes(sw_list[i])){
+        typeofnode = "Open"
+      }else{}
 
-      id = id + "\n" + typeofnode
+     
 
       if(prevReconfigure.length!==0){
         for(let j=0;j<prevReconfigure.length-1;j++){
           for(let k=0;k<prevReconfigure[j].length;k++){
             if(sw_list[prevReconfigure[j][k][0]]===sw_list[i]){
               color = "#654321"
+              typeofnode = "Open"
               break
             }
           }
         }
       }
+
+      id = id + "\n" + typeofnode
       nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
       let link_color ="#6fff6f"
       let section_list = getSectionOfSwitch(switchtable, sw_list[i])

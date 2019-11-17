@@ -58,19 +58,7 @@ class FaultGenerator extends React.Component {
   componentDidMount() {
     //  this.onChangeDB()
 
-    firebase
-      .database()
-      .ref()
-      .child("Negambo")
-      .once("value")
-
-      .then(snapshot => {
-        const val = snapshot.val();
-        switchtable = val.switchtable;
-        console.log(switchtable);
-        this.setState({ switchtable: val.switchtable });
-      });
-    console.log(switchtable);
+   
   }
 
   /*Change map details on change of the drop down*/
@@ -78,6 +66,20 @@ class FaultGenerator extends React.Component {
     this.setState({
       branch: event.target.value
     });
+
+    firebase
+    .database()
+    .ref()
+    .child(event.target.value)
+    .once("value")
+
+    .then(snapshot => {
+      const val = snapshot.val();
+      switchtable = val.switchtable;
+      console.log(switchtable);
+      this.setState({ switchtable: val.switchtable });
+    });
+  console.log(switchtable);
   };
 
   onChangeHandler = event => {

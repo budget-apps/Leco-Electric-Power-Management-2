@@ -119,11 +119,12 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
         }
     }
     let new_path = []
-    //console.log(allPaths)
+    console.log(allPaths)
     faultyPathSections.pop()
     for(let i=0;i<allPaths.length;i++){
       let se = allPaths[i][0][0]
-      let found = false
+      let found1 = false
+      let found2 = false
       
       //console.log("Cheking sw: "+switch_list[se]+"----------------")
       let seSec = getSectionOfSwitch(switch_table, switch_list[se])
@@ -132,19 +133,19 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
         //console.log(section_list[faultyPathSections[k]])
         if(seSec.includes(section_list[faultyPathSections[k]])){
           
-          found = true
+          found1 = true
         }
       }
 
       for(let k=0;k<allPaths[i].length;k++){
        // console.log(switch_list[allPaths[i][k][0]]+", "+faultLoc[0][0]+","+faultLoc[0][1])
         if(switch_list[allPaths[i][k][0]]===faultLoc[0][0] || switch_list[allPaths[i][k][0]]===faultLoc[0][1]){
-          found = true
+          found2 = true
         }
       }
       let temp = []
       temp.push(allPaths[i])
-      if(!found){
+      if(!found1 || !found2){
         new_path.push(temp)
       }
       //console.log("End check")
@@ -202,10 +203,10 @@ const optimalPath = (allPaths, faultySection, faultPathSwitches, currentTable, s
       }
     }  
   }
-  console.log(diff)
-  console.log(maxDiffPath)
-  console.log(allPaths[maxDiffPath][0])
-  console.log(uptoo)
+  // console.log(diff)
+  // console.log(maxDiffPath)
+  // console.log(allPaths[maxDiffPath][0])
+  // console.log(uptoo)
   return [maxDiffPath, diff, uptoo]
   
 }
