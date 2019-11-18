@@ -184,7 +184,7 @@ class FaultGenerator extends React.Component {
             <GridItem xs={12} sm={12} md={12}>
               <Card>
                 <CardHeader color="success">
-                  <h4 className={classes.cardTitleWhite}>Fault Generater</h4>
+                  <h4 className={classes.cardTitleWhite}>Fault Generator</h4>
                 </CardHeader>
                 <CardBody>
                   <GridContainer>
@@ -212,19 +212,20 @@ class FaultGenerator extends React.Component {
                         {/*<option defaultValue={"No Branch"}> Select ID</option>*/}
                         {/*<option value="Negambo">Negambo</option>*/}
                         {/*</select>*/}
-                      </div>
-                      <Button
+                        <Button
                         onClick={this.sendFault}
                         style={{ marginLeft: 5 }}
                         color="danger"
                       >
                         Power Down
                       </Button>
+                      </div>
+                      
                     </GridItem>
                     <GridItem xs={6} sm={6} md={12}>
                       <p>
-                        2. Add current table (Do not use this without except
-                        admin)
+                        2. Add current table (Do not use this without
+                        admin priviledges)
                       </p>
 
                       <AddExelCurrentData branch={this.state.branch} />

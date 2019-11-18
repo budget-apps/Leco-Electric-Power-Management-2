@@ -8,11 +8,11 @@ const findEndConnectedNOs = (faultLoc, noList, switch_table, switch_list) => {
     for(let j=0;j<faultLoc.length;j++){
         let end = faultLoc[j][1]
         let arr = getSwitchsToSwitch(switch_list,end,switch_table)
-        for(let i=0;i<arr.length;i++){
-            if(!noList.includes(arr[i])){
-                arr.splice(i,1)
-            }
-        }
+        // for(let i=0;i<arr.length;i++){
+        //     if(!noList.includes(arr[i])){
+        //         arr.splice(i,1)
+        //     }
+        // }
         console.log(arr)
         nos.push(arr)
     }
@@ -101,7 +101,7 @@ const NOToFeederPath = (switchID, faultSwitch, feedMatrix, switch_list, noList) 
     
   }
 
-const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMatrix, faultSwitch, faultyPathSections,section_list) => {
+const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMatrix, faultSwitch, faultyPathSections,section_list, faultPathSwitches) => {
     let noSet = findEndConnectedNOs(faultLoc, noList, switch_table, switch_list)
   
     let allPaths = []
@@ -120,32 +120,48 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
     }
     let new_path = []
     console.log(allPaths)
-    faultyPathSections.pop()
+    //console.log(faultLoc)
+    let f1 = switch_list.indexOf(faultLoc[0][0])
+    let f2 = switch_list.indexOf(faultLoc[0][1])
+
+    let ff1 = faultPathSwitches.indexOf(f1)
+    let ff2 = faultPathSwitches.indexOf(f2)
+    let faultLocSec = []
+    for(let x=ff1;x<ff2+1;x++){
+      faultLocSec.push([faultPathSwitches[x],faultyPathSections[x]])
+    }
+    
+
     for(let i=0;i<allPaths.length;i++){
+      
       let se = allPaths[i][0][0]
+      //console.log( switch_list[se])
+      //console.log(faultLocSec)
       let found1 = false
       let found2 = false
       
       //console.log("Cheking sw: "+switch_list[se]+"----------------")
       let seSec = getSectionOfSwitch(switch_table, switch_list[se])
       //console.log(seSec)
-      for(let k=0;k<faultyPathSections.length;k++){
-        //console.log(section_list[faultyPathSections[k]])
-        if(seSec.includes(section_list[faultyPathSections[k]])){
+      for(let k=0;k<faultLocSec.length;k++){
+        console.log(section_list[faultLocSec[k][1]])
+        if(seSec.includes(section_list[faultLocSec[k][1]])){
           
           found1 = true
         }
       }
 
       for(let k=0;k<allPaths[i].length;k++){
-       // console.log(switch_list[allPaths[i][k][0]]+", "+faultLoc[0][0]+","+faultLoc[0][1])
+        //console.log(switch_list[allPaths[i][k][0]]+", "+faultLoc[0][0]+","+faultLoc[0][1])
         if(switch_list[allPaths[i][k][0]]===faultLoc[0][0] || switch_list[allPaths[i][k][0]]===faultLoc[0][1]){
           found2 = true
         }
       }
       let temp = []
       temp.push(allPaths[i])
-      if(!found1 || !found2){
+      //console.log(found1)
+      //console.log(found2)
+      if(!found1 && !found2){
         new_path.push(temp)
       }
       //console.log("End check")

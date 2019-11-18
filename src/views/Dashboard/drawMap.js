@@ -11,6 +11,12 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       nodes_arr.push({id: se_list[i],color: color, size: 200, symbolType: "circle"})
     }
 
+    //let f1 = faultyPathSwithces.indexOf(sw_list.indexOf(faultLoc[0]))
+    let f2 = faultyPathSwithces.indexOf(sw_list.indexOf(faultLoc[1]))
+    let faultSec = se_list[faultyPathSections[f2]]
+
+    console.log("Fault section---------> "+faultSec)
+
     for(let i=0;i<sw_list.length;i++){
       let typeofnode = ""
       let id = sw_list[i]
@@ -20,17 +26,25 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       
       if(noopn_list.includes(sw_list[i])){
         color = "#ff4848"
+        typeofnode = "Open"
       }else if(feed_list.includes(sw_list[i])){
         color = "#6fb7ff"
+        typeofnode = "Close"
       }else{
-
+        color = "#6fff6f"
+        typeofnode = "Close"
       }
-
-      if(faultLoc.includes(sw_list[i])){
+      //console.log("Switch:->>>>>>>>>>>>>"+sw_list[i])
+      //console.log(mapState[sw_list[i]]===0)
+      if(faultLoc.includes(sw_list[i]) && mapState[sw_list[i]]===0){
+        //console.log("faultLoc.includes(sw_list[i]) && mapState[sw_list[i]]===0")
         color = "#ffff00"
       }
-      else{
-        
+      else if(faultLoc.includes(sw_list[i]) && mapState[sw_list[i]]===1){
+        //console.log("faultLoc.includes(sw_list[i]) && mapState[sw_list[i]]===1")
+        color = "#654321"
+      }else{
+        //do nothing
       }
 
       if(faultyFeeder===sw_list[i]){
@@ -72,24 +86,19 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       for(let j=0;j<section_list.length;j++){
         if(faultyPathSwithces.includes(sw_list.indexOf(sw_list[i]))){
           link_color = "#654321"
+        }else{
+
         }
-        if(faultLoc.includes(sw_list[i])){
+        if(faultLoc.includes(sw_list[i]) && mapState[sw_list[i]]===0 && section_list[j]===faultSec){
+          //console.log("faultLoc.includes(sw_list[i]) && mapState[sw_list[i]]===0")
           link_color = "#ffff00"
         }
         else{
-          
-        }
-
-        if(faultyFeeder===sw_list[i]){
-          link_color = "#654321"
-        }else{
-          
+          //do nothing
         }
 
         if(mapState[sw_list[i]]===1 && noopn_list.includes(sw_list[i])){
           link_color = "#003366"
-        }
-        else{
         }
         link_arr.push({source: id, target: section_list[j], color: link_color})
           

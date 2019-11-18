@@ -29,7 +29,7 @@ import {
   generateFeedingMatrix,
   generatePhysicalConnectionFeederMatrix,
   getSwitchesCurrent,
-  generateMapState,
+  //generateMapState,
   getSectionOfSwitch,
   processPrevReconfigure
 } from "./matrixOperations";
@@ -209,19 +209,19 @@ class Dashboard extends React.Component {
           }
           
            //Map State
-        this.setState({
-          mapState: generateMapState(
-            this.state.prevMapState,
-            this.state.switch_list,
-            this.state.isGenerated,
-            this.state.noopensw_list,
-            this.state.branch,
-            this.state.faultSwitch,
-            faultLoc,
-            this.state.prevReconfigure,
-            this.state.mapUpdated
-          )
-        });
+        // this.setState({
+        //   mapState: generateMapState(
+        //     this.state.prevMapState,
+        //     this.state.switch_list,
+        //     this.state.isGenerated,
+        //     this.state.noopensw_list,
+        //     this.state.branch,
+        //     this.state.faultSwitch,
+        //     faultLoc,
+        //     this.state.prevReconfigure,
+        //     this.state.mapUpdated
+        //   )
+        // });
 
         //Draw graph
         let graphData = drawGraph(
@@ -236,7 +236,7 @@ class Dashboard extends React.Component {
           this.state.switchtable,
           this.state.faultSwitch,
           this.state.allFaultPaths,
-          this.state.mapState
+          this.state.prevMapState
         )[0];
         let graphConfig = drawGraph(
           faultFeeder,
@@ -250,7 +250,7 @@ class Dashboard extends React.Component {
           this.state.switchtable,
           this.state.faultSwitch,
           this.state.allFaultPaths,
-          this.state.mapState
+          this.state.prevMapState
         )[1];
         this.setState({
           graph_data: graphData,
@@ -272,19 +272,25 @@ class Dashboard extends React.Component {
       });
   };
 
+  componentDidMount(){
+    this.onChangeDB()
+  }
+
   onChangeDB =()=> {
     
     firebase
       .database()
       .ref()
-      .child(this.state.branch+"/mapState")
-      .on("value", function(snapshot) {
+      .child(this.state.branch+"/faultSwitch")
+      .on("value", snapshot=> {
         //Do whatever
+        console.log(snapshot.val())
         Swal.fire({
           type: "info",
-          title: "DBChanged",
+          title: "DB Changed",
           text: "Please refresh the screen"
         });
+        
       });
   }
 
@@ -405,7 +411,8 @@ class Dashboard extends React.Component {
               this.state.physicalConFeedMatrix,
               this.state.faultSwitch,
               this.state.faultyPathSections,
-              this.state.section_list
+              this.state.section_list,
+              this.state.faultyPathSwithces
             )
           });
 
@@ -515,7 +522,7 @@ class Dashboard extends React.Component {
   hadleOnclickErrorBtn = () => {};
 
   render() {
-    //this.onChangeDB()
+    //
     const { classes } = this.props;
     return (
       <div>
