@@ -1,10 +1,10 @@
 import {getSectionOfSwitch, getSwitchType, getSwitchesFromSection} from "./matrixOperations"
 import Swal from "sweetalert2";
 
-const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, faultyPathSections, switchtable, faultSwitch, prevReconfigure, mapState) => {
+const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_list, faultyPathSwithces, faultyPathSections, switchtable, faultSwitch, prevReconfigure, mapState, isIsolated, isReconfigured, optimalPath) => {
     let nodes_arr = []
     let link_arr = []
-    console.log(faultLoc)
+    //console.log(faultLoc)
     for(let i=0;i<se_list.length;i++){
       let color = "grey"
     
@@ -14,8 +14,13 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
     //let f1 = faultyPathSwithces.indexOf(sw_list.indexOf(faultLoc[0]))
     let f2 = faultyPathSwithces.indexOf(sw_list.indexOf(faultLoc[1]))
     let faultSec = se_list[faultyPathSections[f2]]
-
-    console.log("Fault section---------> "+faultSec)
+    let fpath = JSON.parse(JSON.stringify(faultyPathSections))
+    // let recfNode = optimalPath[0][0]
+    // let recfSec = optimalPath[0][1]
+    let newFaultPath = fpath.splice(f2+1, fpath.length)
+    //console.log(newFaultPath)
+    
+    //console.log("Fault section---------> "+faultSec)
 
     for(let i=0;i<sw_list.length;i++){
       let typeofnode = ""
@@ -47,11 +52,6 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
         //do nothing
       }
 
-      if(faultyFeeder===sw_list[i]){
-        color = "#654321"
-      }else{
-
-      }
       
       if(mapState[sw_list[i]]===1 && noopn_list.includes(sw_list[i])){
         typeofnode = "Close"
@@ -81,28 +81,48 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
 
       id = id + "\n" + typeofnode
       nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
+      console.log(faultyPathSections)
       let link_color ="#6fff6f"
       let section_list = getSectionOfSwitch(switchtable, sw_list[i])
-      for(let j=0;j<section_list.length;j++){
-        if(faultyPathSwithces.includes(sw_list.indexOf(sw_list[i]))){
-          link_color = "#654321"
-        }else{
-
-        }
-        if(faultLoc.includes(sw_list[i]) && mapState[sw_list[i]]===0 && section_list[j]===faultSec){
-          //console.log("faultLoc.includes(sw_list[i]) && mapState[sw_list[i]]===0")
-          link_color = "#ffff00"
-        }
-        else{
-          //do nothing
-        }
-
-        if(mapState[sw_list[i]]===1 && noopn_list.includes(sw_list[i])){
-          link_color = "#003366"
-        }
-        link_arr.push({source: id, target: section_list[j], color: link_color})
+      if(!isIsolated){
+        for(let j=0;j<section_list.length;j++){
+          //console.log(section_list[j], se_list.indexOf(section_list[j]))
+          if(faultyPathSections.includes(se_list.indexOf(section_list[j]))){
+            link_color = "#654321"
+          }else{
+            link_color = "#6fff6f"
+          }
+  
           
+          link_arr.push({source: id, target: section_list[j], color: link_color})
+            
+        }
+      }else{
+        for(let j=0;j<section_list.length;j++){
+          
+          if(newFaultPath.includes(se_list.indexOf(section_list[j]))){
+            link_color = "#654321"
+          }else{
+            link_color = "#6fff6f"
+          }
+          if(faultSec===section_list[j]){
+            link_color = "#654321"
+          }else{
+            link_color = "#6fff6f"
+          }
+  
+          if(mapState[sw_list[i]]===1 && noopn_list.includes(sw_list[i])){
+            let recfinNodeSec = getSectionOfSwitch(switchtable, sw_list[i])
+            if(recfinNodeSec.includes(section_list[j])){
+              link_color = "#6fff6f"
+            }
+            
+          }
+          link_arr.push({source: id, target: section_list[j], color: link_color})
+            
+        }
       }
+      
     }
 
     const graph_data = {
@@ -147,24 +167,42 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
     return [graph_data, graph_config]
   }
 
-  const drawPath = (se_list,sw_list, switchtable) => {
+  const drawPath = (se_list,sw_list,noopn_list, feed_list) => {
     let nodes_arr = []
     let link_arr = []
-
+    
+    
     for(let i=0;i<se_list.length;i++){
-      let color = "black"
+      let color = "grey"
+     
       nodes_arr.push({id: se_list[i],color: color, size: 100, symbolType: "circle"})
     }
-
+    console.log("++++++++++++++++++++++++")
+    console.log(feed_list)
+    console.log(noopn_list)
     for(let i=0;i<sw_list.length;i++){
+      
       let id = sw_list[i]
+      console.log(id)
       let color = "green"
       let size = 3000
       let symbolType = "square"
+      //let typeofnode = 'Close'
+      if(noopn_list.includes(sw_list[i])){
+        color = "#ff4848"
+        //typeofnode = "Open"
+      }else if(feed_list.includes(sw_list[i])){
+        color = "#6fb7ff"
+       // typeofnode = "Close"
+      }else{
+        color = "#6fff6f"
+       // typeofnode = "Close"
+      }
       nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
 
       link_arr.push({source: id, target: se_list[i]})
     }
+    console.log("++++++++++++++++++++++++")
 
     const graph_data = {
         nodes: nodes_arr,
@@ -190,7 +228,7 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       "d3": {
         "alphaTarget": 0.05,
         "gravity": -500,
-        "linkLength": 50,
+        "linkLength": 90,
         "linkStrength": 2
       },
       node: {

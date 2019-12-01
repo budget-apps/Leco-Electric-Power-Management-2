@@ -13,7 +13,7 @@ import CardBody from "components/Card/CardBody.jsx";
 import { Graph } from 'react-d3-graph';
 import Swal from "sweetalert2";
 import SelectBranch from "components/SelectBranch/selectBranch";
-import { getSwitches, getSections, getNormallyOpenSwitches, resetMapState, reconfigureMapState, isolateMapState } from "../Dashboard/matrixOperations";
+import { getSwitches, getSections, getNormallyOpenSwitches,getFeedingPoints, resetMapState, reconfigureMapState, isolateMapState } from "../Dashboard/matrixOperations";
 import {drawPath} from "../Dashboard/drawMap"
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -68,10 +68,10 @@ class PhysicalConnectivity extends React.Component {
     };
   }
 
-  processLogs(reconfigure, switch_list, section_list, switchtable){
+  processLogs(reconfigure, switch_list, section_list, noopenlist, feedlist){
 
     let tableData = []
-    for(let i=1;i<reconfigure.length;i++){
+    for(let i=reconfigure.length-1;i>0;i--){
       let faultSwitch = reconfigure[i]['faultSwitch']
       let faultyFeeder = JSON.parse(reconfigure[i]['faultyFeeder'])
       //let faultyPath = JSON.parse(reconfigure[i]['faultyPath'])
@@ -101,8 +101,8 @@ class PhysicalConnectivity extends React.Component {
         }
         console.log(sw)
         console.log(se)
-        let graphData = drawPath(se, sw, switchtable)[0]
-        let graphConfig  = drawPath(se, sw, switchtable)[1]
+        let graphData = drawPath(se, sw, noopenlist, feedlist)[0]
+        let graphConfig  = drawPath(se, sw, noopenlist, feedlist)[1]
 
         graphDatas.push([graphData,graphConfig])
         viewBtn.push(<Button color='info' onClick={()=>this.handleShow(i-1, j)}>View Reconfigure {j+1}</Button>)
@@ -123,7 +123,7 @@ class PhysicalConnectivity extends React.Component {
       }
       details.push(opindex)
       details.push(<div>
-                      <Button color='warning' onClick={()=>this.isolateBtnHandler(faultySection[0], this.state.mapState,this.state.branch, isFaultRepaired)}> Isolate </Button>
+                      <Button color='warning' onClick={()=>this.isolateBtnHandler(faultySection[0], this.state.mapState,this.state.branch, isFaultRepaired, i)}> Isolate </Button>
                       <Button color='success' onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, this.state.mapState, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </Button>
                   </div>)
       let row = [time, details, <Button color={isFaultRepaired?"success":"default"} onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Repaired <CheckIcon/></div>:"Repair"}</Button>]
@@ -137,9 +137,9 @@ class PhysicalConnectivity extends React.Component {
 
   }
 
-  isolateBtnHandler= (faultSection, mapState, branch, isFaultRepaired) => {
+  isolateBtnHandler= (faultSection, mapState, branch, isFaultRepaired, logIndex) => {
     if(!isFaultRepaired){
-      isolateMapState(faultSection, mapState, branch)
+      isolateMapState(faultSection, mapState, branch, logIndex)
       Swal.fire({
         title: 'Success!',
         text: "Fault section isolated successfully!",
@@ -317,15 +317,23 @@ class PhysicalConnectivity extends React.Component {
     .then((snapshot) => {
         const val = snapshot.val();
         
-        this.setState({faultSwitch:val.faultSwitch,log: val.reconfigure, switchtable: val.switchtable, logIndex: val.logIndex,  noswitch: val.noswitch, mapState: val.mapState})
+        this.setState({faultSwitch:val.faultSwitch,
+          log: val.reconfigure, 
+          switchtable: val.switchtable, 
+          logIndex: val.logIndex,  
+          noswitch: val.noswitch,
+          feederspoints: val.feedpoints, mapState: val.mapState})
+          
         this.setState({
           switch_list: getSwitches(this.state.switchtable),
           section_list: getSections(this.state.switchtable),
           noopensw_list: getNormallyOpenSwitches(this.state.noswitch),
+          feeding_list: getFeedingPoints(this.state.feederspoints),
         })
+        console.log(this.state.feeding_list)
         console.log(this.state.log)
         console.log(this.state.section_list)
-        this.processLogs(this.state.log, this.state.switch_list, this.state.section_list, this.state.switchtable)
+        this.processLogs(this.state.log, this.state.switch_list, this.state.section_list, this.state.noopensw_list, this.state.feeding_list)
         console.log(this.state.graphs)
       })
     .catch((e) => {

@@ -81,8 +81,12 @@ class Dashboard extends React.Component {
       branch: "",
       faultyPathSwithces: [],
       faultyPathSections: [],
-      ButtonCaption: "View Graph Map",
-      faultLoc: []
+      ButtonCaption: "View Structural Map",
+      faultLoc: [],
+      showManual: false,
+      optimalPath: [],
+      gotMsg: false,
+      showGraph: true,
     };
     this.onChageNewID = this.onChageNewID.bind(this);
     this.onChageNewSection = this.onChageNewSection.bind(this);
@@ -118,6 +122,10 @@ class Dashboard extends React.Component {
   handleChangeIndex = index => {
     this.setState({ value: index });
   };
+
+  refrshMap = ()=>{
+    this.setState({showGraph: !this.state.showGraph})
+  }
   changeGrid = branch => {
     //console.log(this.state.branch)
     firebase
@@ -189,8 +197,9 @@ class Dashboard extends React.Component {
           currentSwVal: getSwitchesCurrent(this.state.currentTable)
         });
         console.log(this.state.prevMapState);
-
-        firebase
+        console.log(this.state.optimalPath.length)
+          console.log("-----------------2349032842309840ujkbfkjdbfjkafjkhf23^&*^&*^----------------")
+          firebase
         .database()
         .ref()
         .child(branch)
@@ -202,12 +211,15 @@ class Dashboard extends React.Component {
           let isRepaired = val.reconfigure[this.state.logIndex].isFaultRepaired
           let faultLoc = []
           let faultFeeder = []
-          console.log(isRepaired)
+          let isIsolated = val.reconfigure[this.state.logIndex].isIsolated
+          let isReconfigured = val.reconfigure[this.state.logIndex].isReconfigured
+          let optimalPath = parseInt(val.reconfigure[this.state.logIndex].optimalPath[0], 10)
+          let reconfigurePaths = JSON.parse(val.reconfigure[this.state.logIndex].reconfiguredPaths)
+          console.log(reconfigurePaths)
           if(!isRepaired){
             faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
             faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
           }
-          
            //Map State
         // this.setState({
         //   mapState: generateMapState(
@@ -236,7 +248,11 @@ class Dashboard extends React.Component {
           this.state.switchtable,
           this.state.faultSwitch,
           this.state.allFaultPaths,
-          this.state.prevMapState
+          this.state.prevMapState,
+          isIsolated,
+          isReconfigured,
+          reconfigurePaths[optimalPath][0]
+
         )[0];
         let graphConfig = drawGraph(
           faultFeeder,
@@ -250,7 +266,10 @@ class Dashboard extends React.Component {
           this.state.switchtable,
           this.state.faultSwitch,
           this.state.allFaultPaths,
-          this.state.prevMapState
+          this.state.prevMapState,
+          isIsolated,
+          isReconfigured,
+          reconfigurePaths[optimalPath][0]
         )[1];
         this.setState({
           graph_data: graphData,
@@ -258,8 +277,7 @@ class Dashboard extends React.Component {
         });
 
         })
-
-       
+            
         //this.drawTree()
       })
       .catch(e => {
@@ -271,28 +289,6 @@ class Dashboard extends React.Component {
         });
       });
   };
-
-  componentDidMount(){
-    this.onChangeDB()
-  }
-
-  onChangeDB =()=> {
-    
-    firebase
-      .database()
-      .ref()
-      .child(this.state.branch+"/faultSwitch")
-      .on("value", snapshot=> {
-        //Do whatever
-        console.log(snapshot.val())
-        Swal.fire({
-          type: "info",
-          title: "DB Changed",
-          text: "Please refresh the screen"
-        });
-        
-      });
-  }
 
   findingFaults(){
     if (checkFaults(this.state.faultSwitch)) {
@@ -346,7 +342,7 @@ class Dashboard extends React.Component {
       );
       
       Swal.fire({
-        title: 'Are you sure?',
+        title: 'Are you sure you got the messages from switches?',
         text: "You won't be able to revert this!",
         type: 'warning',
         showCancelButton: true,
@@ -444,6 +440,7 @@ class Dashboard extends React.Component {
     this.setState({
       branch: event.target.value
     });
+    
     try{
       this.changeGrid(event.target.value);
     }catch(err){
@@ -471,9 +468,9 @@ class Dashboard extends React.Component {
   chageMap = () => {
     if (this.state.branch !== "") {
       if (!this.state.manual) {
-        this.setState({ ButtonCaption: "View Structural Map" });
-      } else {
         this.setState({ ButtonCaption: "View Graph Map" });
+      } else {
+        this.setState({ ButtonCaption: "View Structural Map" });
       }
       this.setState({ manual: !this.state.manual });
     } else {
@@ -655,20 +652,29 @@ class Dashboard extends React.Component {
                       >
                         {this.state.ButtonCaption}
                       </Button>
+                      <Button variant="contained"
+                        color="success" onClick={()=>this.refrshMap()}>Refresh</Button>
                     </CardHeader>
                   )}
+                  
                   <CardBody id="Map" style={{ marginTop: 10 }}>
                     <div>
                       {this.state.graph_data === undefined ? (
                         "Please select a branch"
-                      ) : this.state.manual ? (
+                      ) : !this.state.manual ? (
+                        
+                      this.state.showGraph?(
                         <div>
+                          <div>
+                          <button onClick={()=>this.setState({showManual: !this.state.showManual})}>Show Map Details</button>
                           <img alt={''} src={require("../../assets/img/Details2.png")} style={{
                            height: 300,
                            width:300,
-                            position: "absolute",
-                            right: "0%"
+                           absolute: 0,
+                           right: "0%",
+                            display: this.state.showManual?"block":"none"
                           }}/>
+                          </div>
                           <Graph
                             id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                             data={this.state.graph_data}
@@ -688,7 +694,7 @@ class Dashboard extends React.Component {
                             }
                           />
                         </div>
-                      ) : (
+                      ):<div></div>):(
                         <div>
 
                           <img alt={''} src={require("../../assets/img/Details2.png")} style={{

@@ -39,7 +39,8 @@ class AdminNavbarLinks extends React.Component {
     feederCapacity: 0,
     feederFactor: 0,
     feederlineCapacity: 0,
-    feederlineFactor: 0
+    feederlineFactor: 0,
+    notofication: false
   };
   handleToggleNotification = () => {
     this.setState(state => ({ openNotifcation: !state.openNotifcation }));
@@ -154,22 +155,25 @@ class AdminNavbarLinks extends React.Component {
     }
   };
 
-  render() {
-    // firebase
-    //   .database()
-    //   .ref()
-    //   .child("Negambo/faultSwitch")
-    //   .on("value", function(snapshot) {
-    //     //Do whatever
-    //     let switchids = snapshot.val().faultSwitch
-    //     Swal.fire({
-    //       type: "info",
-    //       title: "DBChanged",
-    //       text: switchids
-    //     });
-        
-    //   });
+  componentDidMount(){
+    this.onChangeDB()
+  }
 
+  onChangeDB =()=> {
+    
+    firebase
+      .database()
+      .ref()
+      .child(this.state.branch+"/faultSwitch")
+      .on("value", snapshot=> {
+        //Do whatever
+        console.log(snapshot.val())
+        this.setState({notification: true})
+      });
+  }
+
+  render() {
+    
     const { classes } = this.props;
     const { openNotifcation, openProfile, openSettings } = this.state;
     return (
@@ -200,7 +204,7 @@ class AdminNavbarLinks extends React.Component {
             className={classes.buttonLink}
           >
             <Notifications className={classes.icons} />
-            {/* <span className={classes.notifications}></span> */}
+          <span className={classes.notifications}>{this.state.notofication?1:null}</span>
             <Hidden mdUp implementation="css">
               <p onClick={this.handleClick} className={classes.linkText}>
                 Notification

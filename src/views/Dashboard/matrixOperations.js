@@ -381,13 +381,13 @@ const reconfigureMapState = (affectedlist, normal, mapState, switchlist, branch,
   firebase.database().ref().child(branch).child('reconfigure').child(logIndex).child('isReconfigured').set(true)
 }
 
-const isolateMapState = (faultSection, mapState, branch) => {
+const isolateMapState = (faultSection, mapState, branch,logIndex) => {
   
   mapState[faultSection[0]] = 0
   mapState[faultSection[1]] = 0
   console.log(mapState)
   firebase.database().ref().child(branch).child('mapState').set(mapState)
-  //firebase.database().ref().child(branch).child('reconfigure').child(logIndex).child('isIsolated').set(true)
+  firebase.database().ref().child(branch).child('reconfigure').child(logIndex).child('isIsolated').set(true)
 
 }
 
