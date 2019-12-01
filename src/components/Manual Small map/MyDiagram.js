@@ -64,20 +64,18 @@ class MyDiagramsmall extends React.Component {
           { key: "Feeder3", label: "Primary3", color: "lightblue" },
           { key: "sw1010", label: "sw1010", color: "lightgreen" },
           { key: "sw1011", label: "sw1011", color: "lightgreen" },
-          { key: "sw1012", label: "sw1012", color: "lightgreen" },
+          { key: "sw1012", label: "sw1012", color: "red" },
           { key: "sw1018", label: "sw1018", color: "lightgreen" },
           { key: "sw1014", label: "sw1014", color: "lightgreen" },
           { key: "sw1015", label: "sw1015", color: "red" },
-          { key: "sw1016", label: "sw1016", color: "lightgreen" },
+          { key: "sw1016", label: "sw1016", color: "red" },
           { key: "sw1017", label: "sw1017", color: "lightgreen" },
           { key: "sw1018", label: "sw1018", color: "red" },
           { key: "sw1019", label: "sw1019", color: "lightgreen" },
           { key: "sw1020", label: "sw1020", color: "lightgreen" },
-          { key: "sw1021", label: "sw1021", color: "red" },
-          { key: "sw1022", label: "sw1022", color: "lightgreen" },
-          { key: "sw1023", label: "sw1023", color: "red" },
-          { key: "sw1036", label: "sw1036", color: "lightgreen" },
-          { key: "sw1037", label: "sw1037", color: "red" },
+          { key: "sw1021", label: "sw1021", color: "lightgreen" },
+          { key: "sw1022", label: "sw1022", color: "red" },
+          { key: "sw1036", label: "sw1036", color: "lightgreen" }
         ],
         linkDataArray: [
           { from: "sw1010", to: "sw1036" },
@@ -97,9 +95,7 @@ class MyDiagramsmall extends React.Component {
           { from: "sw1020", to: "sw1022" },
           { from: "sw1020", to: "sw1017" },
           { from: "sw1021", to: "sw1022" },
-          { from: "sw1021", to: "sw1023" },
-          { from: "sw1022", to: "sw1021" },
-          { from: "sw1023", to: "sw1037" }
+          { from: "sw1022", to: "sw1021" }
         ]
       }
     });

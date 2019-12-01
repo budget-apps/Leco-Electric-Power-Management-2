@@ -76,7 +76,7 @@ class SingleLineMapScreen extends React.Component {
                   </p>
                 </CardHeader>
                 <CardBody>
-                  {this.state.branch === "Negambo" ? (
+                  {this.state.branch === "Negambo-2" ? (
 
                       <ImageZoom
                           image={{
@@ -90,7 +90,7 @@ class SingleLineMapScreen extends React.Component {
                             alt: 'Golden Gate Bridge'
                           }}
                       />
-                  ) : this.state.branch === "Negambo-2" ? (
+                  ) : this.state.branch === "Negambo" ? (
                     <div>
                       <ImageZoom
                         image={{
