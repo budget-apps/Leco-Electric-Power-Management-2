@@ -18,7 +18,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-
+import SelectBranch from "../SelectBranch/selectBranch";
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
 import Notifications from "@material-ui/icons/Notifications";
@@ -29,21 +29,55 @@ import Button from "components/CustomButtons/Button.jsx";
 import { auth } from "../../firebase";
 import headerLinksStyle from "assets/jss/material-dashboard-react/components/headerLinksStyle.jsx";
 import Swal from "sweetalert2";
+import FormLabel from "@material-ui/core/FormLabel";
+import Input from "@material-ui/core/Input";
+import * as excel from "xlsx";
 var firebase = require("firebase");
 class AdminNavbarLinks extends React.Component {
-  state = {
-    openNotifcation: false,
-    openProfile: false,
-    switchCapacity: 0,
-    switchFactor: 0,
-    feederCapacity: 0,
-    feederFactor: 0,
-    feederlineCapacity: 0,
-    feederlineFactor: 0,
-    notofication: false,
-    weightFactor: 0,
-    K0: 0
+  constructor(props) {
+    super(props);
+    // eslint-disable-next-line no-this-before-super
+    this.uploadfile = this.uploadfile.bind(this);
+this.updateWeightFactors =this.updateWeightFactors.bind(this)
+    this.state = {
+      openNotifcation: false,
+      openProfile: false,
+      switchCapacity: 0,
+      switchID: "",
+      feederCapacity: 0,
+      feederFactor: 0,
+      feederlineCapacity: 0,
+      feederlineFactor: 0,
+      notofication: false,
+      weightFactor: 0,
+      K0: 0
+    };
+  }
+
+  selectMapEventHandler = event => {
+    this.setState({
+      branch: event.target.value
+    });
   };
+
+  uploadfile(event) {
+    let file = event.target.files[0];
+    var reader = new FileReader();
+
+    reader.readAsArrayBuffer(file);
+    reader.onload = e => {
+      var data = new Uint8Array(reader.result);
+      var wb = excel.read(data, { type: "array" });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data1 = excel.utils.sheet_to_json(ws);
+
+      this.setState({ arr: data1, branch: this.state.branch });
+      // eslint-disable-next-line no-console
+      console.log(this.state.arr);
+      console.log(this.state.branch);
+    };
+  }
   handleToggleNotification = () => {
     this.setState(state => ({ openNotifcation: !state.openNotifcation }));
   };
@@ -154,6 +188,46 @@ class AdminNavbarLinks extends React.Component {
         type: "error"
       });
     }
+  };
+  addWeightFacters = () => {
+    firebase
+      .database()
+      .ref()
+      .child(this.state.branch)
+      .child("WeightFactor")
+      .set(this.state.arr, (err, doc) => {
+        if (!err) {
+          console.log("2File added");
+          //swal("File added to database!!!")
+        } else {
+          console.log(err);
+        }
+      });
+  };
+  updateWeightFactors = () => {
+ var switchid=(this.state.switchID);
+    var newarr = [];
+    firebase
+      .database()
+      .ref()
+      .child(this.state.branch)
+      .child("WeightFactor")
+      .on("value", function(snapshot) {
+        snapshot.forEach(function(val) {
+          console.log(val.val());
+          if (switchid === val.val().switchID) {
+            const obj = {
+              switchID: this.state.switchID,
+              K0: this.state.K0,
+              weightFactor: this.state.weightFactor
+            };
+            newarr.push(obj);
+          } else {
+            newarr.push(val.val());
+          }
+        });
+      });
+    console.log(newarr);
   };
 
   componentDidMount() {
@@ -384,9 +458,9 @@ class AdminNavbarLinks extends React.Component {
         </div>
         <div>
           <Dialog
-              fullScreen={true}
-              fullWidth={true}
-              maxWidth="xl"
+            fullScreen={true}
+            fullWidth={true}
+            maxWidth="xl"
             open={this.state.show}
             onClose={this.handleClose}
             aria-labelledby="alert-dialog-title"
@@ -409,17 +483,27 @@ class AdminNavbarLinks extends React.Component {
         </div>
         <div>
           <Dialog
+            fullWidth={true}
+            maxWidth="xl"
             open={this.state.showWeight}
             onClose={this.handleCloseWeight}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
             <DialogTitle id="alert-dialog-title">
-              {"Change Factors"}
+              {"Add Weight Facter"}
             </DialogTitle>
-            <Button onClick={this.handleCloseWeight} color="primary">
+            <div className="col-md-3" style={{ marginTop: "50px" }}>
+              <SelectBranch changed={this.selectMapEventHandler} />
+            </div>
+            <FormLabel>Add Weight Factors</FormLabel>
+            <Input fullWidth="true" type="file" onChange={this.uploadfile} />
+            <Button onClick={this.addWeightFacters} color="primary">
               Add Weight Factors
             </Button>
+            <DialogTitle id="alert-dialog-title">
+              {"Update Weight Facter"}
+            </DialogTitle>
             {/*<DialogContent>*/}
             {/*  <DialogContentText id="alert-dialog-description">*/}
             {/*    <div>*/}
@@ -520,10 +604,9 @@ class AdminNavbarLinks extends React.Component {
             <input
               onChange={this.onChange}
               placeholder="Switch ID"
-              type="number"
-              id="switchid"
-              name="switchFactor"
-              value={this.state.switchFactor}
+              id="switchID"
+              name="switchID"
+              value={this.state.switchID}
             ></input>
             <label>Weight Factor</label>
             <input
@@ -543,7 +626,8 @@ class AdminNavbarLinks extends React.Component {
               name="K0"
               value={this.state.K0}
             ></input>
-            <Button onClick={this.handleCloseWeight} color="primary">
+
+            <Button onClick={this.updateWeightFactors} color="primary">
               Update
             </Button>
             <DialogActions>
