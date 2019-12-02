@@ -21,15 +21,13 @@ class  AddExelSheet extends React.Component{
     uploadfile_1(event){
         let file =event.target.files[0]
         var reader = new FileReader();
-        
         reader.readAsArrayBuffer(file)
         reader.onload=(e)=>{
           var data = new Uint8Array(reader.result);
           var wb = excel.read(data,{type:'array'});
           const wsname = wb.SheetNames[0];
           const ws = wb.Sheets[wsname];
-          const data1 = excel.utils.sheet_to_json(ws);      
-        
+          const data1 = excel.utils.sheet_to_json(ws);
           this.setState({arr_1 : data1, branch: this.state.branch})
           
         }
