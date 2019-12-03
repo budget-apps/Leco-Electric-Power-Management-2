@@ -217,7 +217,7 @@ class FaultGenerator extends React.Component {
                         style={{ marginLeft: 5 }}
                         color="danger"
                       >
-                        Power Down
+                        Fault Detection
                       </Button>
                       </div>
                       

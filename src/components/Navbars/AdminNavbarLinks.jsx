@@ -29,7 +29,6 @@ import Button from "components/CustomButtons/Button.jsx";
 import { auth } from "../../firebase";
 import headerLinksStyle from "assets/jss/material-dashboard-react/components/headerLinksStyle.jsx";
 import Swal from "sweetalert2";
-import FormLabel from "@material-ui/core/FormLabel";
 import Input from "@material-ui/core/Input";
 import * as excel from "xlsx";
 var firebase = require("firebase");
@@ -190,12 +189,20 @@ this.updateWeightFactors =this.updateWeightFactors.bind(this)
     }
   };
   addWeightFacters = () => {
-    firebase
+    try{
+    console.log(this.state.arr[0].switchID)
+    let newArr = {}
+    for(let i in this.state.arr){
+      newArr[this.state.arr[i].switchID]={'minCapacity': this.state.arr[i].minCapacity, 'k0': this.state.arr[i].k0}
+    }
+    console.log(newArr)
+    
+      firebase
       .database()
       .ref()
       .child(this.state.branch)
-      .child("WeightFactor")
-      .set(this.state.arr, (err, doc) => {
+      .child("weightFactor")
+      .set(newArr, (err, doc) => {
         if (!err) {
           console.log("2File added");
           //swal("File added to database!!!")
@@ -203,32 +210,38 @@ this.updateWeightFactors =this.updateWeightFactors.bind(this)
           console.log(err);
         }
       });
+    }catch(err){
+      alert(err.message)
+    }
+    
   };
   updateWeightFactors = () => {
- var switchid=(this.state.switchID);
-    var newarr = [];
-    firebase
-      .database()
-      .ref()
-      .child(this.state.branch)
-      .child("WeightFactor")
-      .on("value", function(snapshot) {
-        snapshot.forEach(function(val) {
-          console.log(val.val());
-          if (switchid === val.val().switchID) {
-            const obj = {
-              switchID: this.state.switchID,
-              K0: this.state.K0,
-              weightFactor: this.state.weightFactor
-            };
-            newarr.push(obj);
+    try{
+      var switchid=(this.state.switchID);
+      var branch = (this.state.branch)
+      var K0 = this.state.K0
+      var weightFactor = this.state.weightFactor
+      const obj = {'minCapacity': weightFactor, 'k0': K0}
+      console.log(obj)
+      console.log(switchid)
+      firebase
+        .database()
+        .ref()
+        .child(branch)
+        .child("weightFactor")
+        .child(switchid)
+        .set(obj, (err, doc) => {
+          if (!err) {
+            console.log("2File added");
+            //swal("File added to database!!!")
           } else {
-            newarr.push(val.val());
+            console.log(err);
           }
         });
-      });
-    console.log(newarr);
-  };
+    }catch(err){
+      alert(err.message)
+    }
+  }
 
   componentDidMount() {
     this.onChangeDB();
@@ -491,16 +504,18 @@ this.updateWeightFactors =this.updateWeightFactors.bind(this)
             aria-describedby="alert-dialog-description"
           >
             <DialogTitle id="alert-dialog-title">
-              {"Add Weight Facter"}
+              {"Add Weight Factors"}
             </DialogTitle>
-            <div className="col-md-3" style={{ marginTop: "50px" }}>
+            <div>
               <SelectBranch changed={this.selectMapEventHandler} />
             </div>
-            <FormLabel>Add Weight Factors</FormLabel>
-            <Input fullWidth="true" type="file" onChange={this.uploadfile} />
-            <Button onClick={this.addWeightFacters} color="primary">
+            <div style={{ display:'inline-block'}}>
+            <Input style={{width: "70%", marginLeft: 5}} type="file" onChange={this.uploadfile} />
+            <Button style={{width: "25%"}} onClick={this.addWeightFacters} color="primary">
               Add Weight Factors
             </Button>
+            </div>
+           
             <DialogTitle id="alert-dialog-title">
               {"Update Weight Facter"}
             </DialogTitle>
@@ -599,8 +614,8 @@ this.updateWeightFactors =this.updateWeightFactors.bind(this)
             {/*    /!*<button onClick={this.sendWeightBtnHandler}>Send</button>*!/*/}
             {/*  </DialogContentText>*/}
             {/*</DialogContent>*/}
-            <label>Switch ID</label>
-
+            <div style={{display: 'inline-bock', margin: '10'}}>
+            <label style={{marginLeft: 5}}>Switch ID</label>
             <input
               onChange={this.onChange}
               placeholder="Switch ID"
@@ -609,7 +624,7 @@ this.updateWeightFactors =this.updateWeightFactors.bind(this)
               value={this.state.switchID}
             ></input>
             <label>Weight Factor</label>
-            <input
+              <input
               onChange={this.onChange}
               placeholder="Weight Factor"
               type="number"
@@ -626,10 +641,11 @@ this.updateWeightFactors =this.updateWeightFactors.bind(this)
               name="K0"
               value={this.state.K0}
             ></input>
-
             <Button onClick={this.updateWeightFactors} color="primary">
               Update
             </Button>
+            </div>
+            
             <DialogActions>
               <Button onClick={this.handleCloseWeight} color="danger">
                 Close

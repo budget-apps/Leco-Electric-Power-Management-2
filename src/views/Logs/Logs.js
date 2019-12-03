@@ -126,7 +126,7 @@ class PhysicalConnectivity extends React.Component {
                       <Button color='warning' onClick={()=>this.isolateBtnHandler(faultySection[0], this.state.mapState,this.state.branch, isFaultRepaired, i)}> Isolate </Button>
                       <Button color='success' onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, this.state.mapState, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </Button>
                   </div>)
-      let row = [time, details, <Button color={isFaultRepaired?"success":"default"} onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Repaired <CheckIcon/></div>:"Repair"}</Button>]
+      let row = [time, details, <Button color={isFaultRepaired?"success":"default"} onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Restored <CheckIcon/></div>:"Restore"}</Button>]
       tableData.push(row)
       
     }
