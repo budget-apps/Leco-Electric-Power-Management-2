@@ -394,7 +394,8 @@ class PhysicalConnectivity extends React.Component {
     }
   }
   render(){
-    const { classes } = this.props;
+    try{
+      const { classes } = this.props;
     //console.log(this.state.graphs!==undefined?this.state.graphs[this.state.viewIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex]!==undefined?this.state.graphs[this.state.viewIndex][this.state.subIndex][0]:"No":"Noo":"Nooo")
     // const table_data= this.state===null?"":this.state.physicalConMatrix;
     //console.log("table data"+(this.state===null?"":this.state.physicalConMatrix));
@@ -482,6 +483,10 @@ class PhysicalConnectivity extends React.Component {
     </div>
     
   );
+    }catch(err){
+      console.log(err)
+    }
+    
 }
 }
 

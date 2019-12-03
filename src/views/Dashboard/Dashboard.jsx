@@ -144,7 +144,7 @@ class Dashboard extends React.Component {
           faultSwitch: val.faultSwitch,
           currentTable: val.currentTable,
           prevReconfigure: val.reconfigure,
-          minOut: val.minOut,
+          minOut: val.weightFactor,
           prevMapState: val.mapState,
           isGenerated: val.isGenerated,
           mapUpdated: val.mapUpdated
@@ -277,7 +277,7 @@ class Dashboard extends React.Component {
         });
 
         })
-            
+        //window.location.reload(false);
         //this.drawTree()
       })
       .catch(e => {

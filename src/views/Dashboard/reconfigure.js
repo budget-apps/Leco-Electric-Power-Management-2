@@ -8,11 +8,24 @@ const findEndConnectedNOs = (faultLoc, noList, switch_table, switch_list) => {
     for(let j=0;j<faultLoc.length;j++){
         let end = faultLoc[j][1]
         let arr = getSwitchsToSwitch(switch_list,end,switch_table)
-        // for(let i=0;i<arr.length;i++){
-        //     if(!noList.includes(arr[i])){
-        //         arr.splice(i,1)
-        //     }
-        // }
+        let arrLen = arr.length
+        let removed = []
+        for(let i=0;i<arr.length;i++){
+            if(!noList.includes(arr[i])){
+                removed.push(arr[i])
+                arr.splice(i,1)
+            }
+        }
+        if(arrLen!==arr.length){
+          for(let j=0;j<removed.length;j++){
+            let temper = getSwitchsToSwitch(switch_list, removed[j], switch_table)
+            for(let k=0;k<temper.length;k++){
+              if(!arr.includes(temper[k])&&noList.includes(temper[k])){
+                arr.push(temper[k])
+              }
+            }
+          }
+        }
         console.log(arr)
         nos.push(arr)
     }
@@ -184,8 +197,14 @@ const optimalPath = (allPaths, faultySection, faultPathSwitches, currentTable, s
     let tempNode = switch_list[allPaths[i][0][allPaths[i][0].length-1][0]]
     let tempCrnt = getSwitchCurrent(tempNode, currentTable)
     
+    let minCap = -1
+    let k0 = minOut[tempNode].k0
 
-    let maxOut = minOut - tempCrnt 
+    if(k0!==0){
+      minCap= minOut[tempNode].minCapacity
+    }
+    console.log(tempNode+" ------------------------>>> "+minCap)
+    let maxOut = minCap - tempCrnt 
     //console.log(maxOut)
     faultPathSwitches = [...new Set(faultPathSwitches)]
     //console.log(faultPathSwitches)
