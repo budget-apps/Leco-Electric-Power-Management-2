@@ -381,11 +381,19 @@ const reconfigureMapState = (affectedlist, normal, mapState, switchlist, branch,
   firebase.database().ref().child(branch).child('reconfigure').child(logIndex).child('isReconfigured').set(true)
 }
 
-const isolateMapState = (faultSection, mapState, branch,logIndex) => {
-  
+const downUpStream = (faultyFeeder, mapState, branch) => {
+  let faultF = ("sw20"+faultyFeeder.substr(faultyFeeder.length-2,faultyFeeder.length)).toString()
+  mapState[faultF] = 0
+  firebase.database().ref().child(branch).child('mapState').set(mapState)
+}
+
+const isolateMapState = (faultSection,faultyFeeder, mapState, branch,logIndex) => {
+  let faultF = ("sw20"+faultyFeeder.substr(faultyFeeder.length-2,faultyFeeder.length)).toString()
+  mapState[faultF] = 1
   mapState[faultSection[0]] = 0
   mapState[faultSection[1]] = 0
   console.log(mapState)
+  console.log(faultF)
   firebase.database().ref().child(branch).child('mapState').set(mapState)
   firebase.database().ref().child(branch).child('reconfigure').child(logIndex).child('isIsolated').set(true)
 
@@ -407,4 +415,4 @@ const processPrevReconfigure = ( prevReconfigure ) => {
 export { getSwitches, getSections, getSectionOfSwitch, getNormallyOpenSwitches, getSwitchType, getFeedingPoints, generatePhysicalConMatrix };
 export { generateElectricConnectivityMatrix, generateFeedingMatrix, rowOperation, colOperation, findFeederInRow, findFeederInCol }
 export { getRow, getSwitchsToSwitch, generatePhysicalConnectionFeederMatrix, getSwitchesFromSection, getSwitchesCurrent, generateMapState }
-export { processPrevReconfigure, resetMapState, getSwitchCurrent, reconfigureMapState, isolateMapState }
+export { processPrevReconfigure, resetMapState, getSwitchCurrent, reconfigureMapState, isolateMapState, downUpStream }

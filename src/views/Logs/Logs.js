@@ -81,7 +81,7 @@ class PhysicalConnectivity extends React.Component {
       let time = reconfigure[i]['time']
       let optimalPath = reconfigure[i]['optimalPath']
       // console.log(faultSwitch)
-      // console.log(faultyFeeder)
+      console.log(faultyFeeder)
       // console.log(faultyPath)
       console.log(faultySection)
       // console.log(isFaultRepaired)
@@ -123,7 +123,7 @@ class PhysicalConnectivity extends React.Component {
       }
       details.push(opindex)
       details.push(<div>
-                      <Button color='warning' onClick={()=>this.isolateBtnHandler(faultySection[0], this.state.mapState,this.state.branch, isFaultRepaired, i)}> Isolate </Button>
+                      <Button color='warning' onClick={()=>this.isolateBtnHandler(faultySection[0],faultyFeeder[0], this.state.mapState,this.state.branch, isFaultRepaired, i)}> Isolate </Button>
                       <Button color='success' onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, this.state.mapState, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </Button>
                   </div>)
       let row = [time, details, <Button color={isFaultRepaired?"success":"default"} onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Restored <CheckIcon/></div>:"Restore"}</Button>]
@@ -137,9 +137,9 @@ class PhysicalConnectivity extends React.Component {
 
   }
 
-  isolateBtnHandler= (faultSection, mapState, branch, isFaultRepaired, logIndex) => {
+  isolateBtnHandler= (faultSection,faultyFeeder, mapState, branch, isFaultRepaired, logIndex) => {
     if(!isFaultRepaired){
-      isolateMapState(faultSection, mapState, branch, logIndex)
+      isolateMapState(faultSection,faultyFeeder, mapState, branch, logIndex)
       Swal.fire({
         title: 'Success!',
         text: "Fault section isolated successfully!",

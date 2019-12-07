@@ -27,14 +27,16 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       let id = sw_list[i]
       let color = "#6fff6f"
       let size = 3000
-      let symbolType = "square"
+      let symbolType = "circle"
       
       if(noopn_list.includes(sw_list[i])){
         color = "#ff4848"
         typeofnode = "Open"
+        symbolType ="triangle"
       }else if(feed_list.includes(sw_list[i])){
         color = "#6fb7ff"
         typeofnode = "Close"
+        symbolType ="square"
       }else{
         color = "#6fff6f"
         typeofnode = "Close"
@@ -285,7 +287,7 @@ const onClickNode = (nodeId, noopensw_list, feeding_list, crrntTable,sw_list) =>
       title: nodeId,
       html:
     'Switch Type: <b>'+typeO+'</b> <br>'
-    +'Real Time Current (Avg.): <b>'+swCurrent+' A</b> <br>',
+    +'Last Recorded Current (Avg.): <b>'+swCurrent+' A</b> <br>',
   showCloseButton: true,
   focusConfirm: false,
   })

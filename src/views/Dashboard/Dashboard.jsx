@@ -31,7 +31,8 @@ import {
   getSwitchesCurrent,
   //generateMapState,
   getSectionOfSwitch,
-  processPrevReconfigure
+  processPrevReconfigure,
+  downUpStream
 } from "./matrixOperations";
 import {
   findFaultyFeeder,
@@ -312,6 +313,8 @@ class Dashboard extends React.Component {
           this.state.switchtable
         )
       });
+
+      downUpStream(this.state.faultyFeeder[0], this.state.prevMapState, this.state.branch)
 
       let path = findFaultyPath(
         this.state.faultyFeeder,
@@ -645,6 +648,16 @@ class Dashboard extends React.Component {
                         Physical connection graph will display here.(Click on
                         node for auto arrange them)
                       </p>
+                      <div style={{margin:5}}>
+                          <button onClick={()=>this.setState({showManual: !this.state.showManual})}>Show Map Details</button>
+                          <img alt={''} src={require("../../assets/img/Details2.png")} style={{
+                           height: 300,
+                           width:200,
+                           absolute: 0,
+                           right: "0%",
+                            display: this.state.showManual?"block":"none"
+                          }}/>
+                          </div>
                       <Button
                         variant="contained"
                         color="primary"
@@ -652,7 +665,7 @@ class Dashboard extends React.Component {
                       >
                         {this.state.ButtonCaption}
                       </Button>
-                      <Button variant="contained"
+                      <Button style={{marginLeft:5}} variant="contained"
                         color="success" onClick={()=>this.refrshMap()}>Refresh</Button>
                     </CardHeader>
                   )}
@@ -665,16 +678,7 @@ class Dashboard extends React.Component {
                         
                       this.state.showGraph?(
                         <div>
-                          <div>
-                          <button onClick={()=>this.setState({showManual: !this.state.showManual})}>Show Map Details</button>
-                          <img alt={''} src={require("../../assets/img/Details2.png")} style={{
-                           height: 300,
-                           width:300,
-                           absolute: 0,
-                           right: "0%",
-                            display: this.state.showManual?"block":"none"
-                          }}/>
-                          </div>
+                          
                           <Graph
                             id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                             data={this.state.graph_data}
@@ -697,13 +701,13 @@ class Dashboard extends React.Component {
                       ):<div></div>):(
                         <div>
 
-                          <img alt={''} src={require("../../assets/img/Details2.png")} style={{
+                          {/* <img alt={''} src={require("../../assets/img/Details2.png")} style={{
                             height: 300,
                             width:300,
                             margin: 10,
                             position: "absolute",
                             right: "0%"
-                          }}/>
+                          }}/> */}
                           {this.state.branch === "Negambo-2" ?
                               <MyDiagram
                                   no_list={this.state.noopensw_list}
