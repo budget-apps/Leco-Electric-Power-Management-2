@@ -14,10 +14,10 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
     //let f1 = faultyPathSwithces.indexOf(sw_list.indexOf(faultLoc[0]))
     let f2 = faultyPathSwithces.indexOf(sw_list.indexOf(faultLoc[1]))
     let faultSec = se_list[faultyPathSections[f2]]
-    let fpath = JSON.parse(JSON.stringify(faultyPathSections))
+    // let fpath = JSON.parse(JSON.stringify(faultyPathSections))
     // let recfNode = optimalPath[0][0]
     // let recfSec = optimalPath[0][1]
-    let newFaultPath = fpath.splice(f2+1, fpath.length)
+    // let newFaultPath = fpath.splice(f2+1, fpath.length)
     //console.log(newFaultPath)
     
     //console.log("Fault section---------> "+faultSec)
@@ -101,17 +101,17 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
         }
       }else{
         for(let j=0;j<section_list.length;j++){
-          
-          if(newFaultPath.includes(se_list.indexOf(section_list[j]))){
-            link_color = "#654321"
-          }else{
-            link_color = "#6fff6f"
-          }
           if(faultSec===section_list[j]){
             link_color = "#654321"
           }else{
+            // link_color = "#6fff6f"
+          }
+          if(faultyPathSections.includes(se_list.indexOf(section_list[j]))){
+            link_color = "#654321"
+          }else{
             link_color = "#6fff6f"
           }
+         
   
           if(mapState[sw_list[i]]===1 && noopn_list.includes(sw_list[i])){
             let recfinNodeSec = getSectionOfSwitch(switchtable, sw_list[i])

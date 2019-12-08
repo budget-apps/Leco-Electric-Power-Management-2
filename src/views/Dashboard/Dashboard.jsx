@@ -212,16 +212,7 @@ class Dashboard extends React.Component {
 
   findingFaults(){
     if (checkFaults(this.state.faultSwitch)) {
-      Swal.fire({
-        type: "error",
-        title: "NodeFailure",
-        text:
-          "At " +
-          this.state.faultSwitch +
-          ".(*" +
-          this.state.faultyFeeder[0] +
-          "*)"
-      });
+      
       this.setState({
         faultyFeeder: findFaultyFeeder(
           this.state.faultSwitch,
@@ -232,8 +223,10 @@ class Dashboard extends React.Component {
           this.state.switchtable
         )
       });
-
-      downUpStream(this.state.faultyFeeder[0], this.state.prevMapState, this.state.branch)
+      if(!this.state.mapUpdated){
+        downUpStream(this.state.faultyFeeder[0], this.state.prevMapState, this.state.branch)
+      }
+      
 
       let path = findFaultyPath(
         this.state.faultyFeeder,
@@ -262,182 +255,349 @@ class Dashboard extends React.Component {
         this.state.faultSwitch,
         this.state.switch_list
       );
+      if(!this.state.mapUpdated){
+        Swal.fire({
+          title: 'Are you sure you got the messages from switches?',
+          text: "You won't be able to revert this!",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, I got messages from switches!'
+        }).then((result) => {
+          console.log(result['dismiss']==='cancel')
+          if (result['dismiss']!=='cancel') {
+  
+            firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').once("value").then(snapshot => {
+              const val = snapshot.val();
+              this.setState({
+                faultCurrentSwitchesNotValid: val.switchID.split(
+                  ","
+                ),
+                faultCurrentSwitches: val.switchIDValid.split(
+                  ","
+                ),
+              })
       
-      Swal.fire({
-        title: 'Are you sure you got the messages from switches?',
-        text: "You won't be able to revert this!",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, I got messages from switches!'
-      }).then((result) => {
-        console.log(result['dismiss']==='cancel')
-        if (result['dismiss']!=='cancel') {
-
-          firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').once("value").then(snapshot => {
-            const val = snapshot.val();
-            this.setState({
-              faultCurrentSwitchesNotValid: val.switchID.split(
-                ","
-              ),
-              faultCurrentSwitches: val.switchIDValid.split(
-                ","
-              ),
-            })
-    
-            
-          //Find Loc
-          let validSet = [];
-          console.log(this.state.faultCurrentSwitchesNotValid[0]);
-          console.log(this.state.faultCurrentSwitches[0]);
-          if (this.state.faultCurrentSwitchesNotValid[0] === "") {
-            console.log("In 1st condition")
-            validSet = [];
-          } else {
-            if (this.state.faultCurrentSwitches[0] !== "") {
-              console.log("In 2nd condition")
-              validSet = this.state.faultCurrentSwitches;
+              
+            //Find Loc
+            let validSet = [];
+            console.log(this.state.faultCurrentSwitchesNotValid[0]);
+            console.log(this.state.faultCurrentSwitches[0]);
+            if (this.state.faultCurrentSwitchesNotValid[0] === "") {
+              console.log("In 1st condition")
+              validSet = [];
             } else {
-              console.log("In 3rd condition")
-              console.log(this.state.faultSwitch.split(","))
-              validSet = this.state.faultSwitch.split(",");
+              if (this.state.faultCurrentSwitches[0] !== "") {
+                console.log("In 2nd condition")
+                validSet = this.state.faultCurrentSwitches;
+              } else {
+                console.log("In 3rd condition")
+                console.log(this.state.faultSwitch.split(","))
+                validSet = this.state.faultSwitch.split(",");
+              }
             }
-          }
-
-          console.log(validSet);
-          let loc = getFaultLoc(
-            this.state.faultyPathSwithces,
-            validSet,
-            this.state.switch_list,
-            this.state.switchtable
-          );
-          
-            this.setState({
-              faultLoc: loc
-            });
-            console.log(this.state.faultLoc);
-          
-
-          //reconfigure
-          this.setState({
-            reconfigurePaths: findRecofigurePaths(
-              this.state.faultLoc,
-              this.state.noopensw_list,
-              this.state.switchtable,
+  
+            console.log(validSet);
+            let loc = getFaultLoc(
+              this.state.faultyPathSwithces,
+              validSet,
               this.state.switch_list,
-              this.state.physicalConFeedMatrix,
-              this.state.faultSwitch,
-              this.state.faultyPathSections,
-              this.state.section_list,
-              this.state.faultyPathSwithces
-            )
-          });
-          
-          this.setState({
-            optimalPath: optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
-          }) 
-
-          sendReconfigurePathsToDB(
-            this.state.switch_list,
-            this.state.logIndex,
-            this.state.branch,
-            this.state.faultSwitch,
-            this.state.faultyFeeder,
-            this.state.path,
-            this.state.faultLoc,
-            Date(),
-            false,
-            this.state.reconfigurePaths,
-            this.state.optimalPath
-          );
-
-          
-          console.log(this.state.prevMapState);
-          console.log(this.state.optimalPath.length)
-            console.log("-----------------2349032842309840ujkbfkjdbfjkafjkhf23^&*^&*^----------------")
-            firebase
-          .database()
-          .ref()
-          .child(this.state.branch)
-          .once("value")
-          .then(snapshot => {
-            const val = snapshot.val();
-            console.log(JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]);
-  
-            let isRepaired = val.reconfigure[this.state.logIndex].isFaultRepaired
-            let faultLoc = []
-            let faultFeeder = []
-            let isIsolated = val.reconfigure[this.state.logIndex].isIsolated
-            let isReconfigured = val.reconfigure[this.state.logIndex].isReconfigured
-            let optimalPath = parseInt(val.reconfigure[this.state.logIndex].optimalPath[0], 10)
-            let reconfigurePaths = JSON.parse(val.reconfigure[this.state.logIndex].reconfiguredPaths)
-            console.log(reconfigurePaths)
-            if(!isRepaired){
-              faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
-              faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
-            }
+              this.state.switchtable
+            );
             
-             //Map State
-          // this.setState({
-          //   mapState: generateMapState(
-          //     this.state.prevMapState,
-          //     this.state.switch_list,
-          //     this.state.isGenerated,
-          //     this.state.noopensw_list,
-          //     this.state.branch,
-          //     this.state.faultSwitch,
-          //     faultLoc,
-          //     this.state.prevReconfigure,
-          //     this.state.mapUpdated
-          //   )
-          // });
+              this.setState({
+                faultLoc: loc
+              });
+              console.log(this.state.faultLoc);
+            
   
-          //Draw graph
-          let graphData = drawGraph(
-            faultFeeder,
-            faultLoc!==undefined?faultLoc:[],
-            this.state.feeding_list,
-            this.state.noopensw_list,
-            this.state.switch_list,
-            this.state.section_list,
-            this.state.faultyPathSwithces,
-            this.state.faultyPathSections,
-            this.state.switchtable,
-            this.state.faultSwitch,
-            this.state.allFaultPaths,
-            this.state.prevMapState,
-            isIsolated,
-            isReconfigured,
-            reconfigurePaths[optimalPath]!==undefined?reconfigurePaths[optimalPath][0]:[]
+            //reconfigure
+            this.setState({
+              reconfigurePaths: findRecofigurePaths(
+                this.state.faultLoc,
+                this.state.noopensw_list,
+                this.state.switchtable,
+                this.state.switch_list,
+                this.state.physicalConFeedMatrix,
+                this.state.faultSwitch,
+                this.state.faultyPathSections,
+                this.state.section_list,
+                this.state.faultyPathSwithces
+              )
+            });
+            
+            this.setState({
+              optimalPath: optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
+            }) 
   
-          )[0];
-          let graphConfig = drawGraph(
-            faultFeeder,
-            faultLoc!==undefined?faultLoc:[],
-            this.state.feeding_list,
-            this.state.noopensw_list,
-            this.state.switch_list,
-            this.state.section_list,
-            this.state.faultyPathSwithces,
-            this.state.faultyPathSections,
-            this.state.switchtable,
-            this.state.faultSwitch,
-            this.state.allFaultPaths,
-            this.state.prevMapState,
-            isIsolated,
-            isReconfigured,
-            reconfigurePaths[optimalPath]!==undefined?reconfigurePaths[optimalPath][0]:[]
-          )[1];
-          this.setState({
-            graph_data: graphData,
-            graph_config: graphConfig
+            sendReconfigurePathsToDB(
+              this.state.switch_list,
+              this.state.logIndex,
+              this.state.branch,
+              this.state.faultSwitch,
+              this.state.faultyFeeder,
+              this.state.path,
+              this.state.faultLoc,
+              Date(),
+              false,
+              this.state.reconfigurePaths,
+              this.state.optimalPath
+            );
+  
+            
+            console.log(this.state.prevMapState);
+            console.log(this.state.optimalPath.length)
+              console.log("-----------------2349032842309840ujkbfkjdbfjkafjkhf23^&*^&*^----------------")
+              firebase
+            .database()
+            .ref()
+            .child(this.state.branch)
+            .once("value")
+            .then(snapshot => {
+              const val = snapshot.val();
+              console.log(JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]);
+    
+              let isRepaired = val.reconfigure[this.state.logIndex].isFaultRepaired
+              let faultLoc = []
+              let faultFeeder = []
+              let isIsolated = val.reconfigure[this.state.logIndex].isIsolated
+              let isReconfigured = val.reconfigure[this.state.logIndex].isReconfigured
+              let optimalPath = parseInt(val.reconfigure[this.state.logIndex].optimalPath[0], 10)
+              let reconfigurePaths = JSON.parse(val.reconfigure[this.state.logIndex].reconfiguredPaths)
+              console.log(reconfigurePaths)
+              if(!isRepaired){
+                faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
+                faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
+              }
+              
+               //Map State
+            // this.setState({
+            //   mapState: generateMapState(
+            //     this.state.prevMapState,
+            //     this.state.switch_list,
+            //     this.state.isGenerated,
+            //     this.state.noopensw_list,
+            //     this.state.branch,
+            //     this.state.faultSwitch,
+            //     faultLoc,
+            //     this.state.prevReconfigure,
+            //     this.state.mapUpdated
+            //   )
+            // });
+    
+            //Draw graph
+            let graphData = drawGraph(
+              faultFeeder,
+              faultLoc!==undefined?faultLoc:[],
+              this.state.feeding_list,
+              this.state.noopensw_list,
+              this.state.switch_list,
+              this.state.section_list,
+              this.state.faultyPathSwithces,
+              this.state.faultyPathSections,
+              this.state.switchtable,
+              this.state.faultSwitch,
+              this.state.allFaultPaths,
+              this.state.prevMapState,
+              isIsolated,
+              isReconfigured,
+              reconfigurePaths[optimalPath]!==undefined?reconfigurePaths[optimalPath][0]:[]
+    
+            )[0];
+            let graphConfig = drawGraph(
+              faultFeeder,
+              faultLoc!==undefined?faultLoc:[],
+              this.state.feeding_list,
+              this.state.noopensw_list,
+              this.state.switch_list,
+              this.state.section_list,
+              this.state.faultyPathSwithces,
+              this.state.faultyPathSections,
+              this.state.switchtable,
+              this.state.faultSwitch,
+              this.state.allFaultPaths,
+              this.state.prevMapState,
+              isIsolated,
+              isReconfigured,
+              reconfigurePaths[optimalPath]!==undefined?reconfigurePaths[optimalPath][0]:[]
+            )[1];
+            this.setState({
+              graph_data: graphData,
+              graph_config: graphConfig
+            });
+    
+            })
           });
+        }
+      })
+      }else{
+     
   
-          })
-        });
+            firebase.database().ref().child(this.state.branch).child('faultCurrentRequest').once("value").then(snapshot => {
+              const val = snapshot.val();
+              this.setState({
+                faultCurrentSwitchesNotValid: val.switchID.split(
+                  ","
+                ),
+                faultCurrentSwitches: val.switchIDValid.split(
+                  ","
+                ),
+              })
+      
+              
+            //Find Loc
+            let validSet = [];
+            console.log(this.state.faultCurrentSwitchesNotValid[0]);
+            console.log(this.state.faultCurrentSwitches[0]);
+            if (this.state.faultCurrentSwitchesNotValid[0] === "") {
+              console.log("In 1st condition")
+              validSet = [];
+            } else {
+              if (this.state.faultCurrentSwitches[0] !== "") {
+                console.log("In 2nd condition")
+                validSet = this.state.faultCurrentSwitches;
+              } else {
+                console.log("In 3rd condition")
+                console.log(this.state.faultSwitch.split(","))
+                validSet = this.state.faultSwitch.split(",");
+              }
+            }
+  
+            console.log(validSet);
+            let loc = getFaultLoc(
+              this.state.faultyPathSwithces,
+              validSet,
+              this.state.switch_list,
+              this.state.switchtable
+            );
+            
+              this.setState({
+                faultLoc: loc
+              });
+              console.log(this.state.faultLoc);
+            
+  
+            //reconfigure
+            this.setState({
+              reconfigurePaths: findRecofigurePaths(
+                this.state.faultLoc,
+                this.state.noopensw_list,
+                this.state.switchtable,
+                this.state.switch_list,
+                this.state.physicalConFeedMatrix,
+                this.state.faultSwitch,
+                this.state.faultyPathSections,
+                this.state.section_list,
+                this.state.faultyPathSwithces
+              )
+            });
+            
+            this.setState({
+              optimalPath: optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
+            }) 
+  
+            sendReconfigurePathsToDB(
+              this.state.switch_list,
+              this.state.logIndex,
+              this.state.branch,
+              this.state.faultSwitch,
+              this.state.faultyFeeder,
+              this.state.path,
+              this.state.faultLoc,
+              Date(),
+              false,
+              this.state.reconfigurePaths,
+              this.state.optimalPath
+            );
+  
+            
+            console.log(this.state.prevMapState);
+            console.log(this.state.optimalPath.length)
+              console.log("-----------------2349032842309840ujkbfkjdbfjkafjkhf23^&*^&*^----------------")
+              firebase
+            .database()
+            .ref()
+            .child(this.state.branch)
+            .once("value")
+            .then(snapshot => {
+              const val = snapshot.val();
+              console.log(JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]);
+    
+              let isRepaired = val.reconfigure[this.state.logIndex].isFaultRepaired
+              let faultLoc = []
+              let faultFeeder = []
+              let isIsolated = val.reconfigure[this.state.logIndex].isIsolated
+              let isReconfigured = val.reconfigure[this.state.logIndex].isReconfigured
+              let optimalPath = parseInt(val.reconfigure[this.state.logIndex].optimalPath[0], 10)
+              let reconfigurePaths = JSON.parse(val.reconfigure[this.state.logIndex].reconfiguredPaths)
+              console.log(reconfigurePaths)
+              if(!isRepaired){
+                faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
+                faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
+              }
+              
+               //Map State
+            // this.setState({
+            //   mapState: generateMapState(
+            //     this.state.prevMapState,
+            //     this.state.switch_list,
+            //     this.state.isGenerated,
+            //     this.state.noopensw_list,
+            //     this.state.branch,
+            //     this.state.faultSwitch,
+            //     faultLoc,
+            //     this.state.prevReconfigure,
+            //     this.state.mapUpdated
+            //   )
+            // });
+    
+            //Draw graph
+            let graphData = drawGraph(
+              faultFeeder,
+              faultLoc!==undefined?faultLoc:[],
+              this.state.feeding_list,
+              this.state.noopensw_list,
+              this.state.switch_list,
+              this.state.section_list,
+              this.state.faultyPathSwithces,
+              this.state.faultyPathSections,
+              this.state.switchtable,
+              this.state.faultSwitch,
+              this.state.allFaultPaths,
+              this.state.prevMapState,
+              isIsolated,
+              isReconfigured,
+              reconfigurePaths[optimalPath]!==undefined?reconfigurePaths[optimalPath][0]:[]
+    
+            )[0];
+            let graphConfig = drawGraph(
+              faultFeeder,
+              faultLoc!==undefined?faultLoc:[],
+              this.state.feeding_list,
+              this.state.noopensw_list,
+              this.state.switch_list,
+              this.state.section_list,
+              this.state.faultyPathSwithces,
+              this.state.faultyPathSections,
+              this.state.switchtable,
+              this.state.faultSwitch,
+              this.state.allFaultPaths,
+              this.state.prevMapState,
+              isIsolated,
+              isReconfigured,
+              reconfigurePaths[optimalPath]!==undefined?reconfigurePaths[optimalPath][0]:[]
+            )[1];
+            this.setState({
+              graph_data: graphData,
+              graph_config: graphConfig
+            });
+    
+            })
+          });
+        
       }
-    })
+      
   }else{
     //Draw graph
     let graphData = drawGraph2(

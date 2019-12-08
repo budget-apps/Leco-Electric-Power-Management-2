@@ -389,8 +389,10 @@ const reconfigureMapState = (affectedlist, normal, mapState, switchlist, branch,
 
 const downUpStream = (faultyFeeder, mapState, branch) => {
   let faultF = ("sw20"+faultyFeeder.substr(faultyFeeder.length-2,faultyFeeder.length)).toString()
+  console.log(faultF)
   mapState[faultF] = 0
   firebase.database().ref().child(branch).child('mapState').set(mapState)
+  firebase.database().ref().child(branch).child('mapUpdated').set(true)
 }
 
 const isolateMapState = (faultSection,faultyFeeder, mapState, branch,logIndex) => {
