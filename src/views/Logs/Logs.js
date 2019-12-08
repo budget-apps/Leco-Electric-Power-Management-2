@@ -89,45 +89,54 @@ class PhysicalConnectivity extends React.Component {
       console.log(optimalPath)
       let graphDatas = []
       let viewBtn = []
-      for(let j=0;j<reconfiguredPaths.length;j++){
-        let tempArr = reconfiguredPaths[j]
-        console.log(tempArr)
-        let sw = []
-        let se = []
-        for(let k=0;k<tempArr[0].length;k++){
-          //console.log(tempArr[k][0])
-          sw.push(switch_list[tempArr[0][k][0]])
-          se.push(section_list[tempArr[0][k][1]])
+      if(reconfiguredPaths.length>0){
+        for(let j=0;j<reconfiguredPaths.length;j++){
+          let tempArr = reconfiguredPaths[j]
+          console.log(tempArr)
+          let sw = []
+          let se = []
+          for(let k=0;k<tempArr[0].length;k++){
+            //console.log(tempArr[k][0])
+            sw.push(switch_list[tempArr[0][k][0]])
+            se.push(section_list[tempArr[0][k][1]])
+          }
+          console.log(sw)
+          console.log(se)
+          let graphData = drawPath(se, sw, noopenlist, feedlist)[0]
+          let graphConfig  = drawPath(se, sw, noopenlist, feedlist)[1]
+  
+          graphDatas.push([graphData,graphConfig])
+          viewBtn.push(<Button color='info' onClick={()=>this.handleShow(reconfigure.length-1-i, j)}>View Reconfigure {j+1}</Button>)
         }
-        console.log(sw)
-        console.log(se)
-        let graphData = drawPath(se, sw, noopenlist, feedlist)[0]
-        let graphConfig  = drawPath(se, sw, noopenlist, feedlist)[1]
-
-        graphDatas.push([graphData,graphConfig])
-        viewBtn.push(<Button color='info' onClick={()=>this.handleShow(i-1, j)}>View Reconfigure {j+1}</Button>)
+        let gphs = this.state.graphs
+        gphs.push(graphDatas)
+        console.log(gphs[0][0][0])
+        let details = []  
+        let dts = <div>Fault switch is {faultSwitch}. Faulty Feeder is {faultyFeeder[0]}. Fault section is {JSON.stringify(faultySection[0])}.</div>
+        details.push(dts)
+        details.push(viewBtn)
+        let opindex = <div>No Optimal path </div>
+        if(optimalPath[0]!==undefined && optimalPath[0]!==-1){
+          opindex = <Button color='primary' onClick={()=>this.handleShowOp(reconfigure.length-1-i, optimalPath[0])}>Optimal path </Button>
+        }
+        else{
+          opindex = <Button color='primary' > No optimal path </Button>
+        }
+        details.push(opindex)
+        details.push(<div>
+                        <Button color='warning' onClick={()=>this.isolateBtnHandler(faultySection[0],faultyFeeder[0], this.state.mapState,this.state.branch, isFaultRepaired, i)}> Isolate </Button>
+                        <Button color='success' onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, this.state.mapState, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </Button>
+                    </div>)
+        let row = [time, details, <Button color={isFaultRepaired?"success":"default"} onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Restored <CheckIcon/></div>:"Restore"}</Button>]
+        tableData.push(row)
+      }else{
+        let details = []  
+        let dts = <div>Fault switch is {faultSwitch}. Faulty Feeder is {faultyFeeder[0]}. Fault section is {JSON.stringify(faultySection[0])}.</div>
+        details.push(dts)
+        let row = [time, details, <Button color={isFaultRepaired?"success":"default"} onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Restored <CheckIcon/></div>:"Restore"}</Button>]
+        tableData.push(row)
       }
-      let gphs = this.state.graphs
-      gphs.push(graphDatas)
-      console.log(gphs[0][0][0])
-      let details = []  
-      let dts = <div>Fault switch is {faultSwitch}. Faulty Feeder is {faultyFeeder[0]}. Fault section is {JSON.stringify(faultySection[0])}.</div>
-      details.push(dts)
-      details.push(viewBtn)
-      let opindex = <div>No Optimal path </div>
-      if(optimalPath[0]!==undefined && optimalPath[0]!==-1){
-        opindex = <Button color='primary' onClick={()=>this.handleShowOp(i-1, optimalPath[0])}>Optimal path </Button>
-      }
-      else{
-        opindex = <Button color='primary' > No optimal path </Button>
-      }
-      details.push(opindex)
-      details.push(<div>
-                      <Button color='warning' onClick={()=>this.isolateBtnHandler(faultySection[0],faultyFeeder[0], this.state.mapState,this.state.branch, isFaultRepaired, i)}> Isolate </Button>
-                      <Button color='success' onClick={()=>this.handleReconfigure(optimalPath, reconfiguredPaths, this.state.mapState, faultySection[0], isFaultRepaired, switch_list, faultSwitch, i)}> Reconfigure </Button>
-                  </div>)
-      let row = [time, details, <Button color={isFaultRepaired?"success":"default"} onClick={()=>this.repairedBtnHandler(i, isFaultRepaired)}>{isFaultRepaired?<div>Restored <CheckIcon/></div>:"Restore"}</Button>]
-      tableData.push(row)
+      
       
     }
 

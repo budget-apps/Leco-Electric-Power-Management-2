@@ -43,6 +43,7 @@ import {
 } from "./faultFinder";
 import {
   drawGraph,
+  drawGraph2,
   onClickNode,
   onRightClickNode,
   onRightClickLink
@@ -194,90 +195,6 @@ class Dashboard extends React.Component {
         //Find Faults
         this.findingFaults();
 
-        this.setState({
-          currentSwVal: getSwitchesCurrent(this.state.currentTable)
-        });
-        console.log(this.state.prevMapState);
-        console.log(this.state.optimalPath.length)
-          console.log("-----------------2349032842309840ujkbfkjdbfjkafjkhf23^&*^&*^----------------")
-          firebase
-        .database()
-        .ref()
-        .child(branch)
-        .once("value")
-        .then(snapshot => {
-          const val = snapshot.val();
-          console.log(JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]);
-
-          let isRepaired = val.reconfigure[this.state.logIndex].isFaultRepaired
-          let faultLoc = []
-          let faultFeeder = []
-          let isIsolated = val.reconfigure[this.state.logIndex].isIsolated
-          let isReconfigured = val.reconfigure[this.state.logIndex].isReconfigured
-          let optimalPath = parseInt(val.reconfigure[this.state.logIndex].optimalPath[0], 10)
-          let reconfigurePaths = JSON.parse(val.reconfigure[this.state.logIndex].reconfiguredPaths)
-          console.log(reconfigurePaths)
-          if(!isRepaired){
-            faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
-            faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
-          }
-           //Map State
-        // this.setState({
-        //   mapState: generateMapState(
-        //     this.state.prevMapState,
-        //     this.state.switch_list,
-        //     this.state.isGenerated,
-        //     this.state.noopensw_list,
-        //     this.state.branch,
-        //     this.state.faultSwitch,
-        //     faultLoc,
-        //     this.state.prevReconfigure,
-        //     this.state.mapUpdated
-        //   )
-        // });
-
-        //Draw graph
-        let graphData = drawGraph(
-          faultFeeder,
-          faultLoc,
-          this.state.feeding_list,
-          this.state.noopensw_list,
-          this.state.switch_list,
-          this.state.section_list,
-          this.state.faultyPathSwithces,
-          this.state.faultyPathSections,
-          this.state.switchtable,
-          this.state.faultSwitch,
-          this.state.allFaultPaths,
-          this.state.prevMapState,
-          isIsolated,
-          isReconfigured,
-          reconfigurePaths[optimalPath][0]
-
-        )[0];
-        let graphConfig = drawGraph(
-          faultFeeder,
-          faultLoc,
-          this.state.feeding_list,
-          this.state.noopensw_list,
-          this.state.switch_list,
-          this.state.section_list,
-          this.state.faultyPathSwithces,
-          this.state.faultyPathSections,
-          this.state.switchtable,
-          this.state.faultSwitch,
-          this.state.allFaultPaths,
-          this.state.prevMapState,
-          isIsolated,
-          isReconfigured,
-          reconfigurePaths[optimalPath][0]
-        )[1];
-        this.setState({
-          graph_data: graphData,
-          graph_config: graphConfig
-        });
-
-        })
         //window.location.reload(false);
         //this.drawTree()
       })
@@ -414,7 +331,9 @@ class Dashboard extends React.Component {
               this.state.faultyPathSwithces
             )
           });
-
+          this.setState({
+            currentSwVal: getSwitchesCurrent(this.state.currentTable)
+          });
           this.setState({
             optimalPath: optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
           }) 
@@ -432,9 +351,116 @@ class Dashboard extends React.Component {
             this.state.reconfigurePaths,
             this.state.optimalPath
           );
+
+          
+          console.log(this.state.prevMapState);
+          console.log(this.state.optimalPath.length)
+            console.log("-----------------2349032842309840ujkbfkjdbfjkafjkhf23^&*^&*^----------------")
+            firebase
+          .database()
+          .ref()
+          .child(this.state.branch)
+          .once("value")
+          .then(snapshot => {
+            const val = snapshot.val();
+            console.log(JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]);
+  
+            let isRepaired = val.reconfigure[this.state.logIndex].isFaultRepaired
+            let faultLoc = []
+            let faultFeeder = []
+            let isIsolated = val.reconfigure[this.state.logIndex].isIsolated
+            let isReconfigured = val.reconfigure[this.state.logIndex].isReconfigured
+            let optimalPath = parseInt(val.reconfigure[this.state.logIndex].optimalPath[0], 10)
+            let reconfigurePaths = JSON.parse(val.reconfigure[this.state.logIndex].reconfiguredPaths)
+            console.log(reconfigurePaths)
+            if(!isRepaired){
+              faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
+              faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
+            }
+            
+             //Map State
+          // this.setState({
+          //   mapState: generateMapState(
+          //     this.state.prevMapState,
+          //     this.state.switch_list,
+          //     this.state.isGenerated,
+          //     this.state.noopensw_list,
+          //     this.state.branch,
+          //     this.state.faultSwitch,
+          //     faultLoc,
+          //     this.state.prevReconfigure,
+          //     this.state.mapUpdated
+          //   )
+          // });
+  
+          //Draw graph
+          let graphData = drawGraph(
+            faultFeeder,
+            faultLoc!==undefined?faultLoc:[],
+            this.state.feeding_list,
+            this.state.noopensw_list,
+            this.state.switch_list,
+            this.state.section_list,
+            this.state.faultyPathSwithces,
+            this.state.faultyPathSections,
+            this.state.switchtable,
+            this.state.faultSwitch,
+            this.state.allFaultPaths,
+            this.state.prevMapState,
+            isIsolated,
+            isReconfigured,
+            reconfigurePaths[optimalPath]!==undefined?reconfigurePaths[optimalPath][0]:[]
+  
+          )[0];
+          let graphConfig = drawGraph(
+            faultFeeder,
+            faultLoc!==undefined?faultLoc:[],
+            this.state.feeding_list,
+            this.state.noopensw_list,
+            this.state.switch_list,
+            this.state.section_list,
+            this.state.faultyPathSwithces,
+            this.state.faultyPathSections,
+            this.state.switchtable,
+            this.state.faultSwitch,
+            this.state.allFaultPaths,
+            this.state.prevMapState,
+            isIsolated,
+            isReconfigured,
+            reconfigurePaths[optimalPath]!==undefined?reconfigurePaths[optimalPath][0]:[]
+          )[1];
+          this.setState({
+            graph_data: graphData,
+            graph_config: graphConfig
+          });
+  
+          })
         });
       }
     })
+  }else{
+    //Draw graph
+    let graphData = drawGraph2(
+      this.state.feeding_list,
+      this.state.noopensw_list,
+      this.state.switch_list,
+      this.state.section_list,
+      this.state.switchtable,
+      this.state.prevMapState,
+
+    )[0];
+    let graphConfig = drawGraph2(
+      this.state.feeding_list,
+      this.state.noopensw_list,
+      this.state.switch_list,
+      this.state.section_list,
+      this.state.switchtable,
+      this.state.prevMapState,
+    )[1];
+    this.setState({
+      graph_data: graphData,
+      graph_config: graphConfig
+    });
   }
 }
 
@@ -626,6 +652,16 @@ class Dashboard extends React.Component {
                         Physical connection graph will display here. (Click on
                         node for auto arrange them)
                       </p>
+                      <div style={{margin:5}}>
+                          <button onClick={()=>this.setState({showManual: !this.state.showManual})}>Show Map Details</button>
+                          <img alt={''} src={require("../../assets/img/Details2.png")} style={{
+                           height: 300,
+                           width:200,
+                           absolute: 0,
+                           right: "0%",
+                            display: this.state.showManual?"block":"none"
+                          }}/>
+                          </div>
                       <Button
                         variant="contained"
                         color="primary"

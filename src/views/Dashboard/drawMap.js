@@ -169,6 +169,103 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
     return [graph_data, graph_config]
   }
 
+  const drawGraph2 = (feed_list, noopn_list, sw_list, se_list, switchtable, prevReconfigure) => {
+    let nodes_arr = []
+    let link_arr = []
+    //console.log(faultLoc)
+    for(let i=0;i<se_list.length;i++){
+      let color = "grey"
+    
+      nodes_arr.push({id: se_list[i],color: color, size: 200, symbolType: "circle"})
+    }
+
+    for(let i=0;i<sw_list.length;i++){
+      let typeofnode = ""
+      let id = sw_list[i]
+      let color = "#6fff6f"
+      let size = 3000
+      let symbolType = "circle"
+      
+      if(noopn_list.includes(sw_list[i])){
+        color = "#ff4848"
+        typeofnode = "Open"
+        symbolType ="triangle"
+      }else if(feed_list.includes(sw_list[i])){
+        color = "#6fb7ff"
+        typeofnode = "Close"
+        symbolType ="square"
+      }else{
+        color = "#6fff6f"
+        typeofnode = "Close"
+      }
+     
+      if(prevReconfigure.length!==0){
+        for(let j=0;j<prevReconfigure.length-1;j++){
+          for(let k=0;k<prevReconfigure[j].length;k++){
+            if(sw_list[prevReconfigure[j][k][0]]===sw_list[i]){
+              color = "#654321"
+              typeofnode = "Open"
+              break
+            }
+          }
+        }
+      }
+
+      id = id + "\n" + typeofnode
+      nodes_arr.push({id: id,color: color, size: size, symbolType: symbolType})
+      let link_color ="#6fff6f"
+      let section_list = getSectionOfSwitch(switchtable, sw_list[i])
+      
+      for(let j=0;j<section_list.length;j++){
+    
+        link_arr.push({source: id, target: section_list[j], color: link_color})
+          
+      }
+      
+    }
+
+    const graph_data = {
+        nodes: nodes_arr,
+        links: link_arr
+    };
+    const graph_config = {
+      "automaticRearrangeAfterDropNode": true,
+      "collapsible": true,
+      "directed": false,
+      "focusAnimationDuration": 0.75,
+      "focusZoom": 5,
+      "height": 700,
+      "highlightDegree": 5,
+      "highlightOpacity": 1,
+      "linkHighlightBehavior": true,
+      "maxZoom": 1,
+      "minZoom": 0.3,
+      "nodeHighlightBehavior": false,
+      "panAndZoom": false,
+      "staticGraph": false,
+      "staticGraphWithDragAndDrop": false,
+      "width": 1000,
+      "d3": {
+        "alphaTarget": 0.05,
+        "gravity": -1200,
+        "linkLength": 200,
+        "linkStrength": 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+      },
+      node: {
+          color: 'lightgreen',  
+          size: 120,
+          highlightStrokeColor: 'red',
+          fontSize: 20                                                                        
+      },
+      link: {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+        color: '#6fff6f',
+        highlightColor: 'green'
+      }
+    };
+    console.log("Graph data")
+    return [graph_data, graph_config]
+  }
+
   const drawPath = (se_list,sw_list,noopn_list, feed_list) => {
     let nodes_arr = []
     let link_arr = []
@@ -182,19 +279,22 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
     console.log("++++++++++++++++++++++++")
     console.log(feed_list)
     console.log(noopn_list)
+    
     for(let i=0;i<sw_list.length;i++){
       
       let id = sw_list[i]
       console.log(id)
       let color = "green"
       let size = 3000
-      let symbolType = "square"
+      let symbolType = "circle"
       //let typeofnode = 'Close'
       if(noopn_list.includes(sw_list[i])){
         color = "#ff4848"
+        symbolType = "triangle"
         //typeofnode = "Open"
       }else if(feed_list.includes(sw_list[i])){
         color = "#6fb7ff"
+        symbolType = "square"
        // typeofnode = "Close"
       }else{
         color = "#6fff6f"
@@ -348,4 +448,4 @@ const onNodePositionChange = (nodeId, x, y) =>{
 };
 
 export {drawGraph, onClickGraph, onClickNode, onDoubleClickNode, onRightClickNode, onMouseOverNode, onMouseOutNode, onClickLink, onRightClickLink}
-export {onMouseOverLink, onMouseOutLink, onNodePositionChange, drawPath}                                                                                                                                                                                                                                                              
+export {onMouseOverLink, onMouseOutLink, onNodePositionChange, drawPath, drawGraph2}                                                                                                                                                                                                                                                              

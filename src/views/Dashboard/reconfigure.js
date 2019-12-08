@@ -115,8 +115,11 @@ const NOToFeederPath = (switchID, faultSwitch, feedMatrix, switch_list, noList) 
   }
 
 const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMatrix, faultSwitch, faultyPathSections,section_list, faultPathSwitches) => {
+    if(faultLoc.length<1){
+      return []
+    }
     let noSet = findEndConnectedNOs(faultLoc, noList, switch_table, switch_list)
-  
+
     let allPaths = []
     for(let i=0;i<noSet.length;i++){
         for(let j=0;j<noSet[i].length;j++){
@@ -133,7 +136,7 @@ const findRecofigurePaths = (faultLoc, noList, switch_table, switch_list, feedMa
     }
     let new_path = []
     console.log(allPaths)
-    //console.log(faultLoc)
+    console.log(faultLoc)
     let f1 = switch_list.indexOf(faultLoc[0][0])
     let f2 = switch_list.indexOf(faultLoc[0][1])
 
