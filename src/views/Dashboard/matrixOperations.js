@@ -357,6 +357,12 @@ const resetMapState = (switchlist,nolist,branch) => {
     }
     
   }
+  mapState['sw2010'] = 1
+  mapState['sw2011'] = 1
+  mapState['sw2019'] = 1
+  mapState['sw2020'] = 1
+  mapState['sw2021'] = 1
+
   firebase.database().ref().child(branch).child('mapState').set(mapState)
   return mapState
 }

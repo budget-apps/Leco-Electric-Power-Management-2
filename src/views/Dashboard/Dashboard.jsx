@@ -159,7 +159,9 @@ class Dashboard extends React.Component {
           feeding_list: getFeedingPoints(this.state.feedpoints),
           allFaultPaths: this.state.prevReconfigure!==undefined?processPrevReconfigure(this.state.prevReconfigure):[]
         });
-
+        this.setState({
+          currentSwVal: getSwitchesCurrent(this.state.currentTable)
+        });
         this.setState({
           physicalConMatrix: generatePhysicalConMatrix(
             this.state.switchtable,
@@ -331,9 +333,7 @@ class Dashboard extends React.Component {
               this.state.faultyPathSwithces
             )
           });
-          this.setState({
-            currentSwVal: getSwitchesCurrent(this.state.currentTable)
-          });
+          
           this.setState({
             optimalPath: optimalPath(this.state.reconfigurePaths,  this.state.faultLoc,  this.state.faultyPathSwithces, this.state.currentSwVal, this.state.switch_list, this.state.minOut)
           }) 
@@ -446,7 +446,7 @@ class Dashboard extends React.Component {
       this.state.switch_list,
       this.state.section_list,
       this.state.switchtable,
-      this.state.prevMapState,
+      this.state.allFaultPaths,
 
     )[0];
     let graphConfig = drawGraph2(
@@ -455,7 +455,7 @@ class Dashboard extends React.Component {
       this.state.switch_list,
       this.state.section_list,
       this.state.switchtable,
-      this.state.prevMapState,
+      this.state.allFaultPaths,
     )[1];
     this.setState({
       graph_data: graphData,
