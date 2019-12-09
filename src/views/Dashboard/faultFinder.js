@@ -1,4 +1,4 @@
-import {findFeederInRow, findFeederInCol, getRow, rowOperation, colOperation, getSwitchsToSwitch, getSwitchCurrent, getSectionOfSwitch} from "./matrixOperations"
+import {findFeederInRow, findFeederInCol, getRow, rowOperation, colOperation, getSwitchCurrent, getSectionOfSwitch} from "./matrixOperations"
 var firebase = require("firebase");
 
 const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list, feed_list, section_list, switchtable) => {
@@ -149,38 +149,70 @@ const findFaultyFeeder = (faultSwitch, feedMatrix, switch_list, feed_list, secti
     
   }
   
-  const getFaultLoc = (faultyPath, validset, switch_list, switch_table) => {
+  const getFaultLoc = (faultyPath, validset, switch_list, switch_table, faultSwitch) => {
+    console.log("==================================================")
     console.log(validset)
-    faultyPath = [...new Set(faultyPath)]
-    let FPLength = faultyPath.length
+    console.log(validset.length)
+    console.log("==================================================")
+    let tempploc = []
+    if(validset.length>0){
+      let end = validset[validset.length-1]
+      console.log(end)
+      let endIndex = faultyPath.lastIndexOf(switch_list.indexOf(end))
+      console.log(endIndex)
 
-    let loc = []
-    for(let i=0;i<validset.length;i++){
-      let tempLoc = []
-      tempLoc.push(validset[i])
-      let tempID = switch_list.indexOf(validset[i])
-      if(FPLength>faultyPath.indexOf(tempID)+1){
-        let endLoc = switch_list[faultyPath[faultyPath.indexOf(tempID)+1]]
-        tempLoc.push(endLoc)
-        loc.push(tempLoc)
+      let next = faultyPath[endIndex+1]
+      if(next!==undefined){
+        tempploc.push([end,switch_list[next]])
       }else{
-        tempLoc.push(validset[i])
-        loc.push(tempLoc)
-        let arr = getSwitchsToSwitch(switch_list,validset[i],switch_table)
-        for(let j=0;j<faultyPath.length;j++){
-          if(arr.includes(switch_list[faultyPath[j]])){
-            console.log(switch_list[faultyPath[j]])
-            console.log(j)
-            arr.splice(arr.indexOf(switch_list[faultyPath[j]]), 1)
-          }
-        }
-        console.log(arr)
+        tempploc.push([end,"-1"])
       }
-      
-      
+      console.log(next)
+    }else{
+      let end = faultSwitch
+      let endIndex = faultyPath.lastIndexOf(switch_list.indexOf(end))
+      let next = faultyPath[endIndex+1]
+      if(next!==undefined){
+        tempploc.push([end,switch_list[next]])
+      }else{
+        tempploc.push([end,"-1"])
+      }
+      console.log(next)
     }
-    console.log(loc)
-    return loc
+    console.log(tempploc)
+    
+
+    // faultyPath = [...new Set(faultyPath)]
+    // let FPLength = faultyPath.length
+
+    // let loc = []
+    // for(let i=0;i<validset.length;i++){
+    //   let tempLoc = []
+    //   tempLoc.push(validset[i])
+    //   let tempID = switch_list.indexOf(validset[i])
+    //   if(FPLength>faultyPath.indexOf(tempID)+1){
+    //     let endLoc = switch_list[faultyPath[faultyPath.indexOf(tempID)+1]]
+    //     tempLoc.push(endLoc)
+    //     loc.push(tempLoc)
+    //   }else{
+    //     tempLoc.push(validset[i])
+    //     loc.push(tempLoc)
+    //     let arr = getSwitchsToSwitch(switch_list,validset[i],switch_table)
+    //     for(let j=0;j<faultyPath.length;j++){
+    //       if(arr.includes(switch_list[faultyPath[j]])){
+    //         console.log(switch_list[faultyPath[j]])
+    //         console.log(j)
+    //         arr.splice(arr.indexOf(switch_list[faultyPath[j]]), 1)
+    //       }
+    //     }
+    //     console.log(arr)
+    //   }
+      
+      
+    // }
+    // console.log(loc)
+    // return loc
+    return tempploc
   }
 
 

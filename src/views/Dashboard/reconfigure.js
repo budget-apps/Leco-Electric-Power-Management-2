@@ -6,6 +6,7 @@ var firebase = require("firebase");
 const findEndConnectedNOs = (faultLoc, noList, switch_table, switch_list) => {
     let nos = []
     for(let j=0;j<faultLoc.length;j++){
+      if(faultLoc[j][1]==="-1")continue
         let end = faultLoc[j][1]
         let arr = getSwitchsToSwitch(switch_list,end,switch_table)
         let arrLen = arr.length

@@ -80,7 +80,7 @@ class Dashboard extends React.Component {
           sections: []
         }
       ],
-      branch: "",
+      branch: "Negambo",
       faultyPathSwithces: [],
       faultyPathSections: [],
       ButtonCaption: "View Structural Map",
@@ -92,6 +92,25 @@ class Dashboard extends React.Component {
     };
     this.onChageNewID = this.onChageNewID.bind(this);
     this.onChageNewSection = this.onChageNewSection.bind(this);
+  }
+
+  componentDidMount(){
+    firebase
+      .database()
+      .ref()
+      .child(this.state.branch + "/faultSwitch")
+      .on("value", snapshot => {
+        //Do whatever
+        console.log(snapshot.val());
+        if(this.state.faultSwitch!==snapshot.val() && snapshot.val()!==""){
+          Swal.fire({
+            title: 'Alert',
+            text: "Fault detected at "+snapshot.val(),
+            type: 'warning',
+          })
+        }
+       
+      });
   }
 
   handleClickOpen = (event, source, target) => {
@@ -303,7 +322,8 @@ class Dashboard extends React.Component {
               this.state.faultyPathSwithces,
               validSet,
               this.state.switch_list,
-              this.state.switchtable
+              this.state.switchtable,
+              this.state.faultSwitch
             );
             
               this.setState({
@@ -365,10 +385,19 @@ class Dashboard extends React.Component {
               let isReconfigured = val.reconfigure[this.state.logIndex].isReconfigured
               let optimalPath = parseInt(val.reconfigure[this.state.logIndex].optimalPath[0], 10)
               let reconfigurePaths = JSON.parse(val.reconfigure[this.state.logIndex].reconfiguredPaths)
+              let faultPath = JSON.parse(val.reconfigure[this.state.logIndex].faultyPath)
               console.log(reconfigurePaths)
               if(!isRepaired){
                 faultLoc = JSON.parse(val.reconfigure[this.state.logIndex].faultySection)[0]
                 faultFeeder = JSON.parse(val.reconfigure[this.state.logIndex].faultyFeeder)[0]
+              }
+
+              let fpS = []
+              let fpE = []
+
+              for(let g=0;g<faultPath.length;g++){
+                fpS.push(faultPath[g][0])
+                fpE.push(faultPath[g][1])
               }
               
                //Map State
@@ -394,8 +423,8 @@ class Dashboard extends React.Component {
               this.state.noopensw_list,
               this.state.switch_list,
               this.state.section_list,
-              this.state.faultyPathSwithces,
-              this.state.faultyPathSections,
+              fpS,
+              fpE,
               this.state.switchtable,
               this.state.faultSwitch,
               this.state.allFaultPaths,
@@ -412,8 +441,8 @@ class Dashboard extends React.Component {
               this.state.noopensw_list,
               this.state.switch_list,
               this.state.section_list,
-              this.state.faultyPathSwithces,
-              this.state.faultyPathSections,
+              fpS,
+              fpE,
               this.state.switchtable,
               this.state.faultSwitch,
               this.state.allFaultPaths,
