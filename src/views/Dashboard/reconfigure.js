@@ -195,7 +195,9 @@ const optimalPath = (allPaths, faultySection, faultPathSwitches, currentTable, s
   //console.log(minOut)
   let diff = 0
   let maxDiffPath = 0
+  let pathI = 0
   let uptoo = ""
+  let diffarr = []
   for(let i=0;i<allPaths.length;i++){
     //console.log(allPaths[i][0][allPaths[i][0].length-1][0])
     let tempNode = switch_list[allPaths[i][0][allPaths[i][0].length-1][0]]
@@ -222,8 +224,11 @@ const optimalPath = (allPaths, faultySection, faultPathSwitches, currentTable, s
       if(diff<(maxOut-endInFpCrnt)){
         diff = maxOut-endInFpCrnt
         maxDiffPath = i
+        pathI = i
         uptoo = switch_list[faultPathSwitches[endInFp]]
       }
+      diffarr.push([i,maxOut-endInFpCrnt,switch_list[faultPathSwitches[endInFp]]])
+      
     }else{
       let fcrnt = getFaultPathCurrent(faultPathSwitches, currentTable, switch_list)
       let found = false
@@ -231,7 +236,9 @@ const optimalPath = (allPaths, faultySection, faultPathSwitches, currentTable, s
         if(fcrnt[j]<maxOut){
           if(diff<(maxOut-fcrnt[j])){
             maxDiffPath = i
+            pathI = i
             uptoo = switch_list[faultPathSwitches[j]]
+            
           }
           found = true
           break
@@ -239,14 +246,40 @@ const optimalPath = (allPaths, faultySection, faultPathSwitches, currentTable, s
       }
       if(!found){
         maxDiffPath = -1
+        diffarr.push([i,diff,uptoo])
+      }else{
+        diffarr.push([i,diff,uptoo])
       }
     }  
+    
   }
   // console.log(diff)
-  // console.log(maxDiffPath)
+  console.log(maxDiffPath)
+  console.log(uptoo)
+  console.log(diffarr)
+  console.log(pathI)
+  if(maxDiffPath===-1){
+    if(diffarr.length>1){
+      let min = diffarr[0][0]
+      let minI = 0
+      for(let l=1;l<diffarr.length;l++){
+        if(diffarr[l][0]<min && l!==pathI){
+          min = diffarr[l][0]
+          minI = l
+        }
+      }
+      let alt = diffarr[minI]
+      console.log(alt)
+      return [alt[0], alt[1], alt[2]]
+    }else{
+      return [maxDiffPath, diff, uptoo]
+    }
+  }else{
+    return [maxDiffPath, diff, uptoo]
+  }
   // console.log(allPaths[maxDiffPath][0])
-  // console.log(uptoo)
-  return [maxDiffPath, diff, uptoo]
+ 
+  
   
 }
 

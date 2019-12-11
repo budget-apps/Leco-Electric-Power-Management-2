@@ -232,7 +232,7 @@ class PhysicalConnectivity extends React.Component {
         else if(!isFaultRepaired && faultySection[1]!==upto && !faultySection.includes(faultSwitch)){
     
           console.log(path[0][0])
-          affected.push(faultySection[0], faultySection[1])
+          affected.push(faultySection[0], faultySection[1],upto)
           normal.push(switch_list[path[0][0][0]])
           console.log(affected)
           reconfigureMapState(affected, normal, mapState, switch_list,this.state.branch, logIndex)
@@ -244,14 +244,14 @@ class PhysicalConnectivity extends React.Component {
               'Upstream restored<br>'+
               'Reconfiguration<br>'
               +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
-              +'Opened: <b></b> <br>',
+              +'Opened: <b>'+upto+'</b> <br>',
             
           })
         }
         else if(!isFaultRepaired && faultySection[1]!==upto && faultySection.includes(faultSwitch)){
     
           console.log(path[0][0])
-          affected.push(faultySection[0], faultySection[1])
+          affected.push(faultySection[0], faultySection[1],upto)
           normal.push(switch_list[path[0][0][0]])
           console.log(affected)
           reconfigureMapState(affected, normal, mapState, switch_list,this.state.branch, logIndex)
@@ -263,7 +263,7 @@ class PhysicalConnectivity extends React.Component {
               'Upstream restored<br>'+
               'Reconfiguration<br>'
               +'Closed: <b>'+switch_list[path[0][0][0]]+'</b> <br>'
-              +'Opened: <b></b> <br>',
+              +'Opened: <b>'+upto+'</b> <br>',
             
           })
         }

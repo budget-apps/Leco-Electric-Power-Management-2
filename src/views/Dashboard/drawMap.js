@@ -114,16 +114,30 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
           }else{
             link_color = "#6fff6f"
           }
-          if(newFaultPath.includes(se_list.indexOf(section_list[j]))){
-            link_color = "#654321"
-          }else{
-            if(faultLoc[1]==="-1"){
-              link_color = "#6fff6f"
+          if(!isReconfigured){
+            if(newFaultPath.includes(se_list.indexOf(section_list[j]))){
+              link_color = "#654321"
             }else{
-              //
+              if(faultLoc[1]==="-1"){
+                link_color = "#6fff6f"
+              }else{
+                //
+              }
+              
             }
-            
+          }else{
+            if(newFaultPath.includes(se_list.indexOf(section_list[j]))){
+              // link_color = "#654321"
+            }else{
+              if(faultLoc[1]==="-1"){
+                link_color = "#6fff6f"
+              }else{
+                //
+              }
+              
+            }
           }
+          
   
           console.log(recfinNodeSec)
           console.log(section_list[j])
@@ -150,7 +164,8 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       "directed": false,
       "focusAnimationDuration": 0.75,
       "focusZoom": 5,
-      "height": 700,
+      "height": window.innerHeight,
+      "width":window.innerWidth,
       "highlightDegree": 5,
       "highlightOpacity": 1,
       "linkHighlightBehavior": true,
@@ -160,7 +175,6 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       "panAndZoom": false,
       "staticGraph": false,
       "staticGraphWithDragAndDrop": false,
-      "width": 1000,
       "d3": {
         "alphaTarget": 0.05,
         "gravity": -1200,
@@ -247,7 +261,7 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       "directed": false,
       "focusAnimationDuration": 0.75,
       "focusZoom": 5,
-      "height": 700,
+      "height": window.innerHeight,
       "highlightDegree": 5,
       "highlightOpacity": 1,
       "linkHighlightBehavior": true,
@@ -257,7 +271,7 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       "panAndZoom": false,
       "staticGraph": false,
       "staticGraphWithDragAndDrop": false,
-      "width": 1000,
+      "width": window.innerWidth,
       "d3": {
         "alphaTarget": 0.05,
         "gravity": -1200,
@@ -329,7 +343,7 @@ const drawGraph = (faultyFeeder, faultLoc, feed_list, noopn_list, sw_list, se_li
       "directed": false,
       "focusAnimationDuration": 0.75,
       "focusZoom": 5,
-      "height": 300,
+      "height": 500,
       "highlightDegree": 5,
       "highlightOpacity": 1,
       "linkHighlightBehavior": true,

@@ -455,6 +455,10 @@ class Dashboard extends React.Component {
               graph_data: graphData,
               graph_config: graphConfig
             });
+
+            if(!this.state.mapUpdated){
+              window.location.reload(false)
+            }
     
             })
           });
@@ -740,7 +744,7 @@ class Dashboard extends React.Component {
     //
     const { classes } = this.props;
     return (
-      <div>
+      <div style={{width: "100%"}}>
         <Dialog
           open={this.state.showLinkPopUp}
           onClose={this.handleClose}
@@ -819,11 +823,11 @@ class Dashboard extends React.Component {
             </Button>
           </DialogActions>
         </Dialog>
-        <div className="row">
+        <div className="row" style={{width: "100%", alignItems: 'center', justifyConetent: 'center'}}>
           <div className="col-md-3" style={{ marginTop: "50px" }}>
             <SelectBranch changed={this.selectMapEventHandler} />
           </div>
-          <div>
+          <div style={{width: "100%", alignItems: 'center', justifyConetent: 'center'}}>
             <GridContainer>
               <GridItem xs={12} sm={12} md={12}>
                 <Card>
@@ -895,7 +899,7 @@ class Dashboard extends React.Component {
                     </CardHeader>
                   )}
                   
-                  <CardBody id="Map" style={{ marginTop: 10 }}>
+                  <CardBody id="Map" style={{ marginTop: 10,width: "100%", alignItems: 'center', justifyConetent: 'center'}}>
                     <div>
                       {this.state.graph_data === undefined ? (
                         "Please select a branch"
