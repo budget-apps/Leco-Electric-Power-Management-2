@@ -103,7 +103,7 @@ class FaultGenerator extends React.Component {
         .set(switchid);
       Swal.fire({
         type: "success",
-        title: "SwitchOFF",
+        title: "FaultGenerated",
         text: switchid + " turned off."
       });
     } catch (e) {
